@@ -127,7 +127,9 @@ export class Sahne {
         }
       }
     }
-    if (!seen.has(this.v.n - 1)) order.splice(1, 0, [this.v.n - 1, 8]);
+    // son kare ("sonuç") ilk kareden hemen sonra iner
+    const li = order.findIndex(([i]) => i === this.v.n - 1);
+    if (li > 1) order.splice(1, 0, order.splice(li, 1)[0]);
     for (const [i, step] of order) {
       if (!exists.has(i) || this.frames[i] || this.loading.has(i) || this.failed.has(i)) continue;
       this.loading.add(i);

@@ -40,8 +40,8 @@ TARGETS = [  # (kıta id, lat, lon, başlangıç t)
 ARC_DUR = 0.14
 
 VARIANTS = {
-    'd': dict(res=(1600, 900), lens=50.0, d0=3.5, d1=5.0),
-    'm': dict(res=(768, 1366), lens=36.0, d0=2.9, d1=3.7),
+    'd': dict(res=(1600, 900), lens=50.0, d0=3.5, d1=6.3),
+    'm': dict(res=(768, 1366), lens=36.0, d0=2.9, d1=4.1),
 }
 
 
@@ -284,8 +284,10 @@ def pass_order(n):
             if f not in seen:
                 seen.add(f)
                 order.append(f)
-    if n - 1 not in seen:
-        order.insert(1, n - 1)
+    # son kare (sahnenin "sonuç" karesi) ilk kareden hemen sonra: erken teslimde de var olsun
+    if n - 1 in order:
+        order.remove(n - 1)
+    order.insert(1, n - 1)
     return order
 
 

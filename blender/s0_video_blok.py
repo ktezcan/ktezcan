@@ -98,8 +98,10 @@ def pass_order(n):
             if f not in seen:
                 seen.add(f)
                 order.append(f)
-    if n - 1 not in seen:
-        order.insert(1, n - 1)
+    # son kare (sahnenin "sonuç" karesi) ilk kareden hemen sonra: erken teslimde de var olsun
+    if n - 1 in order:
+        order.remove(n - 1)
+    order.insert(1, n - 1)
     return order
 
 
