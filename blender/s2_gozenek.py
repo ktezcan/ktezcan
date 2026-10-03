@@ -262,7 +262,8 @@ def cam_pose(t, variant):
         (0.16, Vector((0.0, -0.55, 0.03)), c0, 42.0),
         (0.28, Vector((0.0, -0.10, 0.03)), c0 + Vector((0, 0.2, 0)), 24.0),
         (0.38, c0 + Vector((0.0, -0.03, 0.0)), c1, lens_in),
-        (0.50, c0 + Vector((0.02, -0.01, -0.02)), c0 + Vector((-0.16, 0.13, 0.15)), lens_in),
+        # hücre içi bakış: ağız açıklığı (dış stüdyo) kadraj köşesine girmesin
+        (0.50, c0 + Vector((0.02, 0.0, -0.02)), c0 + Vector((-0.14, 0.15, 0.13)), lens_in),
         (0.60, c0 + Vector((-0.01, -0.03, 0.01)), c0 + Vector((0.17, 0.12, -0.10)), lens_in * 1.2),
         (0.70, Vector((0.05, -0.55, 0.12)), c0, 30.0),
         (0.84, Vector((far * 0.45, -far * 0.70, far * 0.38)), Vector((0, 0.6, -0.05)), 45.0),
