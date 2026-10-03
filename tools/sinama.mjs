@@ -52,7 +52,7 @@ async function oturum(ad, viewport, extra = '') {
   }
   await shot('0_giris');
   const H = await page.evaluate(() => document.documentElement.scrollHeight);
-  const s0 = await page.evaluate(() => { const r = document.querySelector('[data-sahne="s0"]').getBoundingClientRect(); return { top: r.top + scrollY, h: r.height }; });
+  const s0 = await page.evaluate(() => { const r = document.querySelector('[data-akis]').getBoundingClientRect(); return { top: r.top + scrollY, h: r.height }; });
   const vh = viewport.height;
   for (const p of [0.06, 0.12, 0.2, 0.35, 0.55, 0.8, 1.0]) {
     await page.evaluate((y) => window.scrollTo(0, y), s0.top + (s0.h - vh) * p);

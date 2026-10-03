@@ -8,16 +8,19 @@ AÇMAK
   İngilizce: sağ üstteki EN düğmesi ya da index.html?dil=en
   Kaydırma kaydı (telefonda izlemek için): paketle birlikte gönderilen MP4 dosyaları.
 
-HİKÂYE (yalnız giriş sayfası; her sahne giriş → gelişme → sonuç)
-  0  Blok      Tanıtım videosu bloğun ön yüzüne küçülür, blok döner.
-  1  Üretim    Blok hammaddelerine çözülür; kum, kireç, çimento, alçı kaidelerde,
-               alüminyum ortada; girdapta karışır, kalıpta kabarır, tellerle kesilir.
-  2  Yapı      Kamera bir gözeneğe dalar: kapalı hava hücresi; sonra numune küpü.
-  3  Sistem    Betonarme apartman doğru sırayla: temel → karkas → gazbeton duvarlar
-               (sıra sıra) → lentolar → çatı panelleri → doğramalar.
-  4  Dünya     Söke/İzmir'den 5 kıtaya yaylar (ülke adı ve sınırı yok).
+HİKÂYE (yalnız giriş sayfası; TEK AKIŞ — ayrı içerik sayfası yok)
+  Tek bir sabit sahnede beş bölüm, kaydırdıkça birbirine erir:
+  0  Blok      Tanıtım videosu bloğun ön yüzüne küçülür; blok sağa geçer.
+  1  Üretim    Blok hammaddelerine çözülür; kaidelerde kum, kireç, çimento, alçı,
+               ortada alüminyum; kalıpta kabarır, tellerle kesilir.
+  2  Yapı      Kesit yüzünden gözeneğe dalış: kapalı hava hücresi; numune küpü.
+  3  Sistem    Küp → şantiyedeki bir blok; apartman doğru sırayla yükselir
+               (karkas → duvar → lento → çatı → doğrama); gün batar, ışıklar yanar,
+               kamera tepeye çıkar.
+  4  Dünya     Tepeden bakış İzmir'e erir; küre açılır, yaylar 5 kıtaya.
   Son          Teklif çağrısı; logo en sonda.
-  Düzen: sahne → içerik. Sahnenin üstünde yalnız tıklanır noktalar var.
+  Metin ve rakamlar sahneyle birlikte, sabit anlatım alanında belirir
+  (masaüstünde solda, telefonda üstte); 3B konu karşı tarafta durur.
 
 YÖNTEM
   Sahneler Blender (Cycles) ile önceden hesaplanmış karelerdir, kaydırmayla

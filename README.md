@@ -1,7 +1,9 @@
 # Ege Gazbeton — giriş sayfası hikâyesi ("Hammaddeden binaya")
 
 Ana sayfanın yalnız **giriş bölümü** için kaydırmaya bağlı, sinematik hikâye:
-önceden hesaplanmış Blender (Cycles) kareleri + tıklanır noktalar + içerik kartları.
+önceden hesaplanmış Blender (Cycles) kareleri + tıklanır noktalar. **Tek akış:** beş sahne tek yapışkan
+sahnede çapraz geçişle birbirine erer; metin ve rakamlar sabit anlatım alanında (masaüstü sol, telefon üst)
+sahneyle senkron belirir. Kareler objektif kaydırmasıyla konuyu anlatım alanının karşısına alır (`kit.kaydir`).
 Hikâye bitince sayfanın geri kalanında animasyon döngüsü çalışmaz.
 
 | Klasör | İçerik |
@@ -19,8 +21,8 @@ Hikâye bitince sayfanın geri kalanında animasyon döngüsü çalışmaz.
 | s0 | Video → blok (gerçek video, bloğun ön yüzüne CSS `matrix3d` ile oturur) | 60 / 30 | 2 fabrika · 1.100.000 m³ · TS EN 771-4 |
 | s1 | Doğuş: blok çözülür, hammadde kaideleri, girdap, kabarma, tel kesim | 96 / 48 | karışım → kabarma → kesim ve otoklav |
 | s2 | Gözenek: 12 mm makro numune, kapalı hava hücresi | 72 / 36 | λ 0,08 · A1 · 300–600 kg/m³ |
-| s3 | Bina: temel → karkas → duvarlar (sıra sıra) → lento → çatı paneli → doğrama | 96 / 48 | ODTÜ: −%17 kütle, −%14 taban kesme |
-| s4 | Dünya: Söke/İzmir'den 5 kıtaya yaylar (ülke adı/sınırı yok) | 72 / 36 | 25+ ülke · 5 kıta |
+| s3 | Bina: küp → paletteki blok; karkas → duvar → lento → çatı → doğrama; gün batımı, tepeden bakış | 120 / 60 | ODTÜ: −%17 kütle, −%14 taban kesme |
+| s4 | Dünya: tepeden İzmir → küre; 5 kıtaya yaylar (ülke adı/sınırı yok; Türkiye vurgusu gerçek sınırla) | 72 / 36 | 25+ ülke · 5 kıta |
 
 ## Komutlar
 
