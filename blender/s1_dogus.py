@@ -335,6 +335,12 @@ def cam_pose(t, variant):
         (0.86, (MOLD_C.x, MOLD_C.y - 0.05, 0.22), e['dist'] * 0.92, -10, 26),
         (1.00, (MOLD_C.x + 0.01, MOLD_C.y - MOLD_W / 2, 0.14), e['dist'] * 0.15, -3, 5),
     ]
+    if variant == 'm':
+        # dikey kadraj: ara pozlarda biraz daha yüksekten bak (boş gökyüzü azalır).
+        # İlk poz (Sahne 0 sonu) ve son yakın plan aynı.
+        # (kaide yayı telefonda yatayda daraltılır: main() → PEDESTALS)
+        ek = {0.14: (1.0, 6), 0.26: (1.0, 10), 0.40: (1.0, 10), 0.56: (1.0, 8), 0.72: (1.0, 4), 0.86: (1.0, 6)}
+        keys = [(tk, A, d * ek[tk][0], y, p + ek[tk][1]) if tk in ek else (tk, A, d, y, p) for (tk, A, d, y, p) in keys]
     for (ta, A, da, ya, pa), (tb, B, db, yb, pb) in zip(keys, keys[1:]):
         if t <= tb:
             u = kit.smoother((t - ta) / (tb - ta))
@@ -344,7 +350,11 @@ def cam_pose(t, variant):
 
 
 def main():
+    global PEDESTALS
     os.makedirs(ARGS.out, exist_ok=True)
+    if ARGS.variant == 'm':
+        # dikey kadraj: kaide yayı yatayda daralır → dördü de sığar, nesneler küçülmez
+        PEDESTALS = [(px * 0.68, py, ph) for (px, py, ph) in PEDESTALS]
     # Sahne 0 stüdyosunu aynen kur, sonra bu sahnenin nesnelerini ekle
     s0.ARGS = ARGS
     cam, blk, dust = s0.build(ARGS.variant)
