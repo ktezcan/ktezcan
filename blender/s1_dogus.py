@@ -220,11 +220,20 @@ def dissolve_material(base_mat):
     nt.link(glow.outputs['Result'], add.inputs[0])
     nt.link(bsdf.outputs[0], add.inputs[1])
     nt.link(em.outputs[0], add.inputs[2])
+    # iç yüzler (çözülürken görünen) kararmasın: içten lime-beyaz parıltı = "dönüşüm çekirdeği"
+    geo = nt.node('ShaderNodeNewGeometry', (1200, -1100))
+    core = nt.node('ShaderNodeEmission', (1200, -900))
+    core.inputs['Color'].default_value = (0.86, 0.95, 0.62, 1.0)
+    core.inputs['Strength'].default_value = 2.2
+    inner = nt.node('ShaderNodeMixShader', (1500, -500))
+    nt.link(geo.outputs['Backfacing'], inner.inputs[0])
+    nt.link(add.outputs[0], inner.inputs[1])
+    nt.link(core.outputs[0], inner.inputs[2])
     tr = nt.node('ShaderNodeBsdfTransparent', (1400, -600))
     mix = nt.node('ShaderNodeMixShader', (1600, -300))
     nt.link(keep, mix.inputs[0])
     nt.link(tr.outputs[0], mix.inputs[1])
-    nt.link(add.outputs[0], mix.inputs[2])
+    nt.link(inner.outputs[0], mix.inputs[2])
     nt.link(mix.outputs[0], out.inputs['Surface'])
     return mat, val
 
