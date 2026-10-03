@@ -9,7 +9,7 @@
  *  • WebGL kullanılmaz: sahneler önceden hesaplanmış karelerdir (2B tuval).
  *  • Hareket azaltma tercihinde sahneler tek kare (son kare) olarak durur.
  */
-import { SAHNELER, DIKEY_ESIK, YUMUSAKLIK, ES_ZAMANLI } from './ayarlar.js';
+import { SAHNELER, DIKEY_ESIK, YUMUSAKLIK, ES_ZAMANLI, GECIS } from './ayarlar.js';
 import { Sahne, Kuyruk } from './sahne.js';
 import { dilUygula } from './dil.js';
 import { arayuzKur } from './arayuz.js';
@@ -54,31 +54,80 @@ function variantFor() {
 
 for (const s of sahneler) s.setVariant(variantFor());
 
-// Yakınlık: sahne 1,5 ekran yaklaşınca kareleri indir; 3 ekran uzaklaşınca bırak
-const yakin = new IntersectionObserver(
-  (entries) => {
-    for (const e of entries) {
-      const s = sahneler.find((x) => x.el === e.target);
-      if (!s) continue;
-      s.near = e.isIntersecting;
-      if (s.near) s.ensure();
-    }
-  },
-  { rootMargin: '150% 0px 150% 0px' }
-);
-const uzak = new IntersectionObserver(
-  (entries) => {
-    for (const e of entries) {
-      const s = sahneler.find((x) => x.el === e.target);
-      if (s && !e.isIntersecting) s.release();
-    }
-  },
-  { rootMargin: '300% 0px 300% 0px' }
-);
-for (const s of sahneler) {
-  yakin.observe(s.el);
-  uzak.observe(s.el);
+// --- Tek akış: kaydırma → sahne ve geçiş eşlemesi ---------------------------
+const akis = document.querySelector('[data-akis]');
+const bas = []; // her sahnenin akıştaki başlangıcı (vh birimi)
+let toplamVh = 0;
+SAHNELER.forEach((c, i) => {
+  bas.push(toplamVh);
+  toplamVh += c.boy + (i < SAHNELER.length - 1 ? GECIS : 0);
+});
+
+function akisBoyu() {
+  if (akis && !azHareket) akis.style.height = `${Math.round(((toplamVh + 100) * window.innerHeight) / 100)}px`;
 }
+akisBoyu();
+
+/** Akış içindeki kaydırma (vh) → her sahne için [p, görünür, saydamlık] ve etkin sahne. */
+function dagit(yVh) {
+  const n = sahneler.length;
+  const out = sahneler.map(() => [0, false, 0]);
+  let aktif = 0;
+  for (let i = 0; i < n; i++) {
+    const st = bas[i];
+    const en = st + SAHNELER[i].boy;
+    if (yVh < st && i === 0) {
+      out[0] = [0, true, 1];
+      aktif = 0;
+      break;
+    }
+    if (yVh >= st && yVh <= en) {
+      out[i] = [(yVh - st) / SAHNELER[i].boy, true, 1];
+      aktif = i;
+      break;
+    }
+    if (i === n - 1 || (yVh > en && yVh < en + GECIS)) {
+      if (i === n - 1) {
+        out[i] = [1, true, 1];
+        aktif = i;
+        break;
+      }
+      const u = (yVh - en) / GECIS;
+      const a = u * u * (3 - 2 * u);
+      out[i] = [1, true, 1];
+      out[i + 1] = [0, true, a];
+      aktif = a < 0.5 ? i : i + 1;
+      break;
+    }
+  }
+  return { out, aktif };
+}
+
+let akisDurum = { aktif: 0, ilerleme: 0, gorunur: true };
+
+/** Yakınlık: etkin sahne ve komşuları iner; uzaktakiler bellekten bırakılır. */
+function yukle(aktif, akisYakin) {
+  sahneler.forEach((s, i) => {
+    const d = Math.abs(i - aktif);
+    const yakin = akisYakin && d <= 1;
+    if (yakin && !s.near) {
+      s.near = true;
+      s.ensure();
+    } else if (!yakin && s.near) {
+      s.near = false;
+      if (d >= 2 || !akisYakin) s.release();
+    }
+  });
+}
+
+/** Yolculuk çubuğundan sahneye git (sahne başlangıcının biraz sonrası). */
+ortak.sahneyeGit = (id) => {
+  const i = sahneler.findIndex((s) => s.id === id);
+  if (i < 0 || !akis) return false;
+  const top = akis.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo({ top: top + ((bas[i] + 2) * window.innerHeight) / 100, behavior: 'auto' });
+  return true;
+};
 
 /** İsteğe bağlı kare döngüsü: yalnız hareket varken çalışır. */
 function kick() {
@@ -91,8 +140,21 @@ function frame(now) {
   const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
   last = now;
   const vh = window.innerHeight;
-  // 1) tüm okumalar (yerleşim) önce
-  const vis = sahneler.map((s) => s.measure(vh));
+  // 1) okumalar önce: akışın konumu
+  const r = akis ? akis.getBoundingClientRect() : { top: 0, bottom: 0, height: 0 };
+  const yVh = (-r.top / vh) * 100;
+  const akisGorunur = r.bottom > 0 && r.top < vh;
+  const akisYakin = r.bottom > -vh * 1.5 && r.top < vh * 2.5;
+  // hareket azaltma: akış durağan sütun, her sahne kendi yerinde tek kare
+  const { out, aktif } = azHareket ? { out: sahneler.map(() => [1, true, 1]), aktif: 0 } : dagit(yVh);
+  const vis = sahneler.map((s, i) => s.konumla(out[i][0], (azHareket || akisGorunur) && out[i][1], out[i][2]));
+  if (azHareket) for (const s of sahneler) {
+    if (!s.near) {
+      s.near = true;
+      s.ensure();
+    }
+  }
+  else yukle(aktif, akisYakin);
   if (ilk || kayit) {
     for (const s of sahneler) s.p = s.target;
     ilk = false;
@@ -105,7 +167,8 @@ function frame(now) {
     s.render();
     s.wasVisible = vis[i];
   });
-  ui.guncelle(sahneler, vis);
+  akisDurum = { aktif, ilerleme: Math.min(1, Math.max(0, yVh / toplamVh)), gorunur: r.top < vh * 0.4 && r.bottom > vh * 0.6 };
+  ui.guncelle(sahneler, akisDurum);
   if (more) raf = requestAnimationFrame(frame);
   else last = 0;
 }
@@ -116,6 +179,7 @@ window.addEventListener(
   'resize',
   () => {
     const v = variantFor();
+    akisBoyu();
     for (const s of sahneler) {
       if (v !== lastVariant) s.setVariant(v);
       else s.layout();

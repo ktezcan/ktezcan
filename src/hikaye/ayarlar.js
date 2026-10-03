@@ -11,12 +11,19 @@ export const KARE_KOK = 'kareler'; // index.html'e göre göreli yol
  *  video  : ön yüz köşeleri meta.face'ten okunur, gerçek video bu yüze oturur.
  */
 export const SAHNELER = [
-  { id: 's0', giris: 0.16, video: true },
-  { id: 's1' },
-  { id: 's2' },
-  { id: 's3' },
-  { id: 's4' },
+  { id: 's0', giris: 0.16, video: true, boy: 230 },
+  { id: 's1', boy: 380 },
+  { id: 's2', boy: 300 },
+  { id: 's3', boy: 400 },
+  { id: 's4', boy: 280 },
 ];
+
+/**
+ * Tek akış: sahne uzunlukları (boy, ekran yüksekliği yüzdesi cinsinden kaydırma) ve iki sahne
+ * arasındaki çapraz geçiş (GECIS). Önceki sahnenin son karesi, sonrakinin ilk karesine erir;
+ * kareler bu geçiş için eşleşecek biçimde hesaplandı (küp → blok, tepeden şantiye → İzmir).
+ */
+export const GECIS = 70;
 
 /** Dikey ekran eşiği (genişlik/yükseklik): altındaysa telefon kareleri (m) kullanılır. */
 export const DIKEY_ESIK = 0.82;

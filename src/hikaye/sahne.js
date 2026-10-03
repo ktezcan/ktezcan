@@ -61,7 +61,12 @@ export class Sahne {
     this.id = cfg.id;
     this.meta = meta || {};
     this.ortak = ortak;
-    this.sabit = el.querySelector('.eg-sahne__sabit');
+    // tek akış: sahne katmanı ortak yapışkan sahnenin içinde, tüm alanı kaplar
+    this.sabit = el;
+    this.perde = el.querySelector('.eg-sahne__perde');
+    this.vuruslar = Array.from(el.querySelectorAll('[data-bas]')).map((v) => ({ el: v, bas: +v.dataset.bas, son: +v.dataset.son, acik: false }));
+    this.alfa = -1;
+    this.perdeOpak = -1;
     this.katman = el.querySelector('.eg-sahne__katman');
     this.canvas = el.querySelector('.eg-sahne__tuval');
     this.ctx = this.canvas.getContext('2d', { alpha: false });
@@ -206,14 +211,12 @@ export class Sahne {
     this.vsize = { w: -1, h: -1 };
   }
 
-  /** Kaydırma konumundan hedef ilerleme (okuma yapılır, yazma yapılmaz). */
-  measure(vh) {
-    const r = this.el.getBoundingClientRect();
-    const span = r.height - vh;
-    this.target = span > 0 ? clamp01(-r.top / span) : 0;
-    if (this.ortak.azHareket) this.target = this.cfg.video ? 0 : 1;
-    this.visible = r.bottom > 0 && r.top < vh;
-    return this.visible;
+  /** Akış denetleyicisinden: hedef ilerleme, görünürlük ve katman saydamlığı (çapraz geçiş). */
+  konumla(p, gorunur, alfa) {
+    this.target = this.ortak.azHareket ? (this.cfg.video ? 0 : 1) : p;
+    this.visible = gorunur;
+    this.hedefAlfa = gorunur ? alfa : 0;
+    return gorunur;
   }
 
   /** Yumuşak yaklaşma; hâlâ hareket varsa true. */
@@ -262,8 +265,35 @@ export class Sahne {
     return [a, b, b === a ? 0 : (f - a) / (b - a)];
   }
 
+  /** Katman saydamlığı, anlatım vuruşları, perde: yalnız değişince yazılır. */
+  katmanYaz() {
+    const a = Math.round(this.hedefAlfa * 1000) / 1000;
+    if (a !== this.alfa) {
+      this.el.style.opacity = String(a);
+      this.el.style.visibility = a <= 0 ? 'hidden' : 'visible';
+      this.alfa = a;
+    }
+    const p = this.p;
+    for (const v of this.vuruslar) {
+      const acik = this.visible && p >= v.bas && p < v.son;
+      if (acik !== v.acik) {
+        v.el.classList.toggle('is-aktif', acik);
+        v.acik = acik;
+      }
+    }
+    if (this.perde) {
+      // video sahnesi: açılışta tam ekran video, blok kayınca anlatım perdesi gelir
+      const o = this.cfg.video ? Math.round(smooth(0.3, 0.62, this.p) * 1000) / 1000 : 1;
+      if (o !== this.perdeOpak) {
+        this.perde.style.opacity = String(o);
+        this.perdeOpak = o;
+      }
+    }
+  }
+
   render() {
-    if (!this.v) return;
+    this.katmanYaz();
+    if (!this.v || !this.visible) return;
     const f = this.frameFloat();
     const nb = this.neighbors(f);
     if (nb) {
