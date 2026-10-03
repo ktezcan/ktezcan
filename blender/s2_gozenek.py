@@ -250,11 +250,15 @@ def cam_pose(t, variant):
     c0 = Vector(CHAIN[0][0])
     c1 = Vector(CHAIN[0][0]).lerp(Vector(CHAIN[1][0]), 1.0)
     portrait = variant == 'm'
-    d0 = 1.45 if not portrait else 0.95
-    far = 4.6 if not portrait else 5.8
-    lens_in = 15.0 if not portrait else 12.0
+    # kit.camera yatay sensör uyumu kullanır: dikey kadrajda düşey görüş çok açılır.
+    # Telefon: yüz ilk karede ekranı doldursun (numune kenarı görünmesin) ve hücre
+    # içindeyken ağız açıklığından dış stüdyo sızmasın → daha yakın başlangıç, daha dar iç objektif.
+    d0 = 1.45 if not portrait else 0.68
+    far = 4.6
+    lens_in = 15.0 if not portrait else 28.0
+    z0 = 0.02 if not portrait else -0.03  # telefon: üst kenardaki kesik gözenek kadraj dışında
     keys = [
-        (0.00, Vector((0.0, -d0, 0.02)), Vector((0.0, 0.0, 0.02)), 50.0),
+        (0.00, Vector((0.0, -d0, z0)), Vector((0.0, 0.0, z0)), 50.0),
         (0.16, Vector((0.0, -0.55, 0.03)), c0, 42.0),
         (0.28, Vector((0.0, -0.10, 0.03)), c0 + Vector((0, 0.2, 0)), 24.0),
         (0.38, c0 + Vector((0.0, -0.03, 0.0)), c1, lens_in),
