@@ -42,9 +42,8 @@ def build(variant):
     v = VARIANTS[variant]
     kit.setup_render(*v['res'], samples=ARGS.samples, threshold=0.012)
     world = kit.studio_world(hdri='studio.exr', hdri_strength=0.32, rot=math.radians(30))
-    if variant == 'm':
-        # dikey kadrajda zeminin uzak kısmı görünür: HDRI yansıması leke yapmasın
-        kit.replace_reflection_env(world, 1.0)
+    # zeminin uzak kısmı HDRI'deki softbox'ı yansıtıp parlak leke yapmasın: lekesiz yumuşak ortam
+    kit.replace_reflection_env(world, 1.0)
 
     floor = kit.box('Zemin', (40, 40, 0.02), (0, 0, -0.01), kit.glossy_floor())
     floor.visible_shadow = True

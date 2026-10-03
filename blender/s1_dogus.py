@@ -353,7 +353,7 @@ def main():
     cake, skin = build_cake(near)
     wires = build_wires()
 
-    env_mix = kit.replace_reflection_env(bpy.context.scene.world, 0.0) if ARGS.variant == 'd' else None
+    env_mix = None  # Sahne 0 artık baştan yumuşak ortamla render ediliyor (süreklilik)
     frames = s0.pass_order(FRAMES) if ARGS.frames == 'all' else [int(x) for x in ARGS.frames.split(',')]
     meta_path = os.path.join(ARGS.out, 'meta.json')
     meta = {'frames': FRAMES, 'res': s0.VARIANTS[ARGS.variant]['res'], 'hotspots': {}}
