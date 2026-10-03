@@ -352,6 +352,9 @@ def main():
     dmat, front = dissolve_material(base)
     blk.data.materials[0] = dmat
     blk.rotation_euler[2] = math.radians(6.0)  # Sahne 0 son karesiyle aynı
+    # alt yüz zeminle aynı düzlemde kalırsa blok saydamlaşınca ışınlar zemin üst yüzünü
+    # kaçırıp zemin kutusunun içine düşer → bloğun izi kara dikdörtgen olur. 0,3 mm kaldır.
+    blk.location.z += 0.0003
 
     g = grain_setup(N_GRAIN)
     grains = make_grain_object(g)
