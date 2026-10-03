@@ -14,7 +14,6 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import kit  # noqa: E402
 import bpy  # noqa: E402
-import bmesh  # noqa: E402
 from mathutils import Vector  # noqa: E402
 import stil_f as F  # noqa: E402
 
@@ -22,19 +21,12 @@ import stil_f as F  # noqa: E402
 def gozenekler(L, T, H, sayi, seed=7):
     """Bloğun içinde rastgele küçük küreler (hava hücreleri) — tek ağ."""
     rnd = random.Random(seed)
-    bm = bmesh.new()
+    mer, boy = [], []
     for _ in range(sayi):
         r = min(0.0075, 0.0012 * rnd.lognormvariate(0.6, 0.45))
-        c = Vector((rnd.uniform(-L / 2 + r, L / 2 - r), rnd.uniform(-T / 2 + r, T / 2 - r), rnd.uniform(r, H - r)))
-        res = bmesh.ops.create_icosphere(bm, subdivisions=2, radius=r)
-        bmesh.ops.translate(bm, verts=res['verts'], vec=c)
-    me = bpy.data.meshes.new('Gozenek')
-    bm.to_mesh(me)
-    bm.free()
-    ob = bpy.data.objects.new('Gozenek', me)
-    kit.link(ob)
-    for p in ob.data.polygons:
-        p.use_smooth = True
+        mer.append((rnd.uniform(-L / 2 + r, L / 2 - r), rnd.uniform(-T / 2 + r, T / 2 - r), rnd.uniform(r, H - r)))
+        boy.append(r)
+    ob = kit.toplu_mesh('Gozenek', kit.sablon('ico', 2), mer, boy, None, None, yumusak=True)
     m = bpy.data.materials.new('FGozenek')
     m.use_nodes = True
     nt = m.node_tree

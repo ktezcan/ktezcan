@@ -652,3 +652,70 @@ def sis(boyut, konum, yogunluk=0.012, renk=(1.0, 1.0, 1.0), yonlu=0.55):
     bpy.context.scene.cycles.volume_step_rate = 4.0
     bpy.context.scene.cycles.volume_max_steps = 256
     return ob
+
+
+def sablon(tur='ico', subdiv=2):
+    """Tek bir şablon ağın (köşe, yüz) dizileri: 'ico' (r=1) ya da 'kup' (kenar=1)."""
+    import bmesh
+    import numpy as np
+    bm = bmesh.new()
+    if tur == 'ico':
+        bmesh.ops.create_icosphere(bm, subdivisions=subdiv, radius=1.0)
+    else:
+        bmesh.ops.create_cube(bm, size=1.0)
+    v = np.array([x.co[:] for x in bm.verts], dtype=np.float32)
+    f = [[x.index for x in fc.verts] for fc in bm.faces]
+    bm.free()
+    return v, f
+
+
+def toplu_mesh(name, sablon_vf, merkez, olcek, donme=None, mat=None, yumusak=False):
+    """Şablonu N kez kopyalayıp tek ağ yapar (numpy; bmesh'in O(N²) yavaşlığı yok).
+    merkez: (N,3); olcek: (N,) ya da (N,3); donme: (N,3) Euler XYZ (radyan) ya da None."""
+    import numpy as np
+    tv, tf = sablon_vf
+    merkez = np.asarray(merkez, dtype=np.float32)
+    n, k = len(merkez), len(tv)
+    olcek = np.asarray(olcek, dtype=np.float32)
+    if olcek.ndim == 1:
+        olcek = np.repeat(olcek[:, None], 3, axis=1)
+    v = tv[None, :, :] * olcek[:, None, :]
+    if donme is not None:
+        e = np.asarray(donme, dtype=np.float32)
+        cx, sx = np.cos(e[:, 0]), np.sin(e[:, 0])
+        cy, sy = np.cos(e[:, 1]), np.sin(e[:, 1])
+        cz, sz = np.cos(e[:, 2]), np.sin(e[:, 2])
+        # R = Rz @ Ry @ Rx (Blender XYZ Euler)
+        R = np.empty((n, 3, 3), dtype=np.float32)
+        R[:, 0, 0] = cz * cy
+        R[:, 0, 1] = cz * sy * sx - sz * cx
+        R[:, 0, 2] = cz * sy * cx + sz * sx
+        R[:, 1, 0] = sz * cy
+        R[:, 1, 1] = sz * sy * sx + cz * cx
+        R[:, 1, 2] = sz * sy * cx - cz * sx
+        R[:, 2, 0] = -sy
+        R[:, 2, 1] = cy * sx
+        R[:, 2, 2] = cy * cx
+        v = np.einsum('nij,nkj->nki', R, v)
+    v = (v + merkez[:, None, :]).reshape(-1, 3)
+    fl = [len(x) for x in tf]
+    tf_flat = np.array([i for x in tf for i in x], dtype=np.int32)
+    loops = (tf_flat[None, :] + (np.arange(n, dtype=np.int32) * k)[:, None]).reshape(-1)
+    me = bpy.data.meshes.new(name)
+    me.vertices.add(len(v))
+    me.vertices.foreach_set('co', v.ravel())
+    me.loops.add(len(loops))
+    me.loops.foreach_set('vertex_index', loops)
+    me.polygons.add(n * len(tf))
+    sizes = np.tile(np.array(fl, dtype=np.int32), n)
+    starts = np.concatenate([[0], np.cumsum(sizes)[:-1]]).astype(np.int32)
+    me.polygons.foreach_set('loop_start', starts)
+    me.update(calc_edges=True)
+    me.validate()
+    if yumusak:
+        me.polygons.foreach_set('use_smooth', np.ones(len(me.polygons), dtype=bool))
+    ob = bpy.data.objects.new(name, me)
+    link(ob)
+    if mat:
+        ob.data.materials.append(mat)
+    return ob
