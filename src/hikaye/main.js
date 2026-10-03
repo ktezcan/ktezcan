@@ -28,6 +28,7 @@ const kuyruk = new Kuyruk(ES_ZAMANLI);
 let raf = 0;
 let last = 0;
 let rafSayac = 0;
+let ilk = true; // ilk karede (yenileme / bağlantıyla gelişte) yumuşatmadan doğrudan otur
 const ortak = {
   kuyruk,
   azHareket,
@@ -90,6 +91,10 @@ function frame(now) {
   const vh = window.innerHeight;
   // 1) tüm okumalar (yerleşim) önce
   const vis = sahneler.map((s) => s.measure(vh));
+  if (ilk) {
+    for (const s of sahneler) s.p = s.target;
+    ilk = false;
+  }
   // 2) sonra yazımlar
   let more = false;
   sahneler.forEach((s, i) => {
