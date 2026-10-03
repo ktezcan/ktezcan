@@ -44,7 +44,7 @@ T_WIN = (0.80, 0.90)
 
 VARIANTS = {
     'd': dict(res=(1600, 900), lens=35.0, dist=27.5),
-    'm': dict(res=(768, 1366), lens=26.0, dist=36.0),
+    'm': dict(res=(768, 1366), lens=40.0, dist=22.0),
 }
 
 

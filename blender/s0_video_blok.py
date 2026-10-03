@@ -33,7 +33,7 @@ VARIANTS = {
     # telefon 9:16 — 768×1366 (ayrı kadraj)
     'm': dict(res=(768, 1366), lens=34.0,
               start=dict(dist=L * 34.0 / 36.0, yaw=0.0, pitch=0.0, tz=H / 2, tx=0.0),
-              end=dict(dist=1.55, yaw=30.0, pitch=26.0, tz=0.10, tx=-0.02)),
+              end=dict(dist=1.22, yaw=30.0, pitch=24.0, tz=0.11, tx=-0.02)),
 }
 
 
@@ -41,7 +41,10 @@ def build(variant):
     kit.reset()
     v = VARIANTS[variant]
     kit.setup_render(*v['res'], samples=ARGS.samples, threshold=0.012)
-    kit.studio_world(hdri='studio.exr', hdri_strength=0.32, rot=math.radians(30))
+    world = kit.studio_world(hdri='studio.exr', hdri_strength=0.32, rot=math.radians(30))
+    if variant == 'm':
+        # dikey kadrajda zeminin uzak kısmı görünür: HDRI yansıması leke yapmasın
+        kit.replace_reflection_env(world, 1.0)
 
     floor = kit.box('Zemin', (40, 40, 0.02), (0, 0, -0.01), kit.glossy_floor())
     floor.visible_shadow = True

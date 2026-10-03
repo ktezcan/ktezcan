@@ -353,14 +353,15 @@ def main():
     cake, skin = build_cake(near)
     wires = build_wires()
 
-    env_mix = kit.replace_reflection_env(bpy.context.scene.world, 0.0)
+    env_mix = kit.replace_reflection_env(bpy.context.scene.world, 0.0) if ARGS.variant == 'd' else None
     frames = s0.pass_order(FRAMES) if ARGS.frames == 'all' else [int(x) for x in ARGS.frames.split(',')]
     meta_path = os.path.join(ARGS.out, 'meta.json')
     meta = {'frames': FRAMES, 'res': s0.VARIANTS[ARGS.variant]['res'], 'hotspots': {}}
     for f in frames:
         t = f / (FRAMES - 1)
         # Sahne 0 ile aynı başlar; sonra HDRI yansıması lekesiz yumuşak ortama devredilir
-        env_mix.outputs[0].default_value = kit.smooth(kit.seg(t, 0.0, 0.14))
+        if env_mix:
+            env_mix.outputs[0].default_value = kit.smooth(kit.seg(t, 0.0, 0.14))
         # çözülme cephesi: yerel z (−H/2..H/2) üstten alta
         cz = H / 2 + 0.06 - kit.smooth(kit.seg(t, 0.03, 0.27)) * (H + 0.14)
         front.outputs[0].default_value = cz

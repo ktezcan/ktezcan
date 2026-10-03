@@ -1,0 +1,65 @@
+EGE GAZBETON — GİRİŞ SAYFASI HİKÂYESİ ("Hammaddeden binaya")
+=============================================================
+
+AÇMAK
+  index.html dosyasına çift tıklayın. İnternet gerekmez (yazı tipleri, betik ve
+  kareler klasörün içinde). Chrome veya Edge önerilir.
+  Hata ayıklama görünümü: index.html?debug  (sol altta döngü durumu)
+  İngilizce: sağ üstteki EN düğmesi ya da index.html?dil=en
+
+HİKÂYE (yalnız giriş sayfası; her sahne giriş → gelişme → sonuç)
+  0  Blok      Tanıtım videosu bloğun ön yüzüne küçülür, blok döner.
+  1  Üretim    Blok hammaddelerine çözülür; kum, kireç, çimento, alçı kaidelerde,
+               alüminyum ortada; girdapta karışır, kalıpta kabarır, tellerle kesilir.
+  2  Yapı      Kamera bir gözeneğe dalar: kapalı hava hücresi; sonra numune küpü.
+  3  Sistem    Betonarme apartman doğru sırayla: temel → karkas → gazbeton duvarlar
+               (sıra sıra) → lentolar → çatı panelleri → doğramalar.
+  4  Dünya     Söke/İzmir'den 5 kıtaya yaylar (ülke adı ve sınırı yok).
+  Son          Teklif çağrısı; logo en sonda.
+  Düzen: sahne → içerik. Sahnenin üstünde yalnız tıklanır noktalar var.
+
+YÖNTEM
+  Sahneler Blender (Cycles) ile önceden hesaplanmış karelerdir, kaydırmayla
+  oynar: masaüstü 1600×900, telefon için ayrı dikey 768×1366 kadraj.
+  Tarayıcıda WebGL çalışmaz; kareler 2B tuvale çizilir.
+
+PERFORMANS ("kasmasın" kuralı)
+  • Döngü (requestAnimationFrame) yalnız kaydırırken / fare hareket ederken
+    çalışır; hareket durunca kendiliğinden durur.
+  • Hikâye bittikten sonra (ürünler, blog, katalog) hiç animasyon döngüsü yok.
+  • Kareler sahne yaklaşınca iner: önce her 8. kare, sonra aralar.
+    Sahne uzaklaşınca ara kareler bellekten bırakılır.
+  • backdrop-filter / mix-blend yok, ekran oranı en fazla 1,25.
+  • Hareket azaltma tercihinde sahneler tek kare olarak durur, video oynamaz.
+
+DEĞİŞTİRİLECEK YER TUTUCULAR
+  1. Video: assets/video/tanitim-hero.mp4 → kod\public\video\tanitim-hero-720.mp4
+     (aynı adla kopyalayın). Kapak: assets/video/tanitim-hero.jpg
+  2. Logo: index.html içinde "YER TUTUCU LOGO" yazan iki SVG
+     → LP\img\logo_white.svg içeriği
+  3. Gazbeton yüzey dokusu kodla üretildi (kendi kesit fotoğrafınız cut-surface.jpg
+     bende yoktu). Fotoğrafla dokular yeniden üretilip sahneler yeniden hesaplanmalı.
+  4. Bağlantılar: /teklif/ /katalog/ /teknik-foyler/ /duvar-tasarla/ /ihracat/
+     /urunler/... → sitenizdeki gerçek adresler.
+
+KARTLARDAKİ RAKAMLAR (kaynakları kartta yazılı)
+  2 fabrika (Söke, İzmir) · 1.100.000 m³ üretim kapasitesi · TS EN 771-4
+  (CE 2179-CPR-0043 / 0052) · λ 0,08 W/mK (G2/350 duvar tasarım değeri) ·
+  A1 yangına tepki sınıfı (EN 13501-1) · 300–600 kg/m³ (G1–G4) ·
+  ODTÜ hesabı: 8 katlı örnek binada yapı kütlesi −%17, taban kesme kuvveti −%14 ·
+  25+ ülke, 5 kıta · Söke'de günde 200 ton kireç tesisi.
+  Uyulan kurallar: ülke adı yok; "yanmaz" denmez; yeşil yalnız bizim ürüne
+  (sahadaki paletlerin streç örtüsü); 3B görüntüde yazı ve rakam yok.
+
+YAYINA ALMA (Natro)
+  Notlarınıza göre FTP'de .js dosyaları engelli. Klasörü zip olarak panelden
+  yükleyip "Extract" ile açın. Önce önizleme alt alan adında deneyin.
+  Astro sitenize taşımak için: src/hikaye/ (kaynak modüller), assets/css/hikaye.css
+  ve kareler/ klasörü yeterli; Astro bileşeni olarak bölümler index.html'deki
+  işaretlemeyle aynıdır.
+
+GELİŞTİRİCİ İÇİN (depo: github.com/ktezcan/ktezcan, dal claude/ege-gazbeton-site-animation-cxwzho)
+  blender/      sahne betikleri (Blender 5.x / bpy): kit.py, s0…s4, dokular.py
+  tools/        kareler.py (PNG → WebP + meta), derle.mjs (tek dosyalık betik),
+                sinama.mjs (başsız tarayıcı sınaması), yer_tutucu_video.sh
+  src/hikaye/   sayfa betiğinin kaynak modülleri
