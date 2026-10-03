@@ -258,7 +258,11 @@ export class Sahne {
     const f = this.frameFloat();
     const nb = this.neighbors(f);
     if (nb) {
-      const [a, b, t] = nb;
+      const [a, b, t0] = nb;
+      // Seyrek karelerde (henüz inmemiş ara kareler) uzun çapraz geçiş çift görüntü bırakır:
+      // aralık büyüdükçe geçiş ortaya sıkıştırılır. Ardışık karelerde (aralık 1) doğrusal kalır.
+      const gap = b - a;
+      const t = gap > 1 ? smooth(0.5 - 1 / gap, 0.5 + 1 / gap, t0) : t0;
       const key = `${a}|${b}|${t.toFixed(3)}`;
       if (key !== this.drawnKey) {
         this.drawnKey = key;
