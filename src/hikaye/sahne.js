@@ -94,7 +94,16 @@ export class Sahne {
 
   /** Varyant (d: masaüstü 16:9, m: telefon dikey) seçimi; yoksa masaüstüne düşer. */
   setVariant(want) {
-    const pick = this.meta[want] && this.meta[want].mevcut && this.meta[want].mevcut.length ? want : 'd';
+    // yarım kalmış bir set (render sürerken paketlenmiş) sahneyi ortada dondurur:
+    // yalnız baştan sona kapsayan set seçilir (ilk + son kare, en fazla 8 karelik boşluk)
+    const tam = (k) => {
+      const m = this.meta[k];
+      const s = m && m.mevcut;
+      if (!s || !s.length || s[0] !== 0 || s[s.length - 1] !== m.n - 1) return false;
+      for (let i = 1; i < s.length; i++) if (s[i] - s[i - 1] > 8) return false;
+      return true;
+    };
+    const pick = tam(want) ? want : 'd';
     if (pick === this.variant) return;
     this.variant = pick;
     this.v = this.meta[pick] || { n: 1, res: [1600, 900], mevcut: [], hotspots: {}, face: {} };

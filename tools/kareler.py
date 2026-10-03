@@ -9,6 +9,7 @@ Kullanım: python tools/kareler.py <render_kök> [kalite]
 """
 import json
 import os
+import shutil
 import sys
 
 from PIL import Image
@@ -37,6 +38,10 @@ def main(render_kok, kalite=90):
             src = os.path.join(render_kok, f'{sid}{var}')
             meta_p = os.path.join(src, 'meta.json')
             if not os.path.isdir(src) or not os.path.exists(meta_p):
+                # kaynağı kalmamış (yeniden render için kenara alınmış) eski set pakete girmesin
+                eski = os.path.join(HEDEF, sid, var)
+                if os.path.isdir(eski):
+                    shutil.rmtree(eski)
                 continue
             meta = json.load(open(meta_p, encoding='utf-8'))
             out = os.path.join(HEDEF, sid, var)
