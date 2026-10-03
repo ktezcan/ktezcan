@@ -29,7 +29,7 @@ def yuvarla(o, n=4):
     return o
 
 
-def main(render_kok, kalite=80):
+def main(render_kok, kalite=90):
     hepsi = {}
     toplam = 0
     for sid in SAHNELER:
@@ -41,6 +41,10 @@ def main(render_kok, kalite=80):
             meta = json.load(open(meta_p, encoding='utf-8'))
             out = os.path.join(HEDEF, sid, var)
             os.makedirs(out, exist_ok=True)
+            # kalite değiştiyse tüm kareler yeniden kodlanır
+            isaret = os.path.join(out, '.kalite')
+            eski_k = open(isaret).read().strip() if os.path.exists(isaret) else ''
+            yeniden = eski_k != str(kalite)
             mevcut = []
             for name in sorted(os.listdir(src)):
                 if not name.endswith('.png'):
@@ -48,7 +52,7 @@ def main(render_kok, kalite=80):
                 i = int(name[:-4])
                 png = os.path.join(src, name)
                 webp = os.path.join(out, f'{i:03d}.webp')
-                if not os.path.exists(webp) or os.path.getmtime(webp) < os.path.getmtime(png):
+                if yeniden or not os.path.exists(webp) or os.path.getmtime(webp) < os.path.getmtime(png):
                     try:
                         im = Image.open(png)
                         im.load()
@@ -57,6 +61,12 @@ def main(render_kok, kalite=80):
                     im.convert('RGB').save(webp, 'WEBP', quality=kalite, method=6)
                 mevcut.append(i)
                 toplam += 1
+            with open(isaret, 'w') as f:
+                f.write(str(kalite))
+            # render klasöründe karşılığı kalmayan eski kareleri sil (pakete girmesin)
+            for name in os.listdir(out):
+                if name.endswith('.webp') and int(name[:-5]) not in mevcut:
+                    os.remove(os.path.join(out, name))
             if not mevcut:
                 continue
             ent = {'n': meta['frames'], 'res': meta['res'], 'mevcut': sorted(mevcut)}
@@ -79,4 +89,4 @@ def main(render_kok, kalite=80):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 80)
+    main(sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 90)

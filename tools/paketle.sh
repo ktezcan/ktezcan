@@ -4,7 +4,7 @@
 set -e
 KOK=$(cd "$(dirname "$0")/.." && pwd)
 RENDER=$1; NM=$2; OUT=$3; PY=${4:-python3}
-"$PY" "$KOK/tools/kareler.py" "$RENDER" 80
+"$PY" "$KOK/tools/kareler.py" "$RENDER" 90
 node "$KOK/tools/derle.mjs" "$NM"
 mkdir -p "$OUT"
 TARIH=$(date +%Y-%m-%d_%H%M)
