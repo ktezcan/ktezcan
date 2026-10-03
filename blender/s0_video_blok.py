@@ -65,8 +65,18 @@ def build(variant):
     for ob in (r1, r2):
         ob.visible_glossy = False  # zeminde dev şerit yansıması olmasın
 
+    # Sinematik: tepeden yumuşak ışık huzmesi (dar yayılımlı alan ışığı, sert spot değil),
+    # havada çok hafif sis → huzme ve toz zerreleri görünür; ışıklar hafifçe ışıldar
+    beam = kit.area_light('Huzme', (-0.75, 1.15, 3.1), (0, 0, 0), 0.25, 55, (1.0, 0.95, 0.88), shape='DISK', spread=12)
+    kit.aim(beam, (-0.32, 0.55, 0.0))  # bloğun arkasına düşer: tepe yüzü yakmaz, sütun görünür
+    beam.visible_glossy = False
+    # sis yalnız huzmeyi gösterir: diğer ışıklar sisi aydınlatmaz (yeşil pus olmasın)
+    for ob in (k, f, r1, r2):
+        ob.visible_volume_scatter = False
+    kit.sis((7.0, 7.0, 3.2), (0, 0.4, 1.6), yogunluk=0.022, yonlu=0.5)
+    kit.sinematik(bloom=0.25, esik=2.5, boyut=0.6)
     cam = kit.camera('Kamera', lens=v['lens'], loc=(0, -3, 0.2), target=(0, 0, 0.12), fstop=4.0)
-    dust = kit.dust(count=36, bounds=((-1.0, 1.0), (-0.3, 1.2), (0.05, 0.9)), seed=11, size=(0.0008, 0.0016), strength=0.6)
+    dust = kit.dust(count=90, bounds=((-1.0, 1.0), (-0.3, 1.2), (0.05, 0.9)), seed=11, size=(0.0008, 0.0016), strength=0.6)
     return cam, blk, dust
 
 

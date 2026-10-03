@@ -240,6 +240,19 @@ def build(variant):
     kit.aim(front, (0, 0, 0))  # gözenek içleri simsiyah kalmasın (gerçekte sekme ışığı var)
     fill = kit.area_light('Dolgu', (0.0, -0.6, 0.0), (0, 0, 0), 0.04, 0.02, (1.0, 0.98, 0.95))
     kit.aim(fill, (0, 1.0, 0))
+    # Sinematik: hücre penceresinden sızan sıcak ışık daha belirgin, havada mikro zerreler,
+    # sonuç planında numunenin arkasına düşen ışık sütunu (sahne 0/1 ile aynı dil)
+    ld.energy = 0.16
+    ld.color = (0.95, 0.9, 0.55)
+    for ob in (k, r1, r2, front, fill):
+        ob.visible_volume_scatter = False
+    beam = kit.area_light('Huzme', (-1.1, 2.3, 6.0), (0, 0, 0), 0.6, 600, (1.0, 0.95, 0.88), shape='DISK', spread=12)
+    kit.aim(beam, (-0.75, 1.45, -BZ - 0.55))
+    beam.visible_glossy = False
+    beam.visible_volume_scatter = True
+    kit.sis((30, 30, 10), (0, 2.0, 2.0), yogunluk=0.006, yonlu=0.5)
+    kit.dust(count=140, bounds=((-0.25, 0.35), (0.0, 0.45), (-0.2, 0.3)), seed=7, size=(0.0006, 0.0012), strength=0.5)
+    kit.sinematik(bloom=0.3, esik=2.0, boyut=0.6)
     cam = kit.camera('Kamera', lens=50, loc=(0, -3, 0), target=(0, 1, 0), fstop=11.0)
     cam.data.clip_start = 0.002
     return cam, fill

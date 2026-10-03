@@ -591,3 +591,64 @@ def lerp(a, b, t):
 
 def vlerp(a, b, t):
     return tuple(lerp(x, y, t) for x, y in zip(a, b))
+
+
+# ---------------------------------------------------------------------------
+#  Sinematik bitiş: parlama (bloom), hafif kenar kararması; hacimli ışık (sis)
+# ---------------------------------------------------------------------------
+def sinematik(bloom=0.55, esik=0.9, boyut=0.55, vinyet=0.0):
+    """Kompozitör: ışık kaynakları (lime halka, yanan pencereler, yaylar) hafifçe ışıldar;
+    kenarlar çok az kararır. Blender 5 kompozitör düğüm grubu."""
+    sc = bpy.context.scene
+    ng = bpy.data.node_groups.new('Sinematik', 'CompositorNodeTree')
+    ng.interface.new_socket('Image', in_out='OUTPUT', socket_type='NodeSocketColor')
+    sc.compositing_node_group = ng
+    n, ln = ng.nodes, ng.links
+    rl = n.new('CompositorNodeRLayers')
+    gl = n.new('CompositorNodeGlare')
+    gl.inputs['Type'].default_value = 'Bloom'
+    gl.inputs['Quality'].default_value = 'High'
+    gl.inputs['Threshold'].default_value = esik
+    gl.inputs['Strength'].default_value = bloom
+    gl.inputs['Size'].default_value = boyut
+    ln.new(rl.outputs['Image'], gl.inputs['Image'])
+    son = gl.outputs['Image']
+    if vinyet > 0:
+        em = n.new('CompositorNodeEllipseMask')
+        em.inputs['Size'].default_value = (1.35, 1.35)
+        bl = n.new('CompositorNodeBlur')
+        bl.inputs['Size'].default_value = (300, 300) if 'Size' in bl.inputs and bl.inputs['Size'].type == 'VECTOR' else bl.inputs['Size'].default_value
+        mx = n.new('CompositorNodeMixRGB') if 'CompositorNodeMixRGB' in dir(bpy.types) else None
+        try:
+            mul = n.new('ShaderNodeMix')
+            mul.data_type = 'RGBA'
+            mul.blend_type = 'MULTIPLY'
+            mul.inputs['Factor'].default_value = vinyet
+            ln.new(son, mul.inputs['A'])
+            ln.new(em.outputs['Mask'], bl.inputs['Image'])
+            ln.new(bl.outputs['Image'], mul.inputs['B'])
+            son = mul.outputs['Result']
+        except Exception as e:  # vinyet isteğe bağlı
+            print('vinyet atlandı:', e)
+    go = n.new('NodeGroupOutput')
+    ln.new(son, go.inputs[0])
+    return ng
+
+
+def sis(boyut, konum, yogunluk=0.012, renk=(1.0, 1.0, 1.0), yonlu=0.55):
+    """Hacimli hafif sis kutusu: ışık huzmeleri ve derinlik (tek saçılım, volume_bounces 0)."""
+    mat = bpy.data.materials.new('Sis')
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new('ShaderNodeOutputMaterial')
+    pv = nt.nodes.new('ShaderNodeVolumePrincipled')
+    pv.inputs['Density'].default_value = yogunluk
+    pv.inputs['Color'].default_value = (*renk, 1.0)
+    pv.inputs['Anisotropy'].default_value = yonlu
+    nt.links.new(pv.outputs[0], out.inputs['Volume'])
+    ob = box('Sis', boyut, konum, mat)
+    ob.visible_shadow = False
+    bpy.context.scene.cycles.volume_step_rate = 4.0
+    bpy.context.scene.cycles.volume_max_steps = 256
+    return ob

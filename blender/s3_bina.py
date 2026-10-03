@@ -281,9 +281,9 @@ def build(variant):
     sun_d = bpy.data.lights.new('Gunes', 'SUN')
     sun_d.energy = 3.6
     sun_d.angle = math.radians(1.2)
-    sun_d.color = (1.0, 0.93, 0.84)
+    sun_d.color = (1.0, 0.88, 0.74)
     sun = bpy.data.objects.new('Gunes', sun_d)
-    sun.rotation_euler = (math.radians(60), 0, math.radians(-42))
+    sun.rotation_euler = (math.radians(66), 0, math.radians(-42))
     kit.link(sun)
 
     ground = kit.box('Zemin', (600, 600, 0.2), (0, 0, -0.1), site_ground_material())
@@ -405,7 +405,95 @@ def build(variant):
     # çıkış: şantiyeyi çevreleyen lime halka (diğer sahnelerdeki halka motifi; küre sahnesinde
     # İzmir'deki halkayla eşleşir)
     ring = kit.halo_ring('SahaHalka', radius=12.5, width=0.22, strength=0.0, segments=256, z=0.08)
-    dusk = dict(world=world, sun=sun, ic=icb, ring=ring)
+    # --- Çevre: uzak tepeler (hava perspektifi), kule vinç, sokak lambaları, aile silüeti ---
+    import random
+    rnd = random.Random(11)
+    tepe_m = simple_material('Tepe', '#5f6b57', rough=1.0)
+    tb = tepe_m.node_tree.nodes.get('Principled BSDF')
+    tb.inputs['Emission Color'].default_value = (0.62, 0.70, 0.78, 1.0)  # uzaklık pusu (gök rengine yaklaşır)
+    tb.inputs['Emission Strength'].default_value = 0.07
+    for i in range(34):
+        a = math.radians(rnd.uniform(-180, 180))
+        r = rnd.uniform(320, 520)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=16, radius=1.0, location=(math.cos(a) * r, math.sin(a) * r, -6.0))
+        h = bpy.context.active_object
+        h.name = 'Tepe'
+        h.scale = (rnd.uniform(70, 150), rnd.uniform(50, 100), rnd.uniform(9, 22))
+        h.rotation_euler[2] = a
+        h.data.materials.append(tepe_m)
+        h.visible_shadow = False
+        bpy.ops.object.shade_smooth()
+    # kule vinç (sarı; yeşil yalnız bizim ürüne): kafes görünümü tel kafes değiştiricisiyle
+    vinc_m = simple_material('Vinc', '#d9a520', rough=0.55, metal=0.3)
+    def kafes(name, size, loc, kalin=0.07):
+        """Kafes kiriş: 4 köşe çubuğu + aralıklı çapraz bağlar (değiştirici/düzen modu yok)."""
+        ax = max(range(3), key=lambda i: size[i])  # uzun eksen
+        L = size[ax]
+        oth = [i for i in range(3) if i != ax]
+        w = [size[i] for i in oth]
+        for c0 in (-0.5, 0.5):
+            for c1 in (-0.5, 0.5):
+                p = list(loc)
+                p[oth[0]] += c0 * w[0]
+                p[oth[1]] += c1 * w[1]
+                d = [kalin] * 3
+                d[ax] = L
+                kit.box(name, tuple(d), tuple(p), vinc_m)
+        n = max(2, int(L / 1.8))
+        for j in range(n + 1):
+            p = list(loc)
+            p[ax] += -L / 2 + L * j / n
+            for c0, c1 in ((0.0, -0.5), (0.0, 0.5), (-0.5, 0.0), (0.5, 0.0)):
+                q = list(p)
+                d = [kalin] * 3
+                if c0 == 0.0:
+                    q[oth[1]] += c1 * w[1]
+                    d[oth[0]] = w[0]
+                else:
+                    q[oth[0]] += c0 * w[0]
+                    d[oth[1]] = w[1]
+                kit.box(name, tuple(d), tuple(q), vinc_m)
+    VX, VY = -15.0, 13.0
+    kafes('VincDirek', (1.6, 1.6, 34.0), (VX, VY, 17.0))
+    kafes('VincBom', (42.0, 1.4, 1.6), (VX - 12.0, VY, 34.8))
+    kafes('VincKarsiBom', (12.0, 1.4, 1.2), (VX + 9.5, VY, 34.7))
+    kit.box('VincAgirlik', (3.0, 2.0, 2.2), (VX + 13.5, VY, 33.4), simple_material('VincBeton', '#8a8a86', rough=0.9))
+    kit.box('VincKabin', (2.0, 2.0, 2.0), (VX - 1.6, VY, 33.6), vinc_m)
+    kit.box('VincTepe', (1.2, 1.2, 6.0), (VX, VY, 38.0), vinc_m)
+    halat = simple_material('Halat', '#222222', rough=0.6)
+    kit.box('VincHalat', (0.04, 0.04, 22.0), (VX - 22.0, VY, 23.6), halat)
+    # sokak lambaları (gece yanar)
+    lamba_m = simple_material('Direk', '#3a3d40', rough=0.5, metal=0.6)
+    lamba_isik = []
+    for (lx, ly) in [(-10.5, -9.0), (10.5, -9.5), (12.5, 3.5)]:
+        kit.box('LambaDirek', (0.14, 0.14, 6.0), (lx, ly, 3.0), lamba_m)
+        kit.box('LambaKol', (1.2, 0.12, 0.12), (lx + 0.5, ly, 6.0), lamba_m)
+        bas = kit.box('LambaBas', (0.5, 0.25, 0.12), (lx + 1.0, ly, 5.92), simple_material('LambaCam', '#fff2d0', rough=0.3))
+        bb = bas.data.materials[0].node_tree.nodes.get('Principled BSDF')
+        bb.inputs['Emission Color'].default_value = (1.0, 0.82, 0.55, 1.0)
+        ld_ = bpy.data.lights.new('Lamba', 'POINT')
+        ld_.energy = 0.0
+        ld_.color = (1.0, 0.8, 0.55)
+        ld_.shadow_soft_size = 0.3
+        lo_ = bpy.data.objects.new('Lamba', ld_)
+        lo_.location = (lx + 1.0, ly, 5.6)
+        kit.link(lo_)
+        lamba_isik.append((ld_, bb))
+    # aile silüeti: 1. kat ön cephe, sağ pencerenin arkasında (iç ışık yanınca belirir)
+    sil_m = simple_material('Siluet', '#0b0b0c', rough=0.9)
+    siluetler = []
+    def insan(x, y, boy):
+        z0 = FH  # 1. kat döşeme üstü
+        siluetler.append(kit.box('Govde', (0.42 * boy / 1.75, 0.26, 0.62 * boy / 1.75), (x, y, z0 + 0.95 * boy / 1.75), sil_m))
+        siluetler.append(kit.box('Bacak', (0.34 * boy / 1.75, 0.22, 0.8 * boy / 1.75), (x, y, z0 + 0.4 * boy / 1.75), sil_m))
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.12 * boy / 1.75, location=(x, y, z0 + 1.42 * boy / 1.75))
+        bpy.context.active_object.data.materials.append(sil_m)
+        siluetler.append(bpy.context.active_object)
+    insan(3.6, YS[0] + 0.75, 1.78)
+    insan(4.15, YS[0] + 0.8, 1.62)
+    insan(4.55, YS[0] + 0.7, 1.12)
+    dusk = dict(world=world, sun=sun, ic=icb, ring=ring, lambalar=lamba_isik, siluet=siluetler)
+    kit.sinematik(bloom=0.35, esik=1.8, boyut=0.6)
     cam = kit.camera('Kamera', lens=v['lens'], loc=(0, -30, 8), target=(0, 0, 5), fstop=11.0)
     return cam, objs, wall_mats, dusk
 
@@ -473,14 +561,20 @@ def alacakaranlik(dusk, u):
     """Çıkışta gün batar: güneş alçalır ve söner, gök kararır, pencereler ve saha halkası yanar."""
     k = kit.smooth(kit.seg(u, U_CIKIS, 0.96))
     sky = dusk['world'].node_tree.nodes['Sky Texture']
-    sky.sun_elevation = math.radians(kit.lerp(28.0, -2.0, k))
+    sky.sun_elevation = math.radians(kit.lerp(22.0, -2.0, k))
     dusk['world'].node_tree.nodes['Background'].inputs['Strength'].default_value = kit.lerp(0.26, 0.11, k)
     dusk['sun'].data.energy = kit.lerp(3.6, 0.0, kit.smooth(kit.seg(u, U_CIKIS, 0.93)))
-    dusk['sun'].rotation_euler[0] = math.radians(kit.lerp(60.0, 88.0, k))
+    dusk['sun'].rotation_euler[0] = math.radians(kit.lerp(66.0, 88.0, k))
     dusk['ic'].inputs['Emission Strength'].default_value = 4.0 * kit.smooth(kit.seg(u, 0.84, 0.97))
     ring_m = dusk['ring'].data.materials[0].node_tree.nodes['Emission']
     ring_m.inputs['Strength'].default_value = 7.0 * kit.smooth(kit.seg(u, 0.86, 0.98))
     dusk['ring'].hide_render = u < 0.855
+    for ob in dusk.get('siluet', []):
+        ob.hide_render = u < 0.83  # aile ev bitince gelir
+    kl = kit.smooth(kit.seg(u, 0.83, 0.92))
+    for ld_, bb in dusk.get('lambalar', []):
+        ld_.energy = 140.0 * kl
+        bb.inputs['Emission Strength'].default_value = 25.0 * kl
     bpy.context.scene.view_settings.exposure = kit.lerp(-0.55, 0.7, k)
 
 

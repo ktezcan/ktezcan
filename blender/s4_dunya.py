@@ -133,7 +133,7 @@ def globe_body(rot):
     pw = nt.math('POWER', lw.outputs['Facing'], 3.2, loc=(-200, 0))
     em = nt.node('ShaderNodeEmission', (0, 100))
     em.inputs['Color'].default_value = kit.srgb('#5f86a0')
-    em.inputs['Strength'].default_value = 2.2
+    em.inputs['Strength'].default_value = 3.0
     tr = nt.node('ShaderNodeBsdfTransparent', (0, -100))
     mx = nt.node('ShaderNodeMixShader', (300, 0))
     nt.link(pw, mx.inputs[0])
@@ -205,6 +205,9 @@ def build(variant):
     kit.aim(r2, (0, 0, 0))
     for ob in (r1, r2):
         ob.visible_glossy = False
+    # Sinematik: arka planda yıldız alanı, ışıldayan yaylar ve atmosfer
+    kit.dust('Yildiz', count=1400, bounds=((-26, 26), (6, 14), (-12, 15)), seed=23, size=(0.005, 0.014), strength=2.2)
+    kit.sinematik(bloom=0.4, esik=1.4, boyut=0.6)
     cam = kit.camera('Kamera', lens=v['lens'], loc=(0, -v['d0'], 0.3), target=(0, 0, 0), fstop=8.0)
     return cam, dots, pts, arcs, pulses
 
