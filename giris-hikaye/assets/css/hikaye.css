@@ -68,6 +68,11 @@ button { font: inherit; color: inherit; }
   display: flex; align-items: center; gap: 28px; padding: 0 var(--gutter);
   background: linear-gradient(180deg, rgba(12, 22, 28, 0.86), rgba(12, 22, 28, 0));
 }
+.eg-ust::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; background: var(--night);
+  opacity: 0; transition: opacity 0.3s var(--ease); pointer-events: none;
+}
+.eg-ust.is-dolu::before { opacity: 1; } /* açık zeminli bölümün üstünde */
 .eg-logo { display: inline-flex; align-items: center; text-decoration: none; flex: none; }
 .eg-logo svg { height: 38px; width: auto; }
 .eg-menu { display: flex; gap: 26px; margin-left: 12px; }

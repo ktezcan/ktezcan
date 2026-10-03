@@ -25,6 +25,21 @@ export function arayuzKur({ sahneler, ortak, debug }) {
     });
   }
 
+  // --- Üst çubuk: açık zeminli bölümün üstündeyken koyu dolgu (logo okunur kalsın) ---
+  const ust = $('.eg-ust');
+  const acikZemin = $$('.eg-sonrasi, .eg-alt');
+  if (ust && acikZemin.length && 'IntersectionObserver' in window) {
+    const altinda = new Set();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) (e.isIntersecting ? altinda.add(e.target) : altinda.delete(e.target));
+        ust.classList.toggle('is-dolu', altinda.size > 0);
+      },
+      { rootMargin: '0px 0px -91% 0px' } // ekranın üst şeridi ≈ üst çubuk
+    );
+    for (const el of acikZemin) io.observe(el);
+  }
+
   // --- Dil -----------------------------------------------------------------
   for (const b of $$('[data-dil-sec]')) {
     b.addEventListener('click', () => {
