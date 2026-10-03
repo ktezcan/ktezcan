@@ -42,26 +42,26 @@ const PROFIL = {
 };
 
 // Hız: sahnelerde ekran yüksekliği/saniye, içerik kartlarında daha hızlı + okuma molası
-const SAHNE_VH_SN = 0.26;
+const SAHNE_VH_SN = 0.27;
 const GECIS_VH_SN = 0.9;
-const KART_MOLA = 2.2;
 const ACILIS_MOLA = 2.0;
 const SON_MOLA = 3.5;
 
 const ease = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
 
-/** Sayfa yerleşiminden kaydırma planı: [{ y0, y1, sure, egri }] */
+/** Sayfa yerleşiminden kaydırma planı: [{ y0, y1, sure, egri }] — tek akış boyunca sabit hız */
 async function plan(page) {
   const d = await page.evaluate(() => {
     const vh = innerHeight;
     const top = (el) => el.getBoundingClientRect().top + scrollY;
-    const sahneler = [...document.querySelectorAll('[data-sahne]')].map((el) => ({ y0: top(el), y1: top(el) + el.offsetHeight - vh }));
-    const kartlar = [...document.querySelectorAll('.eg-icerik')].map((el) => top(el) + el.offsetHeight / 2 - vh / 2);
+    const akis = document.querySelector('[data-akis]');
     const son = document.getElementById('teklif');
-    // son bölüm: başlık üst çubuğun altında kalmasın (bölüm ekrandan uzunsa başlıktan başla)
     const baslik = son && son.querySelector('h2');
-    const sonY = son ? Math.min(top(son) + son.offsetHeight / 2 - vh / 2, baslik ? top(baslik) - 110 : Infinity) : null;
-    return { vh, sahneler, kartlar, son: sonY };
+    return {
+      vh,
+      akisSon: akis ? top(akis) + akis.offsetHeight - vh : 0,
+      son: son ? Math.min(top(son) + son.offsetHeight / 2 - vh / 2, baslik ? top(baslik) - 110 : Infinity) : null,
+    };
   });
   const adim = [];
   let y = 0;
@@ -73,14 +73,7 @@ async function plan(page) {
   };
   const bekle = (sure) => adim.push({ y0: y, y1: y, sure, egri: false });
   bekle(ACILIS_MOLA);
-  d.sahneler.forEach((s, i) => {
-    git(s.y0, GECIS_VH_SN);
-    git(s.y1, SAHNE_VH_SN, false);
-    if (d.kartlar[i] !== undefined) {
-      git(d.kartlar[i], GECIS_VH_SN);
-      bekle(KART_MOLA);
-    }
-  });
+  git(d.akisSon, SAHNE_VH_SN, false);
   if (d.son !== null) {
     git(d.son, GECIS_VH_SN);
     bekle(SON_MOLA);
