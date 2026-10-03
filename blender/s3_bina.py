@@ -466,6 +466,11 @@ def main():
     frames = pass_order(FRAMES) if ARGS.frames == 'all' else [int(x) for x in ARGS.frames.split(',')]
     meta_path = os.path.join(ARGS.out, 'meta.json')
     meta = {'frames': FRAMES, 'res': VARIANTS[ARGS.variant]['res'], 'hotspots': {}}
+    if os.path.exists(meta_path):  # kısmi işler (kaba/ara/ince geçiş) birbirinin noktalarını silmesin
+        import json
+        _eski = json.load(open(meta_path, encoding='utf-8'))
+        if _eski.get('frames') == FRAMES:
+            meta['hotspots'].update(_eski.get('hotspots', {}))
     for f in frames:
         t = f / (FRAMES - 1)
         for inp in time_inputs:
