@@ -38,6 +38,7 @@ TARGETS = [  # (kıta id, lat, lon, başlangıç t)
     (4, -25.0, 134.0, 0.56),
 ]
 ARC_DUR = 0.14
+H_GIRIS = {'d': 0.42, 'm': 0.5}  # girişte İzmir'in üstündeki kamera yüksekliği
 
 VARIANTS = {
     'd': dict(res=(1600, 900), lens=50.0, d0=3.5, d1=6.3),
@@ -222,6 +223,10 @@ def cam_pose(t, variant):
 def main():
     os.makedirs(ARGS.out, exist_ok=True)
     cam, dots, pts, arcs, pulses = build(ARGS.variant)
+    rot0 = globe_rotation()
+    src = kit.halo_ring('IzmirHalka', radius=0.045, width=0.004, strength=7.0, segments=96)
+    n_ = ll2v(*IZMIR, R * 1.004)
+    src.matrix_world = rot0 @ Matrix.Translation(n_) @ n_.to_track_quat('Z', 'Y').to_matrix().to_4x4()
     kita = pts[:, 2].astype(int)
     base = np.tile(np.array([0.78, 0.80, 0.80, 1.0], dtype=np.float32), (len(pts), 1))
     lime = np.array(kit.LIME_HI, dtype=np.float32)
@@ -238,7 +243,7 @@ def main():
         col = base.copy()
         glow = np.full(len(pts), 0.05, dtype=np.float32)
         # Türkiye: kaynak, lime
-        k_tr = kit.smooth(kit.seg(t, 0.06, 0.18))
+        k_tr = 1.0  # tek akış: sahne 3'ün lime saha halkasıyla eşleşir — Türkiye baştan yanık
         tr = kita == 5
         col[tr] = base[tr] * (1 - k_tr) + lime * k_tr
         glow[tr] = 0.05 + 1.3 * k_tr
@@ -259,9 +264,24 @@ def main():
         me.attributes['isik'].data.foreach_set('value', glow)
         me.update()
         loc, target = cam_pose(t, ARGS.variant)
+        if t < 0.24:
+            # giriş: İzmir'e tepeden yakın plan (sahne 3 çıkışındaki tepeden şantiye karesiyle eşleşir),
+            # sonra küre açılır
+            w = kit.smoother(kit.seg(t, 0.0, 0.24))
+            pA = rot0 @ ll2v(*IZMIR, R)
+            nA = pA.normalized()
+            dB = loc - target
+            dirv = nA.lerp(dB.normalized(), w).normalized()
+            dist = math.exp(kit.lerp(math.log(H_GIRIS[ARGS.variant]), math.log(dB.length), w))
+            target = pA.lerp(target, w)
+            loc = target + dirv * dist
         cam.location = loc
         kit.aim(cam, target)
-        cam.data.dof.focus_distance = (target - loc).length - R * 0.6
+        kit.kaydir(cam, ARGS.variant, 1.0)
+        cam.data.dof.focus_distance = max(0.1, (target - loc).length - R * 0.6 * (1 if t >= 0.24 else w))
+        # kaynak halkası: İzmir'de, girişte parlak, küre açılınca söner
+        src.hide_render = t > 0.32
+        src.data.materials[0].node_tree.nodes['Emission'].inputs['Strength'].default_value = 7.0 * (1 - kit.smooth(kit.seg(t, 0.16, 0.32)))
         rot = dots.matrix_world
         hs = {}
         if t >= 0.12:
