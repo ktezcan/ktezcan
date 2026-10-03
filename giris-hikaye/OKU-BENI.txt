@@ -6,6 +6,7 @@ AÇMAK
   kareler klasörün içinde). Chrome veya Edge önerilir.
   Hata ayıklama görünümü: index.html?debug  (sol altta döngü durumu)
   İngilizce: sağ üstteki EN düğmesi ya da index.html?dil=en
+  Kaydırma kaydı (telefonda izlemek için): paketle birlikte gönderilen MP4 dosyaları.
 
 HİKÂYE (yalnız giriş sayfası; her sahne giriş → gelişme → sonuç)
   0  Blok      Tanıtım videosu bloğun ön yüzüne küçülür, blok döner.
@@ -61,5 +62,6 @@ YAYINA ALMA (Natro)
 GELİŞTİRİCİ İÇİN (depo: github.com/ktezcan/ktezcan, dal claude/ege-gazbeton-site-animation-cxwzho)
   blender/      sahne betikleri (Blender 5.x / bpy): kit.py, s0…s4, dokular.py
   tools/        kareler.py (PNG → WebP + meta), derle.mjs (tek dosyalık betik),
-                sinama.mjs (başsız tarayıcı sınaması), yer_tutucu_video.sh
+                sinama.mjs (başsız tarayıcı sınaması), kayit.mjs (kaydırma kaydı → MP4),
+                yer_tutucu_video.sh
   src/hikaye/   sayfa betiğinin kaynak modülleri
