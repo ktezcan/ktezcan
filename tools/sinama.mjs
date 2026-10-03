@@ -38,7 +38,9 @@ async function oturum(ad, viewport, extra = '') {
   const ctx = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion: extra.includes('az') ? 'reduce' : 'no-preference' });
   const page = await ctx.newPage();
   const hatalar = [];
-  page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') hatalar.push(`${m.type()}: ${m.text()}`); });
+  // 'GPU stall due to ReadPixels': başsız Chromium'un yazılımsal birleştirmesi her WebGL karesini geri okur
+  // (en basit WebGL sayfasında da çıkar) → sayfa hatası değil, raporlanmaz
+  page.on('console', (m) => { if ((m.type() === 'error' || m.type() === 'warning') && !/GPU stall due to ReadPixels/.test(m.text())) hatalar.push(`${m.type()}: ${m.text()}`); });
   page.on('pageerror', (e) => hatalar.push(`pageerror: ${e.message}`));
   await page.goto(base + '?debug' + (extra ? '&' + extra : ''), { waitUntil: 'load' });
   await page.waitForTimeout(1500);
