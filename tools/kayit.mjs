@@ -58,7 +58,10 @@ async function plan(page) {
     const sahneler = [...document.querySelectorAll('[data-sahne]')].map((el) => ({ y0: top(el), y1: top(el) + el.offsetHeight - vh }));
     const kartlar = [...document.querySelectorAll('.eg-icerik')].map((el) => top(el) + el.offsetHeight / 2 - vh / 2);
     const son = document.getElementById('teklif');
-    return { vh, sahneler, kartlar, son: son ? top(son) + son.offsetHeight / 2 - vh / 2 : null };
+    // son bölüm: başlık üst çubuğun altında kalmasın (bölüm ekrandan uzunsa başlıktan başla)
+    const baslik = son && son.querySelector('h2');
+    const sonY = son ? Math.min(top(son) + son.offsetHeight / 2 - vh / 2, baslik ? top(baslik) - 110 : Infinity) : null;
+    return { vh, sahneler, kartlar, son: sonY };
   });
   const adim = [];
   let y = 0;
