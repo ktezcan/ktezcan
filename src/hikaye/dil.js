@@ -14,7 +14,7 @@ export const EN = {
   'nav.iletisim': 'Contact',
   'cta.teklif': 'Get a quote',
   'cta.katalog': 'Product catalogue',
-  'cta.foyler': 'Technical sheets',
+  'cta.foyler': 'Technical specifications',
   'cta.hesapla': 'Calculate your walls',
   'giris.ust': 'EGE GAZBETON · Söke & İzmir',
   'giris.baslik': 'Built on trust —<br><em>today and tomorrow</em>',
