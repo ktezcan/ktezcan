@@ -10,7 +10,7 @@ Hikâye bitince sayfanın geri kalanında animasyon döngüsü çalışmaz.
 | `src/hikaye/` | Sayfa betiğinin kaynak modülleri (kare oynatıcı, video→blok homografisi, TR/EN, yolculuk çubuğu) |
 | `src/canli/` | Teklif bölümündeki canlı gözenek katmanı (three.js, yalnız görünürken çalışır) |
 | `blender/` | Sahne betikleri (bpy 5.x): `kit.py` ortak stüdyo, `s0`…`s4` sahneler, `dokular.py` gazbeton dokusu |
-| `tools/` | `kareler.py` (PNG→WebP + meta), `derle.mjs` (esbuild → tek dosyalık betik), `sinama.mjs` (başsız tarayıcı sınaması), `paketle.sh`, `hikaye_foy.py` |
+| `tools/` | `kareler.py` (PNG→WebP + meta), `derle.mjs` (esbuild → tek dosyalık betik), `sinama.mjs` (başsız tarayıcı sınaması), `kayit.mjs` (kaydırma kaydı → MP4), `paketle.sh`, `hikaye_foy.py` |
 
 ## Sahneler
 
@@ -34,6 +34,7 @@ EGE_MINSTEP=2 ... --variant m                    # telefon seti (her 2. kare)
 python tools/kareler.py render                   # → giris-hikaye/kareler + assets/js/kareler-meta.js
 node tools/derle.mjs <node_modules>              # esbuild, three, @fontsource/barlow(-condensed)
 node tools/sinama.mjs sinama                     # konsol hatası, rAF boşta durma, ekran görüntüleri
+node tools/kayit.mjs kayit ikisi 25             # tanıtım kaydı (MP4, masaüstü + telefon), ?kayit kipi
 ```
 
 ## Astro sitesine taşıma (kod\ deposu)

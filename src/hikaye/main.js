@@ -19,6 +19,8 @@ root.classList.replace('no-js', 'js') || root.classList.add('js');
 
 const params = new URLSearchParams(location.search);
 const debug = params.has('debug');
+// ?kayit: tanıtım kaydı için — kaydırma yumuşatılmaz, her kare tam konumda çizilir (tools/kayit.mjs)
+const kayit = params.has('kayit');
 const azHareket = window.matchMedia('(prefers-reduced-motion: reduce)').matches || params.has('az');
 if (azHareket) root.classList.add('az-hareket');
 
@@ -91,7 +93,7 @@ function frame(now) {
   const vh = window.innerHeight;
   // 1) tüm okumalar (yerleşim) önce
   const vis = sahneler.map((s) => s.measure(vh));
-  if (ilk) {
+  if (ilk || kayit) {
     for (const s of sahneler) s.p = s.target;
     ilk = false;
   }
@@ -181,9 +183,13 @@ if (canli && !tasarruf) {
   io.observe(canli);
 }
 
-if (debug) {
+if (debug || kayit) {
   window.__ege = {
     sahneler,
+    /** indirme kuyruğu boş ve çizim döngüsü durmuşsa true (kayıt aracı bekler) */
+    hazir() {
+      return kuyruk.jobs.length === 0 && kuyruk.active === 0 && raf === 0;
+    },
     get raf() {
       return rafSayac;
     },

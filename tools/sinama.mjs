@@ -1,6 +1,7 @@
 // Başsız Chromium sınaması: konsol hatası, kaydırma, rAF'ın boşta durması, ekran görüntüleri.
 // Kullanım: node tools/sinama.mjs <çıktı klasörü> [file]
 import { createServer } from 'node:http';
+import { existsSync } from 'node:fs';
 import { readFile, mkdir } from 'node:fs/promises';
 import { extname, join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -28,7 +29,9 @@ const server = createServer(async (req, res) => {
 }).listen(0);
 const base = fileMode ? pathToFileURL(join(kok, 'index.html')).href : `http://127.0.0.1:${server.address().port}/`;
 
-const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+// Playwright sürümü kurulu tarayıcıyla eşleşmezse hazır Chromium'u kullan (CHROME_YOLU ile değiştirilebilir)
+const chromeYolu = process.env.CHROME_YOLU || (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
+const browser = await chromium.launch({ executablePath: chromeYolu, args: ['--autoplay-policy=no-user-gesture-required'] });
 const sonuc = {};
 
 async function oturum(ad, viewport, extra = '') {
