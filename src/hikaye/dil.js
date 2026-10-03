@@ -68,7 +68,7 @@ export const EN = {
   'kaynak': 'Source',
   'kapat': 'Close',
   'sonra.baslik': 'Product groups',
-  'sonra.metin': 'Blocks, lintels, panels and adhesive: everything an AAC wall and roof system needs, from one manufacturer.',
+  'sonra.metin': 'Blocks, lintels, panels and adhesive: everything an AAC wall and roof system needs, from a single supplier.',
   'dil.tr': 'TR',
   'dil.en': 'EN',
   'yol.baslik': 'Story',
