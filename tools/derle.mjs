@@ -19,6 +19,19 @@ await build({
   banner: { js: '/* Ege Gazbeton — giriş hikâyesi · kaynak: src/hikaye/ */' },
 });
 
+// Canlı katman (three.js gömülü, yalnız teklif bölümü yaklaşınca yüklenir)
+await build({
+  entryPoints: [join(kok, 'src/canli/giris.js')],
+  bundle: true,
+  format: 'iife',
+  target: ['es2019'],
+  minify: true,
+  legalComments: 'none',
+  nodePaths: [nm],
+  outfile: join(kok, 'giris-hikaye/assets/js/canli.js'),
+  banner: { js: '/* Ege Gazbeton — canlı gözenek katmanı · three.js (MIT) · kaynak: src/canli/ */' },
+});
+
 // Yazı tipleri (yerel; dış servis yok — KVKK ve çevrimdışı maket için)
 const fontDir = join(kok, 'giris-hikaye/assets/fonts');
 mkdirSync(fontDir, { recursive: true });

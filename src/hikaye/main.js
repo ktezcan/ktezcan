@@ -158,6 +158,24 @@ dilUygula(lang === 'en' ? 'en' : 'tr');
 
 kick();
 
+// Canlı katman: teklif bölümü 1,5 ekran yaklaşınca yüklenir (veri tasarrufunda hiç yüklenmez)
+const canli = document.querySelector('[data-canli]');
+const tasarruf = navigator.connection && navigator.connection.saveData;
+if (canli && !tasarruf) {
+  const io = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      const sc = document.createElement('script');
+      sc.src = 'assets/js/canli.js';
+      sc.async = true;
+      document.body.appendChild(sc);
+    },
+    { rootMargin: '150% 0px' }
+  );
+  io.observe(canli);
+}
+
 if (debug) {
   window.__ege = {
     sahneler,

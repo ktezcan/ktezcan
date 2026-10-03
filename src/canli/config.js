@@ -6,21 +6,8 @@
  * Renkler CSS'ten okunur (assets/css/hero.css → :root --eg-*).
  */
 
-/** Sabitlenmiş Three.js sürümü (CDN). Güncellerken test ederek değiştirin. */
+/** Gömülü Three.js sürümü (derle.mjs ile canli.js'e paketlenir; dış CDN yok). */
 export const THREE_VERSION = '0.186.1';
-
-/**
- * Three.js CDN kaynakları — sırayla denenir, ilk çalışan kullanılır.
- * 1) jsDelivr "+esm": tek dosya, küçültülmüş (en hızlı)
- * 2) jsDelivr resmi build  3) unpkg resmi build (yedekler)
- * Kendi sunucunuzda barındırmak isterseniz listenin başına
- * '/assets/vendor/three.module.js' gibi bir yol ekleyin.
- */
-export const THREE_SOURCES = [
-  `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/+esm`,
-  `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/build/three.module.js`,
-  `https://unpkg.com/three@${THREE_VERSION}/build/three.module.js`,
-];
 
 /**
  * Kalite kademeleri. Cihaz yeteneğine göre başlangıç kademesi seçilir;

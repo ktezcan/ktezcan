@@ -136,7 +136,7 @@ export function arayuzKur({ sahneler, ortak, debug }) {
   const yolBtn = yol ? $('[data-yol-ac]', yol) : null;
   const hikaye = $('[data-hikaye]');
   let sonAd = '';
-  const YOL_TR = { s0: 'Blok', s1: 'Üretim', s2: 'Yapı', s3: 'Sistem', s4: 'Dünya' };
+  const YOL_TR = { s0: 'Blok', s1: 'Üretim', s2: 'Yapı', s3: 'Sistem', s4: 'Dünya', son: 'Teklif' };
   function yolAdYaz() {
     if (!yolAd) return;
     const tr = YOL_TR[sonAd] || '';
@@ -196,9 +196,21 @@ export function arayuzKur({ sahneler, ortak, debug }) {
         if (on) {
           const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - vh)));
           yolDolgu.style.transform = `scaleX(${p.toFixed(4)})`;
-          let aktif = list[0];
-          for (let i = 0; i < list.length; i++) if (vis[i]) aktif = list[i];
-          const ad = aktif ? aktif.id : '';
+          let ad = '';
+          for (let i = 0; i < list.length; i++) if (vis[i]) ad = list[i].id;
+          if (!ad) {
+            // sahneler arası içerik kartındayken bir önceki sahne; teklif bölümündeyse 'son'
+            const son = document.getElementById('teklif');
+            if (son && son.getBoundingClientRect().top < vh * 0.6) ad = 'son';
+            else {
+              for (let i = list.length - 1; i >= 0; i--) {
+                if (list[i].el.getBoundingClientRect().top < 0) {
+                  ad = list[i].id;
+                  break;
+                }
+              }
+            }
+          }
           if (ad !== sonAd) {
             sonAd = ad;
             yolAdYaz();
