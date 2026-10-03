@@ -13,7 +13,7 @@ Gelişme (0,28–0,62) Hücrenin içi — kapalı hava hücresi, ince duvarlar.
 Sonuç   (0,62–1,00) Geri çekilme, numune küpü stüdyoda (λ 0,08 · A1 kartları sahneden sonra).
 
 Geometri: işaretli uzaklık alanı (küp − gözenek küreleri, pürüzlü) →
-marching cubes (scikit-image). Önbellek: tex/gozenek_mesh.npz
+marching cubes (scikit-image). Önbellek: tex/gozenek_mesh_v2.npz
 
 Kullanım: python s2_gozenek.py --variant d|m --frames all|0,40 --out DIR
 """
@@ -66,9 +66,12 @@ def value_noise3(shape, cells, rng):
 def build_sdf(seed=1907):
     rng = np.random.default_rng(seed)
     pad = 3 * VOX
-    xs = np.arange(-BX - pad, BX + pad, VOX, dtype=np.float32)
-    ys = np.arange(BY0 - pad, BY1 + pad, VOX, dtype=np.float32)
-    zs = np.arange(-BZ - pad, BZ + pad, VOX, dtype=np.float32)
+    # ızgara yarım voksel kaydırılır: küp yüzleri örnek noktalarına denk gelirse
+    # marching cubes gözenek ağızlarını sekizgen (ızgara hizalı) keser
+    off = 0.5 * VOX
+    xs = np.arange(-BX - pad + off, BX + pad, VOX, dtype=np.float32)
+    ys = np.arange(BY0 - pad + off, BY1 + pad, VOX, dtype=np.float32)
+    zs = np.arange(-BZ - pad + off, BZ + pad, VOX, dtype=np.float32)
     shape = (len(xs), len(ys), len(zs))
     M = np.full(shape, 1e3, dtype=np.float32)
 
@@ -192,7 +195,7 @@ def build(variant):
     world = kit.studio_world(hdri='studio.exr', hdri_strength=0.3, rot=math.radians(30))
     kit.replace_reflection_env(world, 1.0)
 
-    cache = os.path.join(kit.TEX_DIR, 'gozenek_mesh.npz')
+    cache = os.path.join(kit.TEX_DIR, 'gozenek_mesh_v2.npz')
     verts, faces, normals, pores = get_mesh(cache)
     me = bpy.data.meshes.new('Numune')
     me.vertices.add(len(verts))
