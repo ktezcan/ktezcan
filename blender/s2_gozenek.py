@@ -253,10 +253,10 @@ def cam_pose(t, variant):
     # kit.camera yatay sensör uyumu kullanır: dikey kadrajda düşey görüş çok açılır.
     # Telefon: yüz ilk karede ekranı doldursun (numune kenarı görünmesin) ve hücre
     # içindeyken ağız açıklığından dış stüdyo sızmasın → daha yakın başlangıç, daha dar iç objektif.
-    d0 = 1.45 if not portrait else 0.68
+    d0 = 1.15 if not portrait else 0.55  # kayık kadrajda numune kenarı görünmesin
     far = 4.6
     lens_in = 15.0 if not portrait else 28.0
-    z0 = 0.02 if not portrait else -0.03  # telefon: üst kenardaki kesik gözenek kadraj dışında
+    z0 = 0.02 if not portrait else -0.08  # telefon: üst kenardaki kesik gözenek kadraj dışında
     keys = [
         (0.00, Vector((0.0, -d0, z0)), Vector((0.0, 0.0, z0)), 50.0),
         (0.16, Vector((0.0, -0.55, 0.03)), c0, 42.0),
@@ -293,6 +293,10 @@ def main():
         cam.location = loc
         kit.aim(cam, target)
         cam.data.lens = lens
+        # tek akış: konu anlatım alanının karşısında; hücrenin içindeyken (konu tüm kare)
+        # kaydırma geri alınır — yoksa genişleyen görüş ağız açıklığından dış stüdyoyu gösterir
+        ic = kit.smooth(kit.seg(t, 0.24, 0.34)) * (1 - kit.smooth(kit.seg(t, 0.60, 0.70)))
+        kit.kaydir(cam, ARGS.variant, 1.0 - ic)
         cam.data.dof.focus_distance = max(0.05, (target - loc).length * 0.7)
         # hücre içindeyken kameraya eşlik eden çok zayıf dolgu (karanlıkta kaybolmasın)
         fill.location = loc - (target - loc).normalized() * 0.01

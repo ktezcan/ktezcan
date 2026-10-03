@@ -29,7 +29,7 @@ VARIANTS = {
     # masaüstü 16:9 — 1600×900
     'd': dict(res=(1600, 900), lens=50.0,
               start=dict(dist=L * 50.0 / 36.0, yaw=0.0, pitch=0.0, tz=H / 2, tx=0.0),
-              end=dict(dist=1.95, yaw=34.0, pitch=17.0, tz=0.12, tx=-0.04)),
+              end=dict(dist=2.15, yaw=34.0, pitch=17.0, tz=0.12, tx=-0.04)),
     # telefon 9:16 — 768×1366 (ayrı kadraj)
     'm': dict(res=(768, 1366), lens=34.0,
               start=dict(dist=L * 34.0 / 36.0, yaw=0.0, pitch=0.0, tz=H / 2, tx=0.0),
@@ -121,6 +121,8 @@ def main():
         loc, target = cam_pose(t, ARGS.variant)
         cam.location = loc
         kit.aim(cam, target)
+        # tek akış: video yüzü önce ekranı doldurur, blok geri çekilirken anlatım alanının karşısına kayar
+        kit.kaydir(cam, ARGS.variant, kit.smoother(kit.seg(t, 0.25, 0.7)))
         cam.data.dof.focus_distance = (Vector(target) - loc).length
         kit.move_dust(dust, t * 3.0)
         # blok kendi ekseninde çok az döner (kamera hareketine eşlik)

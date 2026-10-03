@@ -341,6 +341,10 @@ def cam_pose(t, variant):
         # (kaide yayı telefonda yatayda daraltılır: main() → PEDESTALS)
         ek = {0.14: (1.0, 6), 0.26: (1.0, 10), 0.40: (1.0, 10), 0.56: (1.0, 8), 0.72: (1.0, 4), 0.86: (1.0, 6)}
         keys = [(tk, A, d * ek[tk][0], y, p + ek[tk][1]) if tk in ek else (tk, A, d, y, p) for (tk, A, d, y, p) in keys]
+    else:
+        # masaüstü: kalıp/kek/kesim yakın planları sağdaki konu alanına sığsın
+        ek = {0.56: 1.10, 0.72: 1.40, 0.86: 1.40}
+        keys = [(tk, A, d * ek.get(tk, 1.0), y, p) for (tk, A, d, y, p) in keys]
     for (ta, A, da, ya, pa), (tb, B, db, yb, pb) in zip(keys, keys[1:]):
         if t <= tb:
             u = kit.smoother((t - ta) / (tb - ta))
@@ -352,9 +356,9 @@ def cam_pose(t, variant):
 def main():
     global PEDESTALS
     os.makedirs(ARGS.out, exist_ok=True)
-    if ARGS.variant == 'm':
-        # dikey kadraj: kaide yayı yatayda daralır → dördü de sığar, nesneler küçülmez
-        PEDESTALS = [(px * 0.68, py, ph) for (px, py, ph) in PEDESTALS]
+    # tek akış: konu anlatım alanının karşısında → kaide yayı daralır (masaüstü sağdaki %62'ye,
+    # telefon dikey kadraja sığar; nesneler küçülmez)
+    PEDESTALS = [(px * (0.68 if ARGS.variant == 'm' else 0.74), py, ph) for (px, py, ph) in PEDESTALS]
     # Sahne 0 stüdyosunu aynen kur, sonra bu sahnenin nesnelerini ekle
     s0.ARGS = ARGS
     cam, blk, dust = s0.build(ARGS.variant)
@@ -435,6 +439,7 @@ def main():
         loc, target = cam_pose(t, ARGS.variant)
         cam.location = loc
         kit.aim(cam, target)
+        kit.kaydir(cam, ARGS.variant, 1.0)  # Sahne 0 sonundaki kayık kadrajla süreklilik
         cam.data.dof.focus_distance = (Vector(target) - loc).length
         kit.move_dust(dust, 3.0 + t * 4.0)
         # tıklanır noktalar: hammadde bulutları (yalnız ayrışmış göründükleri aralıkta)

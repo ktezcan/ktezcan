@@ -477,6 +477,18 @@ def camera(name='Kamera', lens=50, sensor=36, loc=(0, -3, 1), target=(0, 0, 0), 
     return ob
 
 
+# Tek akış düzeni: anlatım alanı masaüstünde solda (~%36), telefonda üstte (~%40).
+# Konu, objektif kaydırmasıyla (perspektif değişmez) boş alanın karşısına alınır.
+KAYMA = {'d': (-0.17, 0.0), 'm': (0.0, 0.16)}
+
+
+def kaydir(cam, variant, k=1.0):
+    """Kamera objektif kaydırması; k: 0 (ortada) … 1 (tam kayık), kare kare canlandırılabilir."""
+    sx, sy = KAYMA.get(variant, (0.0, 0.0))
+    cam.data.shift_x = sx * k
+    cam.data.shift_y = sy * k
+
+
 def dust(name='Toz', count=260, bounds=((-2, 2), (-1.5, 2.5), (0.05, 1.8)), seed=3, size=(0.0012, 0.0035), strength=1.4):
     """Işıkta asılı ince toz (her kare yeniden konumlanır: move_dust)."""
     import random

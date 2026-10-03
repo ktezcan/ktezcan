@@ -22,7 +22,14 @@ import kit  # noqa: E402
 import bpy  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
-FRAMES = 96
+FRAMES = 120
+# Tek akış: giriş (palet bloğu yakın planı → şantiye) + yapım + çıkış (alacakaranlık, tepeden).
+U_GIRIS, U_CIKIS = 0.12, 0.80  # u (sahne zamanı) → t (yapım zamanı) eşlemesi
+LOOSE = (-10.8, -13.8, 0.0)  # sahne 2'deki numune küpüyle eşleşen gevşek blok (zeminde)
+
+
+def yapim_t(u):
+    return min(1.0, max(0.0, (u - U_GIRIS) / (U_CIKIS - U_GIRIS)))
 XS = [-6.0, -2.0, 2.0, 6.0]  # kolon aksları (m)
 YS = [-4.5, 0.0, 4.5]
 FLOORS = 4
@@ -44,7 +51,7 @@ T_WIN = (0.80, 0.90)
 
 VARIANTS = {
     'd': dict(res=(1600, 900), lens=32.0, dist=31.0),
-    'm': dict(res=(768, 1366), lens=40.0, dist=22.0),
+    'm': dict(res=(768, 1366), lens=40.0, dist=27.0),
 }
 
 
@@ -268,7 +275,7 @@ def build(variant):
     sc = kit.setup_render(*v['res'], samples=ARGS.samples, threshold=0.02, bounces=(5, 3, 3, 4))
     sc.cycles.transparent_max_bounces = 32
     sc.view_settings.exposure = -0.55
-    sky_world(strength=0.26)
+    world = sky_world(strength=0.26)
 
     # güneş: ön-soldan, alçak öğleden sonra ışığı (yumuşak ama belirgin gölge)
     sun_d = bpy.data.lights.new('Gunes', 'SUN')
@@ -287,6 +294,11 @@ def build(variant):
     objs = {'found': None, 'cols': [], 'slabs': [], 'beams': [], 'walls': [], 'lintels': [], 'roof': [], 'wins': [], 'ic': []}
     objs['found'] = kit.box('Temel', (13.0, 10.0, 0.5), (0, 0, -0.13), conc)
 
+    # iç hacim: gündüz koyu, alacakaranlıkta sıcak ışık (pencerelerden yanan iç mekân)
+    ic_mat = simple_material('IcM', '#2a2b2a', rough=0.95)
+    icb = ic_mat.node_tree.nodes.get('Principled BSDF')
+    icb.inputs['Emission Color'].default_value = (1.0, 0.72, 0.42, 1.0)
+    icb.inputs['Emission Strength'].default_value = 0.0
     ex, ey = XS[-1] + WT / 2, YS[-1] + WT / 2  # dış yüz (duvar dış yüzü ile kiriş/döşeme aynı hizada)
     for k in range(FLOORS):
         z0 = k * FH
@@ -308,7 +320,7 @@ def build(variant):
             b['k'] = k
             objs['beams'].append(b)
         # iç karanlık hacim: camdan bakınca boş karkas değil, gölgeli iç mekân görünsün
-        ic = kit.box(f'Ic{k}', (2 * ex - 3.0, 2 * ey - 3.0, FH - SLAB - 0.05), (0, 0, z0 + SLAB + (FH - SLAB) / 2), simple_material(f'IcM{k}', '#2a2b2a', rough=0.95))
+        ic = kit.box(f'Ic{k}', (2 * ex - 3.0, 2 * ey - 3.0, FH - SLAB - 0.05), (0, 0, z0 + SLAB + (FH - SLAB) / 2), ic_mat)
         ic['k'] = k
         objs['ic'].append(ic)
 
@@ -371,7 +383,7 @@ def build(variant):
     pal_mat = simple_material('Ahsap', '#8a6a46', rough=0.85)
     stack = kit.aac_material('Istif', bump=0.4)
     strec = stretch_material()
-    for (px, py, rz) in [(-9.6, -7.6, 0.08), (-8.1, -8.1, -0.05), (-9.3, -9.3, 0.15)]:
+    for (px, py, rz) in [(-10.4, -2.6, 0.08), (-10.2, -4.3, -0.05), (-11.8, -3.4, 0.15)]:  # giriş yolunun dışında
         grp = []
         for sx in (-0.5, 0.0, 0.5):
             grp.append(kit.box('PaletKiris', (0.1, 1.0, 0.1), (px + sx, py, 0.05), pal_mat))
@@ -386,8 +398,16 @@ def build(variant):
         for g in grp:
             g.rotation_euler[2] = rz
 
+    # giriş: sahne 2'nin numune küpüyle eşleşen gevşek blok (paletlerin yanında, zeminde)
+    loose = kit.gecmeli_blok('GevsekBlok', 0.60, 0.25, 0.25, stack)
+    loose.location = (LOOSE[0], LOOSE[1], 0.125)
+    loose.rotation_euler[2] = math.radians(-24)
+    # çıkış: şantiyeyi çevreleyen lime halka (diğer sahnelerdeki halka motifi; küre sahnesinde
+    # İzmir'deki halkayla eşleşir)
+    ring = kit.halo_ring('SahaHalka', radius=12.5, width=0.22, strength=0.0, segments=256, z=0.08)
+    dusk = dict(world=world, sun=sun, ic=icb, ring=ring)
     cam = kit.camera('Kamera', lens=v['lens'], loc=(0, -30, 8), target=(0, 0, 5), fstop=11.0)
-    return cam, objs, wall_mats
+    return cam, objs, wall_mats, dusk
 
 
 def cam_pose(t, variant):
@@ -402,6 +422,66 @@ def cam_pose(t, variant):
     tz = kit.lerp(2.5, 6.0, kit.smooth(kit.seg(t, 0.05, 0.5)))
     loc = Vector((math.sin(yaw) * dist, -math.cos(yaw) * dist, h))
     return loc, Vector((0, 0, tz))
+
+
+def _kure(target, loc):
+    v_ = loc - target
+    dist = v_.length
+    return dist, math.atan2(v_.x, -v_.y), math.asin(max(-1.0, min(1.0, v_.z / dist)))
+
+
+def _konum(target, dist, yaw, pitch):
+    return target + Vector((math.sin(yaw) * math.cos(pitch), -math.cos(yaw) * math.cos(pitch), math.sin(pitch))) * dist
+
+
+def _ara(A, B, w):
+    """İki küresel poz arası: hedef doğrusal, uzaklık logaritmik, açılar doğrusal."""
+    (ta, da, ya, pa), (tb, db, yb, pb) = A, B
+    if yb - ya > math.pi:
+        yb -= 2 * math.pi
+    elif ya - yb > math.pi:
+        yb += 2 * math.pi
+    target = ta.lerp(tb, w)
+    dist = math.exp(kit.lerp(math.log(da), math.log(db), w))
+    return _konum(target, dist, kit.lerp(ya, yb, w), kit.lerp(pa, pb, w)), target
+
+
+def sahne_kamera(u, variant):
+    t = yapim_t(u)
+    loc, target = cam_pose(t, variant)
+    if u < U_GIRIS + 0.06:
+        # giriş: gevşek bloğun yakın planından (numune küpü karesi) şantiye genel planına
+        b = Vector((LOOSE[0], LOOSE[1], 0.14))
+        d_loc, d_tg = cam_pose(0.0, variant)
+        dist0, yaw0, pitch0 = _kure(d_tg, d_loc)
+        A = (b, 1.55 if variant == 'd' else 1.45, yaw0 + math.radians(8), math.radians(20))
+        B = (d_tg, dist0, yaw0, pitch0)
+        w = kit.smoother(kit.seg(u, 0.0, U_GIRIS + 0.06))
+        return _ara(A, B, w)
+    if u > U_CIKIS + 0.02:
+        # çıkış: kahraman açısından tepeye yükselir, aşağı bakar (küre sahnesinde İzmir'e eşleşir)
+        e_loc, e_tg = cam_pose(1.0, variant)
+        dist1, yaw1, pitch1 = _kure(e_tg, e_loc)
+        A = (e_tg, dist1, yaw1, pitch1)
+        B = (Vector((0, 0, 0)), 62.0 if variant == 'd' else 74.0, yaw1 + math.radians(40), math.radians(80))
+        w = kit.smoother(kit.seg(u, U_CIKIS + 0.02, 1.0))
+        return _ara(A, B, w)
+    return loc, target
+
+
+def alacakaranlik(dusk, u):
+    """Çıkışta gün batar: güneş alçalır ve söner, gök kararır, pencereler ve saha halkası yanar."""
+    k = kit.smooth(kit.seg(u, U_CIKIS, 0.96))
+    sky = dusk['world'].node_tree.nodes['Sky Texture']
+    sky.sun_elevation = math.radians(kit.lerp(28.0, -2.0, k))
+    dusk['world'].node_tree.nodes['Background'].inputs['Strength'].default_value = kit.lerp(0.26, 0.11, k)
+    dusk['sun'].data.energy = kit.lerp(3.6, 0.0, kit.smooth(kit.seg(u, U_CIKIS, 0.93)))
+    dusk['sun'].rotation_euler[0] = math.radians(kit.lerp(60.0, 88.0, k))
+    dusk['ic'].inputs['Emission Strength'].default_value = 4.0 * kit.smooth(kit.seg(u, 0.84, 0.97))
+    ring_m = dusk['ring'].data.materials[0].node_tree.nodes['Emission']
+    ring_m.inputs['Strength'].default_value = 7.0 * kit.smooth(kit.seg(u, 0.86, 0.98))
+    dusk['ring'].hide_render = u < 0.855
+    bpy.context.scene.view_settings.exposure = kit.lerp(-0.55, 0.7, k)
 
 
 def apply_state(objs, t):
@@ -455,7 +535,7 @@ def apply_state(objs, t):
 
 def main():
     os.makedirs(ARGS.out, exist_ok=True)
-    cam, objs, wall_mats = build(ARGS.variant)
+    cam, objs, wall_mats, dusk = build(ARGS.variant)
     # zaman düğümü: duvar malzemelerinde 'zaman' girişini bul (wall_material'a None verildi → ilk SUBTRACT girişi)
     time_inputs = []
     for mat in wall_mats.values():
@@ -472,13 +552,16 @@ def main():
         if _eski.get('frames') == FRAMES:
             meta['hotspots'].update(_eski.get('hotspots', {}))
     for f in frames:
-        t = f / (FRAMES - 1)
+        u = f / (FRAMES - 1)
+        t = yapim_t(u)
         for inp in time_inputs:
             inp.default_value = t
         apply_state(objs, t)
-        loc, target = cam_pose(t, ARGS.variant)
+        alacakaranlik(dusk, u)
+        loc, target = sahne_kamera(u, ARGS.variant)
         cam.location = loc
         kit.aim(cam, target)
+        kit.kaydir(cam, ARGS.variant, 1.0)
         cam.data.dof.focus_distance = (target - loc).length
         hs = {}
         pts = {}
@@ -488,6 +571,8 @@ def main():
             pts['lento'] = (0.0, YS[0] - WT / 2, FH + SLAB + 0.9 + 1.4 + 0.1)
         if t >= 0.80:
             pts['cati'] = (2.4, -2.25, FLOORS * FH + 0.2)
+        if u > 0.86:
+            pts = {}
         if pts:
             proj = kit.project(cam, list(pts.values()))
             hs = {k: p for k, p in zip(pts.keys(), proj) if p and 0.03 < p[0] < 0.97 and 0.05 < p[1] < 0.95}
