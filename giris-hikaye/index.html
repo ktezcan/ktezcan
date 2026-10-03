@@ -19,7 +19,7 @@
 <a class="eg-atla-link" href="#icerik" data-i18n="giris.atla">Hikâyeyi atla</a>
 
 <header class="eg-ust">
-  <a class="eg-logo" href="./" aria-label="Ege Gazbeton ana sayfa">
+  <a class="eg-logo" href="./" aria-label="Ege Gazbeton ana sayfa" data-i18n-aria="aria.logo">
     <!-- YER TUTUCU LOGO: LP\img\logo_white.svg ile değiştirin -->
     <svg viewBox="0 0 268 64" aria-hidden="true">
       <path d="M3 20V3h17M44 3h17v17M61 44v17H44M20 61H3V44" fill="none" stroke="#a2bf37" stroke-width="5"/>
@@ -27,7 +27,7 @@
       <text x="76" y="44" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="31" fill="#a2bf37" letter-spacing="4">GAZBETON</text>
     </svg>
   </a>
-  <nav id="ana-menu" class="eg-menu" aria-label="Ana menü">
+  <nav id="ana-menu" class="eg-menu" aria-label="Ana menü" data-i18n-aria="aria.menu">
     <a href="/urunler/" data-i18n="nav.urunler">Ürünler</a>
     <a href="/teknik-foyler/" data-i18n="nav.teknik">Teknik föyler</a>
     <a href="/araclar/" data-i18n="nav.araclar">Araçlar</a>
@@ -41,13 +41,13 @@
       <button type="button" data-dil-sec="en" aria-pressed="false">EN</button>
     </div>
     <a class="eg-dugme eg-dugme--lime eg-dugme--kucuk" href="/teklif/" data-iz="ust_teklif" data-i18n="cta.teklif">Teklif Al</a>
-    <button class="eg-menu-ac" type="button" data-menu-ac aria-expanded="false" aria-controls="ana-menu" aria-label="Menü"><span></span></button>
+    <button class="eg-menu-ac" type="button" data-menu-ac aria-expanded="false" aria-controls="ana-menu" aria-label="Menü" data-i18n-aria="aria.menuac"><span></span></button>
   </div>
 </header>
 
-<nav class="eg-yol" data-yolculuk aria-label="Hikâye bölümleri">
+<nav class="eg-yol" data-yolculuk aria-label="Hikâye bölümleri" data-i18n-aria="aria.yol">
   <div class="eg-yol__cubuk"><span data-yol-dolgu></span></div>
-  <button class="eg-yol__ac" type="button" data-yol-ac aria-expanded="false">Hikâye · <b data-yol-ad>Blok</b></button>
+  <button class="eg-yol__ac" type="button" data-yol-ac aria-expanded="false"><span data-i18n="yol.baslik">Hikâye</span> · <b data-yol-ad>Blok</b></button>
   <ol class="eg-yol__liste">
     <li><a href="#sahne-s0" data-yol-hedef="s0" data-i18n="yol.s0">Blok</a></li>
     <li><a href="#sahne-s1" data-yol-hedef="s1" data-i18n="yol.s1">Üretim</a></li>
@@ -105,13 +105,13 @@
     </div>
     <div class="eg-rakamlar">
       <div class="eg-rakam"><b>2</b><span data-i18n="i0.k1">fabrika · Söke &amp; İzmir</span><small>Ege Gazbeton</small></div>
-      <div class="eg-rakam"><b>1.100.000</b><span data-i18n="i0.k2">m³ üretim kapasitesi</span><small>Ege Gazbeton ortak rakamlar</small></div>
+      <div class="eg-rakam"><b>1.100.000</b><span data-i18n="i0.k2">m³ üretim kapasitesi</span><small data-i18n="kaynak.ortak">Ege Gazbeton ortak rakamlar</small></div>
       <div class="eg-rakam"><b>TS EN 771-4</b><span data-i18n="i0.k3">gazbeton kâgir birim standardı</span><small>CE 2179-CPR-0043 / 0052</small></div>
     </div>
   </article>
 
   <!-- ===================== SAHNE 1 · Doğuş ===================== -->
-  <section class="eg-sahne" id="sahne-s1" data-sahne="s1" style="--boy: 430vh" aria-label="Üretim: hammaddeden bloğa">
+  <section class="eg-sahne" id="sahne-s1" data-sahne="s1" style="--boy: 430vh" aria-label="Üretim: hammaddeden bloğa" data-i18n-aria="aria.s1">
     <div class="eg-sahne__sabit">
       <div class="eg-sahne__katman">
         <img class="eg-sahne__poster" src="kareler/s1/poster.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -135,7 +135,7 @@
   </article>
 
   <!-- ===================== SAHNE 2 · Gözenek ===================== -->
-  <section class="eg-sahne" id="sahne-s2" data-sahne="s2" style="--boy: 330vh" aria-label="Yapı: gözeneğe dalış">
+  <section class="eg-sahne" id="sahne-s2" data-sahne="s2" style="--boy: 330vh" aria-label="Yapı: gözeneğe dalış" data-i18n-aria="aria.s2">
     <div class="eg-sahne__sabit">
       <div class="eg-sahne__katman">
         <img class="eg-sahne__poster" src="kareler/s2/poster.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -153,14 +153,14 @@
       <p class="eg-icerik__metin" data-i18n="i2.metin">Kapalı hava hücreleri ısının geçişini yavaşlatır. Mineral yapı, A1 yangına tepki sınıfındadır.</p>
     </div>
     <div class="eg-rakamlar">
-      <div class="eg-rakam"><b>λ 0,08</b><span><span data-i18n="i2.k1">G2/350 duvar tasarım değeri</span> · W/mK</span><small>Ege Gazbeton ortak rakamlar</small></div>
-      <div class="eg-rakam"><b>A1</b><span data-i18n="i2.k2">yangına tepki sınıfı · EN 13501-1</span><small>CE belgeleri</small></div>
-      <div class="eg-rakam"><b>300–600</b><span><span data-i18n="i2.k3">yoğunluk aralığı (G1–G4)</span> · kg/m³</span><small>Ürün sınıfları G1/300 – G4/600</small></div>
+      <div class="eg-rakam"><b>λ 0,08</b><span><span data-i18n="i2.k1">G2/350 duvar tasarım değeri</span> · W/mK</span><small data-i18n="kaynak.ortak">Ege Gazbeton ortak rakamlar</small></div>
+      <div class="eg-rakam"><b>A1</b><span data-i18n="i2.k2">yangına tepki sınıfı · EN 13501-1</span><small data-i18n="kaynak.ce">CE belgeleri</small></div>
+      <div class="eg-rakam"><b>300–600</b><span><span data-i18n="i2.k3">yoğunluk aralığı (G1–G4)</span> · kg/m³</span><small data-i18n="kaynak.siniflar">Ürün sınıfları G1/300 – G4/600</small></div>
     </div>
   </article>
 
   <!-- ===================== SAHNE 3 · Bina ===================== -->
-  <section class="eg-sahne" id="sahne-s3" data-sahne="s3" style="--boy: 420vh" aria-label="Sistem: bina doğru sırayla kurulur">
+  <section class="eg-sahne" id="sahne-s3" data-sahne="s3" style="--boy: 420vh" aria-label="Sistem: bina doğru sırayla kurulur" data-i18n-aria="aria.s3">
     <div class="eg-sahne__sabit">
       <div class="eg-sahne__katman">
         <img class="eg-sahne__poster" src="kareler/s3/poster.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -182,12 +182,12 @@
     </div>
     <div class="eg-rakamlar">
       <div class="eg-rakam"><b>−%17</b><span data-i18n="i3.k1">yapı kütlesi</span><small data-i18n="i3.kaynak">ODTÜ çalışması, 8 katlı örnek bina hesabı</small></div>
-      <div class="eg-rakam"><b>−%14</b><span data-i18n="i3.k2">taban kesme kuvveti</span><small>ODTÜ</small></div>
+      <div class="eg-rakam"><b>−%14</b><span data-i18n="i3.k2">taban kesme kuvveti</span><small data-i18n="kaynak.odtu">ODTÜ</small></div>
     </div>
   </article>
 
   <!-- ===================== SAHNE 4 · Dünya ===================== -->
-  <section class="eg-sahne" id="sahne-s4" data-sahne="s4" style="--boy: 300vh" aria-label="Dünya: Ege'den beş kıtaya">
+  <section class="eg-sahne" id="sahne-s4" data-sahne="s4" style="--boy: 300vh" aria-label="Dünya: Ege'den beş kıtaya" data-i18n-aria="aria.s4">
     <div class="eg-sahne__sabit">
       <div class="eg-sahne__katman">
         <img class="eg-sahne__poster" src="kareler/s4/poster.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -205,8 +205,8 @@
       <p class="eg-icerik__metin" data-i18n="i4.metin">Söke ve İzmir'de yüklenen paletler, Aliağa ve Alsancak limanlarının yakınından beş kıtaya ulaşıyor.</p>
     </div>
     <div class="eg-rakamlar">
-      <div class="eg-rakam"><b>25+</b><span data-i18n="i4.k1">ülke</span><small>Ege Gazbeton ihracat bölümü</small></div>
-      <div class="eg-rakam"><b>5</b><span data-i18n="i4.k2">kıta</span><small>Ege Gazbeton ihracat bölümü</small></div>
+      <div class="eg-rakam"><b>25+</b><span data-i18n="i4.k1">ülke</span><small data-i18n="kaynak.ihracat">Ege Gazbeton ihracat bölümü</small></div>
+      <div class="eg-rakam"><b>5</b><span data-i18n="i4.k2">kıta</span><small data-i18n="kaynak.ihracat">Ege Gazbeton ihracat bölümü</small></div>
     </div>
   </article>
 
@@ -233,25 +233,26 @@
 <!-- ===================== Hikâyeden sonrası: açık, hızlı içerik (3B yok) ===================== -->
 <section class="eg-sonrasi" id="urunler" aria-labelledby="urunler-baslik">
   <h2 id="urunler-baslik" data-i18n="sonra.baslik">Ürün grupları</h2>
-  <p data-i18n="sonra.metin">Hikâyeden sonra sayfa sade ve hızlıdır: ürünler, teknik bültenler ve blog 3B olmadan yüklenir.</p>
+  <!-- Hikâyeden sonrası sade ve hızlıdır: ürünler, teknik bültenler ve blog 3B olmadan yüklenir. -->
+  <p data-i18n="sonra.metin">Blok, lento, panel ve tutkal: gazbeton duvar ve çatı sistemi için gereken ürünler tek üreticiden.</p>
   <div class="eg-kartlar">
-    <a class="eg-urun" href="/urunler/duvar-bloklari/"><b>Duvar blokları</b><span>Düz ve geçmeli bloklar, 5–35 cm</span></a>
-    <a class="eg-urun" href="/urunler/lentolar/"><b>Lentolar</b><span>Açıklık üstü, 4,50 m'ye kadar</span></a>
-    <a class="eg-urun" href="/urunler/u-blok-kose/"><b>U blok ve köşe bloğu</b><span>Hatıl ve köşe detayları</span></a>
-    <a class="eg-urun" href="/urunler/paneller/"><b>Paneller</b><span>Duvar, döşeme ve çatı panelleri</span></a>
-    <a class="eg-urun" href="/urunler/tutkal/"><b>Gazbeton tutkalı</b><span>İnce derz harcı</span></a>
-    <a class="eg-urun" href="/urunler/egepor/"><b>EGEPOR</b><span>Mineral ısı yalıtım levhası</span></a>
+    <a class="eg-urun" href="/urunler/duvar-bloklari/"><b data-i18n="urun.duvar">Duvar blokları</b><span data-i18n="urun.duvarm">Düz ve geçmeli bloklar, 5–35 cm</span></a>
+    <a class="eg-urun" href="/urunler/lentolar/"><b data-i18n="urun.lento">Lentolar</b><span data-i18n="urun.lentom">Açıklık üstü, 4,50 m'ye kadar</span></a>
+    <a class="eg-urun" href="/urunler/u-blok-kose/"><b data-i18n="urun.ublok">U blok ve köşe bloğu</b><span data-i18n="urun.ublokm">Hatıl ve köşe detayları</span></a>
+    <a class="eg-urun" href="/urunler/paneller/"><b data-i18n="urun.panel">Paneller</b><span data-i18n="urun.panelm">Duvar, döşeme ve çatı panelleri</span></a>
+    <a class="eg-urun" href="/urunler/tutkal/"><b data-i18n="urun.tutkal">Gazbeton tutkalı</b><span data-i18n="urun.tutkalm">İnce derz harcı</span></a>
+    <a class="eg-urun" href="/urunler/egepor/"><b>EGEPOR</b><span data-i18n="urun.egeporm">Mineral ısı yalıtım levhası</span></a>
   </div>
 </section>
 </main>
 
 <footer class="eg-alt">
   <span>© Ege Gazbeton — Akkuş Mimarlık İnşaat Turizm San. ve Tic. A.Ş.</span>
-  <span><a href="/kvkk/">KVKK</a> · <a href="/iletisim/">İletişim</a></span>
+  <span><a href="/kvkk/" data-i18n="alt.kvkk">KVKK</a> · <a href="/iletisim/" data-i18n="nav.iletisim">İletişim</a></span>
 </footer>
 
 <div id="nokta-kart" class="eg-kart" role="dialog" aria-labelledby="kart-baslik" hidden>
-  <button type="button" data-kart-kapat aria-label="Kapat">×</button>
+  <button type="button" data-kart-kapat aria-label="Kapat" data-i18n-aria="kapat">×</button>
   <h3 id="kart-baslik" data-kart-baslik></h3>
   <p data-kart-metin></p>
   <p class="eg-kart__kaynak" data-kart-kaynak hidden></p>

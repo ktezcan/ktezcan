@@ -68,9 +68,36 @@ export const EN = {
   'kaynak': 'Source',
   'kapat': 'Close',
   'sonra.baslik': 'Product groups',
-  'sonra.metin': 'After the story the page is plain and fast: products, technical bulletins and the blog load without 3D.',
+  'sonra.metin': 'Blocks, lintels, panels and adhesive: everything an AAC wall and roof system needs, from one manufacturer.',
   'dil.tr': 'TR',
   'dil.en': 'EN',
+  'yol.baslik': 'Story',
+  'urun.duvar': 'Wall blocks',
+  'urun.duvarm': 'Plain and tongue-and-groove blocks, 5–35 cm',
+  'urun.lento': 'Lintels',
+  'urun.lentom': 'Over openings, up to 4.50 m',
+  'urun.ublok': 'U-blocks and corner blocks',
+  'urun.ublokm': 'Bond beam and corner details',
+  'urun.panel': 'Panels',
+  'urun.panelm': 'Wall, floor and roof panels',
+  'urun.tutkal': 'AAC adhesive',
+  'urun.tutkalm': 'Thin-joint mortar',
+  'urun.egeporm': 'Mineral thermal insulation board',
+  'alt.kvkk': 'Privacy (KVKK)',
+  'kaynak.ortak': 'Ege Gazbeton shared figures',
+  'kaynak.ce': 'CE certificates',
+  'kaynak.siniflar': 'Product classes G1/300 – G4/600',
+  'kaynak.odtu': 'METU',
+  'kaynak.ihracat': 'Ege Gazbeton export department',
+  'sayfa.baslik': 'Ege Gazbeton | AAC from raw material to building',
+  'aria.logo': 'Ege Gazbeton home',
+  'aria.menu': 'Main menu',
+  'aria.menuac': 'Menu',
+  'aria.yol': 'Story chapters',
+  'aria.s1': 'Production: from raw material to block',
+  'aria.s2': 'Structure: diving into a pore',
+  'aria.s3': 'System: the building rises in the right order',
+  'aria.s4': 'World: from the Aegean to five continents',
 };
 
 /** Tıklanır noktalar: başlık, kısa açıklama, kaynak (TR / EN). */
@@ -143,6 +170,8 @@ export function dil() {
 export function dilUygula(lang) {
   current = lang === 'en' ? 'en' : 'tr';
   document.documentElement.lang = current;
+  if (document.documentElement.dataset.trTitle === undefined) document.documentElement.dataset.trTitle = document.title;
+  document.title = current === 'en' ? EN['sayfa.baslik'] : document.documentElement.dataset.trTitle;
   for (const el of document.querySelectorAll('[data-i18n]')) {
     if (el.dataset.tr === undefined) el.dataset.tr = el.innerHTML;
     const key = el.dataset.i18n;
