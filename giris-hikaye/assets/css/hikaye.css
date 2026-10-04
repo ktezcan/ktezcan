@@ -445,3 +445,35 @@ button { font: inherit; color: inherit; }
 }
 .az-hareket .eg-vurus, .no-js .eg-vurus { opacity: 1; visibility: visible; transform: none; max-width: 720px; }
 .az-hareket .eg-adimlar li, .no-js .eg-adimlar li { opacity: 1; display: block; }
+
+/* Ürün turu: özellik çizimleri (kart görününce bir kez oynar; yalnız SVG + CSS) */
+.eg-ozellik { display: block; width: min(100%, 300px); height: auto; margin: 18px 0 4px; overflow: visible; }
+.eg-ozellik .oz-duvar { fill: rgba(242, 239, 231, 0.16); stroke: rgba(242, 239, 231, 0.55); stroke-width: 1.5; }
+.eg-ozellik .oz-kolon { fill: rgba(163, 159, 151, 0.35); stroke: rgba(242, 239, 231, 0.4); stroke-width: 1.5; }
+.eg-ozellik .oz-urun { fill: var(--lime); }
+.eg-ozellik .oz-ok path, .eg-ozellik .oz-olcu, .eg-ozellik .oz-agirlik { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.eg-ozellik .oz-ok path { stroke: #e8894a; }
+.eg-ozellik .oz-ok--ic path { stroke: rgba(232, 137, 74, 0.35); }
+.eg-ozellik .oz-olcu { stroke: var(--lime-hi); }
+.eg-ozellik .oz-agirlik { stroke: var(--soft); }
+.eg-vurus .oz-ok { opacity: 0; transform: translateX(-30px); }
+.eg-vurus .oz-ok--ic { transform: none; }
+.eg-vurus .oz-olcu { stroke-dasharray: 260; stroke-dashoffset: 260; }
+.eg-vurus .oz-levha { transform: translateY(-40px); opacity: 0; transform-box: fill-box; }
+.eg-vurus.is-aktif .oz-ok { animation: oz-ok 2.4s var(--ease) 0.4s infinite; }
+.eg-vurus.is-aktif .oz-ok--ic { animation: oz-ic 2.4s var(--ease) 0.4s infinite; }
+.eg-vurus.is-aktif .oz-olcu { animation: oz-cizgi 1.4s var(--ease) 0.5s forwards; }
+.eg-vurus.is-aktif .oz-nabiz { animation: oz-nabiz 1.6s ease-in-out 0.4s infinite; }
+.eg-vurus.is-aktif .oz-agirlik { animation: oz-hafif 2s ease-in-out 0.6s infinite; }
+.eg-vurus.is-aktif .oz-levha { animation: oz-levha 0.9s var(--ease) 0.5s forwards; }
+@keyframes oz-ok { 0% { opacity: 0; transform: translateX(-30px); } 30% { opacity: 1; } 70% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(0); } }
+@keyframes oz-ic { 0%, 55% { opacity: 0; } 75% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes oz-cizgi { to { stroke-dashoffset: 0; } }
+@keyframes oz-nabiz { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes oz-hafif { 0%, 100% { transform: translateY(0); opacity: 0.9; } 50% { transform: translateY(4px); opacity: 0.4; } }
+@keyframes oz-levha { to { transform: none; opacity: 1; } }
+@media (max-width: 760px) { .eg-ozellik { width: 200px; margin-top: 10px; } }
+@media (prefers-reduced-motion: reduce) {
+  .eg-vurus .oz-ok, .eg-vurus .oz-levha { opacity: 1; transform: none; animation: none !important; }
+  .eg-vurus .oz-olcu { stroke-dashoffset: 0; animation: none !important; }
+}
