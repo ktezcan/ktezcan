@@ -13,6 +13,7 @@ import { SAHNELER, DIKEY_ESIK, YUMUSAKLIK, ES_ZAMANLI, GECIS } from './ayarlar.j
 import { Sahne, Kuyruk } from './sahne.js';
 import { dilUygula } from './dil.js';
 import { arayuzKur } from './arayuz.js';
+import { modullerKur } from './moduller/index.js';
 
 const root = document.documentElement;
 root.classList.replace('no-js', 'js') || root.classList.add('js');
@@ -47,6 +48,7 @@ for (const cfg of SAHNELER) {
 }
 
 const ui = arayuzKur({ sahneler, ortak, debug });
+modullerKur({ sahneler, ortak, ui });
 
 function variantFor() {
   return window.innerWidth / Math.max(1, window.innerHeight) < DIKEY_ESIK ? 'm' : 'd';
