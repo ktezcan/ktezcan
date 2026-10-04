@@ -77,6 +77,8 @@ def main(render_kok, kalite=90):
             ent = {'n': meta['frames'], 'res': meta['res'], 'mevcut': sorted(mevcut)}
             if 'face' in meta:
                 ent['face'] = yuvarla(meta['face'])
+            if 'pen' in meta:  # kalem ucu konumu (eskiz çizimi): sitedeki kalem sprite'ı
+                ent['pen'] = yuvarla(meta['pen'])
             if 'hotspots' in meta:
                 ent['hotspots'] = {k: v for k, v in yuvarla(meta['hotspots']).items() if v}
             hepsi.setdefault(sid, {})[var] = ent

@@ -34,7 +34,7 @@ import bina_detay as B  # noqa: E402
 import sokak as S  # noqa: E402
 import insan as I  # noqa: E402
 
-KARE = {'egim': 18, 'dolum': 28, 'sokak': 36, 'plaka': 8}
+KARE = {'egim': 38, 'dolum': 28, 'sokak': 36, 'plaka': 8}
 RES = {'d': (1600, 900), 'm': (768, 1366)}
 LENS = {'d': 24.0, 'm': 30.0}
 C_HEDEF = Vector((-0.5, -4.0, 4.6))
@@ -67,16 +67,111 @@ def kamera(variant, u=1.0):
 
 
 # ------------------------------------------------------------------ egim: kâğıt üstünde plan → eskiz
+# Bina HİÇ yükselmez: tam boy kâğıt malzeme, çizgiler kalemle SIRAYLA çizilir (kullanıcı şikâyeti).
+# Her karede üç render: S (çizgisiz kâğıt), E (yalnız çevre çizgileri), B (yalnız bina çizgileri). Bina çizgileri,
+# kenar listesinin ekrana izdüşümünden kurulan "çizilmiş kısım" maskesiyle açılır: çıktı = S − dE − dB·M.
+EGIM_N = 38  # plan: E00–E37 (8 kare/sn)
+SAG_ON = (B.XS[-1], B.YS[0])  # kamerayla aynı yöndeki (sağ-ön) köşe: kalem ilk oraya gider
+PLAN_KARE = 6  # E00–E05: üstten plan, bina yok (yalnız zemin çizgileri); E06'dan sonra bina çizilir
+CU_ANAHTAR = [(0, 0.0), (5, 0.18), (13, 0.80), (21, 0.95), (37, 1.0)]  # kamera eğimi (kare, 0..1)
+ZEMIN_Z = 0.06
+
+
+def _cu(f):
+    k = CU_ANAHTAR
+    if f <= k[0][0]:
+        return k[0][1]
+    for (f0, v0), (f1, v1) in zip(k, k[1:]):
+        if f <= f1:
+            return kit.lerp(v0, v1, kit.smoother(kit.seg(f, f0, f1)))
+    return k[-1][1]
+
+
+def egim_cizelge(P):
+    """Çizilecek parçaların kalem sırası: [(c, s, t0, süre)] — t0/süre E kare cinsinden.
+    Dikmeler tek kalemle SIRALI (sağ-ön köşe önce), sonra kat hizaları, pencere/kapı kutuları, çatı."""
+    out = []
+    kol = sorted({(p['c'][0], p['c'][1]) for p in P if p['tur'] == 'kolon'},
+                 key=lambda xy: (xy[0] - SAG_ON[0]) ** 2 + (xy[1] - SAG_ON[1]) ** 2)
+    slot = {xy: i for i, xy in enumerate(kol)}
+    kir = sorted((p for p in P if p['tur'] in ('kiris', 'doseme')),
+                 key=lambda p: (p['kat'], p['tur'] != 'doseme', p['c'][1], p['c'][0]))
+    kir_i = {id(p): i for i, p in enumerate(kir)}
+    pen = [p for p in P if p['tur'] in ('lento', 'denizlik', 'dograma', 'kapi')]
+
+    def bay(p):
+        n = p['n']
+        return (p['kat'], tuple(round(x) for x in n), round((p['c'][0] if abs(n[1]) > 0.5 else p['c'][1]) / 1.5))
+    gruplar = sorted({bay(p) for p in pen}, key=lambda g: (g[0], g[1] != (0, -1, 0), g[1], g[2]))
+    gi = {g: i for i, g in enumerate(gruplar)}
+    panel = [p for p in P if p['tur'] == 'panel']
+    panel_i = {id(p): i for i, p in enumerate(sorted(panel, key=lambda p: (p['c'][0], p['c'][1])))}
+    for p in P:
+        t = p['tur']
+        if t == 'kolon':
+            t0, d = 6.2 + slot[(p['c'][0], p['c'][1])] * 0.62 + p['kat'] * 0.2, 0.22
+        elif t in ('kiris', 'doseme'):
+            t0, d = 11.0 + kir_i[id(p)] * (6.5 / max(1, len(kir))), 0.7
+        elif t in ('lento', 'denizlik', 'dograma', 'kapi'):
+            ek = {'lento': 0.0, 'denizlik': 0.12, 'dograma': 0.18, 'kapi': 0.15}[t]
+            t0, d = 14.0 + gi[bay(p)] * (11.5 / max(1, len(gruplar))) + ek, 0.3
+        elif t == 'panel':
+            t0, d = 26.0 + panel_i[id(p)] * (3.5 / max(1, len(panel))), 0.3
+        else:
+            t0, d = 30.0, 0.3
+        out.append((p['c'], p['s'], t0, d))
+    return out
+
+
+def kutu_kenarlari(c, s, t0, d):
+    """Eksen hizalı kutunun 12 kenarı: [(p0, p1, t0, süre)]; dikmeler alttan üste, diğerleri soldan sağa."""
+    cx, cy, cz = c
+    hx, hy, hz = s[0] / 2, s[1] / 2, s[2] / 2
+    k = []
+    for ax in range(3):
+        o = [i for i in range(3) if i != ax]
+        for a in (-1, 1):
+            for b in (-1, 1):
+                p0 = [cx, cy, cz]
+                h = (hx, hy, hz)
+                p0[o[0]] += a * h[o[0]]
+                p0[o[1]] += b * h[o[1]]
+                p1 = list(p0)
+                p0[ax] -= h[ax]
+                p1[ax] += h[ax]
+                if ax != 2 and (p0[0], p0[1]) > (p1[0], p1[1]):
+                    p0, p1 = p1, p0
+                if max(p0[2], p1[2]) <= ZEMIN_Z:  # zemin çizgileri plandan beri çizili
+                    k.append((p0, p1, -5.0, 1.0))
+                else:
+                    k.append((p0, p1, t0, d))
+    return k
+
+
 def kip_egim(sc, variant, frames):
+    import numpy as np
+    from PIL import Image, ImageDraw
     P, mats = T.bina_hazir()
     kagit = E.duz_malzeme('#ebe3d5')
-    bina = B.kur(P, {k: kagit for k in mats},
-                 lambda p: None if p['tur'] in ('harc', 'cam', 'blok', 'sove', 'temel') else (p['c'], p['s'], (0, 0, 0)))
-    duvar = kit.box('DuvarKutle', (B.XS[-1] - B.XS[0] - 0.02, B.YS[-1] - B.YS[0] - 0.02, B.KAT * B.FH - 0.1),
-                    (0, 0, B.KAT * B.FH / 2), kagit)
-    yuksel = list(bina.values()) + [duvar]
-    for o in yuksel:
-        o['z0'] = o.location.z
+    CIZ = ('harc', 'cam', 'blok', 'sove', 'temel')
+    Pc = [p for p in P if p['tur'] not in CIZ]
+    bina = B.kur(P, {k: kagit for k in mats}, lambda p: None if p['tur'] in CIZ else (p['c'], p['s'], (0, 0, 0)))
+    duvar_s = (B.XS[-1] - B.XS[0] - 0.02, B.YS[-1] - B.YS[0] - 0.02, B.KAT * B.FH - 0.1)
+    duvar = kit.box('DuvarKutle', duvar_s, (0, 0, B.KAT * B.FH / 2), kagit)
+    bina_obs = list(bina.values()) + [duvar]
+    koleksiyon = bpy.data.collections.new('Bina')
+    sc.collection.children.link(koleksiyon)
+    for o in bina_obs:
+        koleksiyon.objects.link(o)
+    # kenar listesi (bir kez): parçalar + duvar kütlesi (kat hizalarıyla birlikte çizilir)
+    kenar = []
+    for (c, s, t0, d) in egim_cizelge(Pc) + [((0, 0, B.KAT * B.FH / 2), duvar_s, 16.0, 0.8)]:
+        kenar += kutu_kenarlari(c, s, t0, d)
+    K0 = np.array([e[0] for e in kenar], np.float64)
+    K1 = np.array([e[1] for e in kenar], np.float64)
+    KT0 = np.array([e[2] for e in kenar], np.float64)
+    KD = np.array([e[3] for e in kenar], np.float64)
+
     # vaziyet: yol, bordür, kaldırım, bahçe duvarı, giriş yolu, ağaç taçları, lavanta, komşu ev izleri
     def kutu(ad, s, c):
         return kit.box(ad, s, c, kagit)
@@ -108,12 +203,10 @@ def kip_egim(sc, variant, frames):
             bpy.ops.mesh.primitive_plane_add(size=B.COL, location=(x, y, 0.03))
             bpy.context.active_object.data.materials.append(kagit)
             iz.append(bpy.context.active_object)
-    komsu = []
+    # komşu evler yalnız İZ: sabit alçak (yükselmez)
     for (x, y, w, d, k) in ((-24, -1, 9, 8, 2), (23, -1, 8, 9, 3), (-8, 22, 11, 8, 2), (12, 21, 8, 8, 2),
                             (-28, 20, 8, 8, 3), (32, 18, 9, 8, 2)):
-        komsu.append(kutu('KomsuIz', (w, d, k * 3.0), (x, y, k * 1.5)))
-    for o in komsu:
-        o['h'] = o.dimensions.z
+        kutu('KomsuIz', (w, d, 0.06), (x, y, 0.03))
     for ob in bpy.data.objects:
         if ob.type == 'LIGHT':
             ob.hide_render = True
@@ -128,6 +221,8 @@ def kip_egim(sc, variant, frames):
     if ls.linestyle is None:
         ls.linestyle = bpy.data.linestyles.new('Kalem')
     ls.select_silhouette = ls.select_border = ls.select_crease = True
+    ls.select_by_collection = True
+    ls.collection = koleksiyon
     st = ls.linestyle
     st.color = (0.16, 0.15, 0.14)
     st.thickness = 1.3 if variant == 'd' else 1.1
@@ -140,30 +235,119 @@ def kip_egim(sc, variant, frames):
     tm.mapping = 'CURVE'
     tm.value_min, tm.value_max = 0.4, 1.4
     sc.compositing_node_group = None
-    meta = {}
+    meta = {'_n': EGIM_N}
+    durum = {'f': 0, 'plan': True, 'proj': None}
+
+    def izdusum(pts):
+        """Dünya noktaları (N,3) → piksel (N,2) ve derinlik işareti; kamera matrisi o karenin."""
+        M = durum['proj']
+        h4 = np.concatenate([pts, np.ones((len(pts), 1))], 1) @ M.T
+        w = h4[:, 3]
+        iyi = w > 0.05
+        w = np.where(iyi, w, 1.0)
+        W, H = durum['W'], durum['H']
+        return np.stack([(h4[:, 0] / w * 0.5 + 0.5) * W, (1 - (h4[:, 1] / w * 0.5 + 0.5)) * H], 1), iyi
+
+    def maske(f):
+        """Kalemin o kareye kadar çizdiği kısım: kenar boyunca ilerleyen kalın şerit (+ uç aşımı payı)."""
+        W, H = durum['W'], durum['H']
+        r = np.clip((f - KT0) / KD, 0.0, 1.0)
+        act = r > 0
+        a = K0[act]
+        b = a + (K1[act] - a) * r[act, None]
+        pa, ia = izdusum(a)
+        pb, ib = izdusum(b)
+        tam = (r[act] >= 1.0)
+        im = Image.new('L', (W, H), 0)
+        dr = ImageDraw.Draw(im)
+        gen = max(4, int(round(8 * W / 1600)))
+        pay = 11 * W / 1600
+        for q0, q1, i0, i1, t in zip(pa, pb, ia, ib, tam):
+            if not (i0 and i1):
+                continue
+            v = q1 - q0
+            n = float(np.hypot(*v))
+            if n > 1e-6 and t:  # tamamlanmış çizgi: 'Uzat' uç aşımı da görünsün
+                u = v / n
+                q0, q1 = q0 - u * pay, q1 + u * pay
+            dr.line([tuple(q0), tuple(q1)], fill=255, width=gen)
+            dr.ellipse([q0[0] - gen / 2, q0[1] - gen / 2, q0[0] + gen / 2, q0[1] + gen / 2], fill=255)
+            dr.ellipse([q1[0] - gen / 2, q1[1] - gen / 2, q1[0] + gen / 2, q1[1] + gen / 2], fill=255)
+        return np.asarray(im, np.float32) / 255.0
+
+    def kalem_ucu(f):
+        """Kalemin o anki ucu (ekran 0..1) — sitedeki kalem sprite'ı için: etkin vuruşların en son başlayanı."""
+        r = (f - KT0) / KD
+        act = np.nonzero((r > 0) & (r < 1) & (KT0 > 0))[0]
+        if len(act) == 0:
+            return None
+        i = act[np.argmax(KT0[act])]
+        q, ok = izdusum((K0[i] + (K1[i] - K0[i]) * r[i])[None, :])
+        if not ok[0]:
+            return None
+        return [round(float(q[0, 0]) / durum['W'], 4), round(float(q[0, 1]) / durum['H'], 4)]
 
     def kare(f):
-        u = f / (KARE['egim'] - 1)
-        cu = kit.seg(u, 0.0, 0.85)
-        cam = kamera(variant, cu)
-        h = kit.smoother(kit.seg(u, 0.3, 1.0))
-        hz = max(h, 0.004)
-        for o in yuksel:
-            o.scale.z = hz
-            o.location.z = o['z0'] * hz
-            # tepeden bakışta yalnız ayak izi (kolon + duvar çevresi) çizilsin
-            o.hide_render = h < 0.06
+        u = f / (EGIM_N - 1)
+        cam = kamera(variant, _cu(f))
+        plan = f < PLAN_KARE
+        for o in bina_obs:
+            o.hide_render = plan
         for o in iz:
-            o.hide_render = h >= 0.06
-        for o in komsu:
-            o.scale.z = max(h, 0.06)
-            o.location.z = o['h'] * max(h, 0.06) / 2
+            o.hide_render = not plan
+        durum.update(f=f, plan=plan)
+        sc.render.use_freestyle = True
+        ls.select_by_collection = False
+        dg = bpy.context.evaluated_depsgraph_get()
+        rw, rh = sc.render.resolution_x, sc.render.resolution_y
+        pct = sc.render.resolution_percentage / 100.0
+        durum['W'], durum['H'] = int(rw * pct), int(rh * pct)
+        P4 = cam.calc_matrix_camera(dg, x=rw, y=rh)
+        V = cam.matrix_world.inverted()
+        durum['proj'] = np.array(P4 @ V, np.float64)
         cpa = {'giris': (0.0, YB - 1.5, 0.2), 'bahce': (-4.6, YB - 2.6, 0.2), 'sokak': (-12.0, Y0 - 7.2, 0.1)}
         if u > 0.8:
             cpa = {'eskiz': (B.XS[0] + 0.5, YB, B.KAT * B.FH * 0.8)}
         pr = kit.project(cam, list(cpa.values()))
         meta[str(f)] = {k: p for k, p in zip(cpa, pr) if p}
-    return kare, meta
+        if plan:  # kalem plandan sağ-ön köşe kolonuna doğru yürür
+            if f >= 3:
+                q = kit.project(cam, [(SAG_ON[0], SAG_ON[1], 0.0)])[0]
+                if q:
+                    meta[str(f)]['pen'] = q
+        else:
+            k = kalem_ucu(f)
+            if k:
+                meta[str(f)]['pen'] = k
+
+    def render(path):
+        f = durum['f']
+        if durum['plan']:
+            ls.select_by_collection = False
+            kit.render_to(path)
+            return
+        tmp = path[:-4]
+
+        def oku(p):
+            im = np.asarray(Image.open(p).convert('RGB'), np.float32)
+            os.remove(p)
+            return im
+        sc.render.use_freestyle = False
+        kit.render_to(tmp + '_s.png')
+        sc.render.use_freestyle = True
+        ls.select_by_collection = True
+        ls.collection = koleksiyon
+        ls.collection_negation = 'EXCLUSIVE'  # yalnız çevre çizgileri
+        kit.render_to(tmp + '_e.png')
+        ls.collection_negation = 'INCLUSIVE'  # yalnız bina çizgileri
+        kit.render_to(tmp + '_b.png')
+        S, Ec, Bc = oku(tmp + '_s.png'), oku(tmp + '_e.png'), oku(tmp + '_b.png')
+        M = maske(f)[..., None]
+        dE = np.clip(S - Ec, 0, 255)
+        dB = np.clip(S - Bc, 0, 255)
+        out = np.clip(S - dE - dB * M, 0, 255).astype(np.uint8)
+        Image.fromarray(out).save(path, compress_level=3)
+    return kare, meta, render
 
 
 # ------------------------------------------------------------------ dolum: tel kafes → gazbeton
@@ -422,7 +606,9 @@ def main():
     frames = list(range(n)) if ARGS.frames == 'all' else [int(x) for x in ARGS.frames.split(',')]
     out = os.path.join(ARGS.out, ARGS.kip)
     os.makedirs(out, exist_ok=True)
-    kare, meta = KIPLER[ARGS.kip](sc, ARGS.variant, frames)
+    sonuc = KIPLER[ARGS.kip](sc, ARGS.variant, frames)
+    kare, meta = sonuc[0], sonuc[1]
+    render = sonuc[2] if len(sonuc) > 2 else kit.render_to  # egim: çizgi maskesiyle çok geçişli render
     mp = os.path.join(out, 'meta.json')
     eski = json.load(open(mp)) if os.path.exists(mp) else {}
     eski.update(meta)
@@ -434,7 +620,7 @@ def main():
         if ARGS.skip_existing and os.path.exists(path):
             continue
         t0 = time.time()
-        kit.render_to(path)
+        render(path)
         print(f'KARE {ARGS.kip} {f} {time.time() - t0:.1f}s', flush=True)
 
 

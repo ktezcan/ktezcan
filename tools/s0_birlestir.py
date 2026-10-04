@@ -134,8 +134,9 @@ def kur(d):
             a = isin_ciz(a, 1.0 + 0.6 * t, 1 - ss(0.0, 0.5, t))
             return isik(a, 1.0 - 0.6 * t, 1 - ss(0.2, 0.9, t))
         d.ekle(f, n0 if t > 0.55 else {})
-    # C: eğim (Blender 18)
-    for i in range(18):
+    # C: eğim + kalemle çizim (Blender, plan: 38 kare; bina yükselmez, çizilir)
+    n_e = int(d.meta['egim'].get('_n', 18))
+    for i in range(n_e):
         d.ekle(lambda i=i: d.oku('egim', i), d.nokta('egim', i))
     # D: eskiz → tel kafes, binadan açılan daire (6)
     k0 = d.oku('dolum', 0)
@@ -144,7 +145,7 @@ def kur(d):
     bm = np.array([xs.mean(), ys.mean()]) if len(xs) else np.array([w * 0.6, h * 0.5])
     rb = np.hypot(xx - bm[0], yy - bm[1])
     rbm = rb.max()
-    eskiz = d.oku('egim', 17)
+    eskiz = d.oku('egim', n_e - 1)
     for i in range(6):
         t = (i + 1) / 7
 
@@ -216,6 +217,8 @@ def main(kaynak, render_kok, variants):
             meta['res'] = [a.shape[1], a.shape[0]]
             kaydet(a, os.path.join(out, f'{i:03d}.png'))
             meta['hotspots'][str(i)] = {k: q for k, q in nk.items() if k in ETIKETLI}
+            if 'pen' in nk:  # kalem ucu (ekran 0..1): sitedeki kalem sprite'ı için
+                meta.setdefault('pen', {})[str(i)] = nk['pen']
         json.dump(meta, open(os.path.join(out, 'meta.json'), 'w'))
         print(v, len(d.kareler), 'kare')
 
