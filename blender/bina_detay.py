@@ -124,6 +124,18 @@ def uret(kat_sayisi=KAT, cati=True):
                 ll = (u1 - u0) + 0.5
                 c, s = ((um, k, zl), (ll - DERZ, WT, BH - DERZ)) if ax == 'X' else ((k, um, zl), (WT, ll - DERZ, BH - DERZ))
                 P.append(_p(c, s, 'lento', kat=kat, n=n, zaman=tk + 0.8 * dt, yuz=yuz))
+                hs = (ll + DERZ, WT * 0.6, BH) if ax == 'X' else (WT * 0.6, ll + DERZ, BH)
+                P.append(_p(c, hs, 'harc', kat=kat, n=n, zaman=tk + 0.8 * dt, yuz=yuz))
+                # söve: boşluğun iç yüzleri (sıva) — derz/köşe boşluklarını kapatır
+                zb0, zt0 = z0 + s0 * BH, z0 + s1 * BH
+                w0 = u1 - u0
+                um0 = (u0 + u1) / 2
+                for (du, dz, sw, sh) in ((0, zt0 - 0.01, w0, 0.02), (0, zb0 + 0.01, w0, 0.02), (-w0 / 2 + 0.01, (zb0 + zt0) / 2, 0.02, zt0 - zb0),
+                                         (w0 / 2 - 0.01, (zb0 + zt0) / 2, 0.02, zt0 - zb0)):
+                    if ax == 'X':
+                        P.append(_p((um0 + du, k, dz), (sw, WT - 0.01, sh), 'sove', kat=kat, n=n, zaman=tk + 0.82 * dt, yuz=yuz))
+                    else:
+                        P.append(_p((k, um0 + du, dz), (WT - 0.01, sw, sh), 'sove', kat=kat, n=n, zaman=tk + 0.82 * dt, yuz=yuz))
                 zb, zt = z0 + s0 * BH, z0 + s1 * BH
                 hh = zt - zb
                 zm = (zb + zt) / 2
@@ -136,9 +148,10 @@ def uret(kat_sayisi=KAT, cati=True):
                     db = (Vector((um, k, zb - 0.025)) if ax == 'X' else Vector((k, um, zb - 0.025))) + nn * (WT / 2 + 0.02)
                     ds = (w + 0.1, WT * 0.5 + 0.04, 0.05) if ax == 'X' else (WT * 0.5 + 0.04, w + 0.1, 0.05)
                     P.append(_p(db, ds, 'denizlik', kat=kat, n=n, zaman=tk + 0.85 * dt))
-                cer = [(0, hh / 2 - t / 2, w, t), (0, -hh / 2 + t / 2, w, t), (-w / 2 + t / 2, 0, t, hh), (w / 2 - t / 2, 0, t, hh)]
+                # profiller uç uca (köşede çakışmasın: aynı düzlemde üst üste yüz siyah görünür)
+                cer = [(0, hh / 2 - t / 2, w, t), (0, -hh / 2 + t / 2, w, t), (-w / 2 + t / 2, 0, t, hh - 2 * t - 0.002), (w / 2 - t / 2, 0, t, hh - 2 * t - 0.002)]
                 if tur == 'pencere':
-                    cer.append((0, 0, t * 0.8, hh))
+                    cer.append((0, 0, t * 0.8, hh - 2 * t - 0.002))
                 for (du, dz, bw, bh) in cer:
                     if ax == 'X':
                         P.append(_p(cc + Vector((du, 0, dz)), (bw, 0.07, bh), 'dograma', kat=kat, n=n, zaman=tk + 0.9 * dt))
@@ -209,6 +222,7 @@ def malzemeler(aksam=False):
         'harc': pbr('Harc', '#6f6b65', 0.95),
         'temel': beton, 'kolon': beton, 'kiris': beton, 'doseme': beton,
         'denizlik': pbr('Denizlik', '#d9d6cf', 0.5),
+        'sove': pbr('Sove', '#e9e5de', 0.85),
         'dograma': pbr('Dograma', '#f3f2ee', 0.4),
         'cam': pbr('Cam', '#141b21', 0.02, 0.0, '#ffb978' if aksam else None, 22.0 if aksam else 0.0),
         'kapi': pbr('Kapi', '#5a4636', 0.6),
