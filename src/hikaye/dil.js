@@ -428,8 +428,8 @@ export function dilUygula(lang) {
     const key = el.dataset.i18nAria;
     el.setAttribute('aria-label', current === 'en' && EN[key] ? EN[key] : el.dataset.trAria);
   }
-  for (const b of document.querySelectorAll('[data-dil-sec]')) {
-    b.setAttribute('aria-pressed', String(b.dataset.dilSec === current));
+  for (const b of document.querySelectorAll('[data-dil-sec], [data-dil-menu]')) {
+    b.setAttribute('aria-pressed', String((b.dataset.dilSec || b.dataset.dilMenu) === current));
   }
   document.dispatchEvent(new CustomEvent('ege:dil', { detail: current }));
 }

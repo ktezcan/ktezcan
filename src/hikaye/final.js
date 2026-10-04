@@ -239,20 +239,28 @@ export function finalKur(ortak) {
       ctx.fillStyle = `rgba(8, 13, 17, ${karar.toFixed(3)})`;
       ctx.fillRect(0, 0, w, h);
     }
-    const [ex, ey] = L.ege;
+    const kb = logoKutu();
+    const [ox, oy] = L.ege;
+    // t=138: kıvılcım Ege'den ekranın ortasına (logo çerçevesinin merkezine) süzülür; "Güven." orada belirir
+    const gt = smooth(0.2, 0.29, p);
+    const mx = kb ? (kb.x + kb.w / 2) * k : ox;
+    const my = kb ? (kb.y + kb.h / 2) * k : oy;
+    const ex = ox + (mx - ox) * gt;
+    const ey = oy + (my - oy) * gt;
     ctx.globalCompositeOperation = 'lighter';
     // 2) dünyanın ışıkları Ege'ye akar (2 px kuyruk, ease-in)
     if (p < 0.24) {
       if (!parcaciklar) parcaciklar = parcaciklarKur();
       const ilk = clamp01(p / 0.2);
+      const [ex0, ey0] = L.ege;
       ctx.lineCap = 'round';
       for (const q of parcaciklar) {
         const u = clamp01((ilk - q.gecikme) / (1 - q.gecikme));
         if (u <= 0) continue;
         const sx = L.merkez[0] + Math.cos(q.aci) * q.yar * L.r * 1.25;
         const sy = L.merkez[1] + Math.sin(q.aci) * q.yar * L.r * 1.25;
-        const dxv = ex - sx;
-        const dyv = ey - sy;
+        const dxv = ex0 - sx;
+        const dyv = ey0 - sy;
         const nx = -dyv;
         const ny = dxv;
         const nok = (t) => {
@@ -282,8 +290,8 @@ export function finalKur(ortak) {
       const r = mulberry32(138);
       for (let i = 0; i < 12; i++) {
         const evre = (((p - 0.2) * 5 + i / 12) % 1 + 1) % 1;
-        const ox = (r() - 0.5) * 36 * k;
-        const x = ex + ox + Math.sin(evre * 6 + i) * 6 * k;
+        const sapma = (r() - 0.5) * 36 * k;
+        const x = ex + sapma + Math.sin(evre * 6 + i) * 6 * k;
         const y = ey - evre * 70 * k;
         const a = Math.sin(Math.PI * evre) * 0.75 * (1 - smooth(0.36, 0.42, p));
         ctx.fillStyle = `rgba(${SICAK}, ${a.toFixed(3)})`;
@@ -308,46 +316,38 @@ export function finalKur(ortak) {
         ctx.stroke();
       }
     }
-    if (p >= 0.3 && p < 0.5) {
-      const kb = logoKutu();
-      if (kb) {
-        const olcek = (kb.w / LOGO_W) * k;
-        const pt = (v) => [kb.x * k + v[0] * olcek, kb.y * k + v[1] * olcek];
-        ctx.lineCap = 'butt';
-        ctx.lineJoin = 'miter';
-        ctx.lineWidth = 9 * olcek;
-        const g = clamp01((p - 0.3) / 0.1); // 4 köşe, her biri 0,25 dilim: ilk 0,2'si sıçrama (çizgisiz), sonrası çizim
-        const solma = 1 - smooth(0.46, 0.5, p); // logo küçülmeden önce çizgiler söner (HTML logonun kendi köşeleri kalır)
-        let onceki = [ex, ey];
-        for (let b = 0; b < 4; b++) {
-          const dilim = clamp01(g * 4 - b);
-          if (dilim <= 0) break;
-          const seg = KOSELER[b].map(pt);
-          const u1 = Math.hypot(seg[1][0] - seg[0][0], seg[1][1] - seg[0][1]);
-          const u2 = Math.hypot(seg[2][0] - seg[1][0], seg[2][1] - seg[1][1]);
-          // polyline üzerinde uzunluğa göre nokta
-          const konum = (t) => (t <= u1
-            ? [seg[0][0] + ((seg[1][0] - seg[0][0]) * t) / u1, seg[0][1] + ((seg[1][1] - seg[0][1]) * t) / u1]
-            : [seg[1][0] + ((seg[2][0] - seg[1][0]) * (t - u1)) / u2, seg[1][1] + ((seg[2][1] - seg[1][1]) * (t - u1)) / u2]);
-          let bas;
-          if (dilim < 0.2) {
-            const e = smooth(0, 1, dilim / 0.2);
-            bas = [onceki[0] + (seg[0][0] - onceki[0]) * e, onceki[1] + (seg[0][1] - onceki[1]) * e];
-          } else {
-            const tt = (u1 + u2) * clamp01((dilim - 0.2) / 0.8);
-            const son = konum(tt);
-            ctx.strokeStyle = `rgba(${LIME}, ${(0.95 * solma).toFixed(3)})`;
-            ctx.beginPath();
-            ctx.moveTo(seg[0][0], seg[0][1]);
-            if (tt > u1) ctx.lineTo(seg[1][0], seg[1][1]);
-            ctx.lineTo(son[0], son[1]);
-            ctx.stroke();
-            bas = son;
-            if (dilim >= 1) onceki = seg[2];
-          }
-          if (dilim < 1) isima(ctx, bas[0], bas[1], 16 * k, 0.9);
-          else if (b === 3 && p < 0.46) isima(ctx, bas[0], bas[1], 14 * k * (1 - smooth(0.4, 0.46, p)), 0.8);
+    if (p >= 0.3 && p < 0.5 && kb) {
+      const olcek = (kb.w / LOGO_W) * k;
+      const pt = (v) => [kb.x * k + v[0] * olcek, kb.y * k + v[1] * olcek];
+      ctx.lineCap = 'butt';
+      ctx.lineJoin = 'miter';
+      ctx.lineWidth = 9 * olcek;
+      const g = clamp01((p - 0.3) / 0.1); // dört ışık birlikte: ilk %30 köşeye uçuş (çizgisiz), kalanı L çizimi
+      const solma = 1 - smooth(0.46, 0.5, p); // logo küçülmeden önce çizgiler söner (HTML logonun kendi köşeleri kalır)
+      for (let b = 0; b < 4; b++) {
+        const seg = KOSELER[b].map(pt);
+        const u1 = Math.hypot(seg[1][0] - seg[0][0], seg[1][1] - seg[0][1]);
+        const u2 = Math.hypot(seg[2][0] - seg[1][0], seg[2][1] - seg[1][1]);
+        // polyline üzerinde uzunluğa göre nokta
+        const konum = (t) => (t <= u1
+          ? [seg[0][0] + ((seg[1][0] - seg[0][0]) * t) / u1, seg[0][1] + ((seg[1][1] - seg[0][1]) * t) / u1]
+          : [seg[1][0] + ((seg[2][0] - seg[1][0]) * (t - u1)) / u2, seg[1][1] + ((seg[2][1] - seg[1][1]) * (t - u1)) / u2]);
+        let bas;
+        if (g < 0.3) {
+          const e = smooth(0, 1, g / 0.3);
+          bas = [mx + (seg[0][0] - mx) * e, my + (seg[0][1] - my) * e];
+        } else {
+          const tt = (u1 + u2) * smooth(0, 1, (g - 0.3) / 0.7);
+          bas = konum(tt);
+          ctx.strokeStyle = `rgba(${LIME}, ${(0.95 * solma).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(seg[0][0], seg[0][1]);
+          if (tt > u1) ctx.lineTo(seg[1][0], seg[1][1]);
+          ctx.lineTo(bas[0], bas[1]);
+          ctx.stroke();
         }
+        if (g < 1) isima(ctx, bas[0], bas[1], 15 * k, 0.9);
+        else if (p < 0.46) isima(ctx, bas[0], bas[1], 13 * k * (1 - smooth(0.4, 0.46, p)), 0.8);
       }
     }
     ctx.globalCompositeOperation = 'source-over';

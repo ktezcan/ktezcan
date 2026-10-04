@@ -317,7 +317,7 @@ button { font: inherit; color: inherit; }
 /* eskiz kalemi: meta.pen kalem ucuna oturur (2B, blend yok); ucu elemanın orijinine hizalıdır */
 .eg-kalem { position: absolute; left: 0; top: 0; width: 0; height: 0; transition: opacity 0.3s var(--ease); pointer-events: none; }
 .eg-kalem.is-gizli { opacity: 0; }
-.eg-kalem svg { position: absolute; left: -2px; top: -46px; overflow: visible; filter: drop-shadow(0 2px 3px rgba(40, 30, 10, 0.35)); }
+.eg-kalem svg { position: absolute; left: -2px; top: -46px; width: 48px; height: 48px; max-width: none; overflow: visible; }
 .eg-kalem .kalem-govde { fill: #e5d2a6; stroke: #6b5a36; stroke-width: 1.4; stroke-linejoin: round; }
 .eg-kalem .kalem-uc { fill: #3a342c; }
 .eg-kalem .kalem-kivilcim { fill: #ffb45e; transform-box: fill-box; transform-origin: center; animation: eg-kivilcim 1s ease-in-out infinite; }
@@ -466,8 +466,10 @@ button { font: inherit; color: inherit; }
 }
 .eg-sahne--finale[data-faz='3'] .eg-final__perde, .eg-sahne--finale[data-faz='4'] .eg-final__perde { opacity: 1; }
 .eg-final__guven {
-  position: absolute; left: 0; right: 0; top: 66%; margin: 0; text-align: center; opacity: 0; visibility: hidden; transform: translateY(14px);
-  font: 700 clamp(64px, 9vw, 140px)/0.9 var(--f-baslik); letter-spacing: 0.02em; text-transform: uppercase; color: var(--white);
+  /* "Güven." logo çerçevesinin tam ortasına oturur (çerçeve = büyük logo kutusu; merkezi ekran ortasının 28 px üstü) */
+  --guven: calc(var(--logo-w) * 0.34);
+  position: absolute; left: 0; right: 0; top: calc(50svh - 28px - var(--guven) * 0.45); margin: 0; text-align: center; opacity: 0; visibility: hidden; transform: translateY(14px);
+  font: 700 var(--guven)/0.9 var(--f-baslik); letter-spacing: 0.02em; text-transform: uppercase; color: var(--white);
   transition: opacity 0.7s var(--ease), transform 0.9s var(--ease), visibility 0s linear 0.7s;
 }
 .eg-final__guven.is-aktif { opacity: 1; visibility: visible; transform: none; transition: opacity 0.9s var(--ease) 0.5s, transform 1s var(--ease) 0.5s, visibility 0s; }
@@ -650,7 +652,6 @@ button { font: inherit; color: inherit; }
   .eg-kart { position: fixed !important; left: 12px !important; right: 12px; top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto; transform: none !important; max-height: 60svh; overflow: auto; z-index: 60; }
   /* finale (telefon): içerik dikey, kartlar sıkı */
   .eg-sahne--finale { --logo-w: clamp(180px, 52vw, 240px); }
-  .eg-final__guven { top: 74%; }
   .eg-final__icerik { gap: 10px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
   .eg-final__baslik { font-size: clamp(28px, 8.4vw, 38px); }
   .eg-final__metin { font-size: 15px; }

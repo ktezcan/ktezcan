@@ -6,6 +6,7 @@
 //   --site  : sınanacak site klasörü (varsayılan giris-hikaye/; EGE_SITE ile de verilebilir)
 //   --kisa  : yalnız masaüstü, az ekran görüntüsü
 //   --sarma : yalnız masaüstü, plan saniyelerine gitmeden hızlı sarma (fps/bellek) testi
+//   --oturum: masaustu,telefon,az içinden seçili oturumlar (varsayılan: hepsi; --kisa ile yalnız masaustu)
 // Çıkış kodu: 0 = tüm denetimler geçti, 1 = en az biri başarısız.
 import { createServer } from 'node:http';
 import { existsSync } from 'node:fs';
@@ -22,7 +23,8 @@ const argv = process.argv.slice(2);
 const bayrak = (ad) => argv.includes(ad);
 const siteIdx = argv.indexOf('--site');
 const siteArg = siteIdx >= 0 ? argv[siteIdx + 1] : undefined;
-const pozisyonel = argv.filter((a, i) => !a.startsWith('--') && (siteIdx < 0 || i !== siteIdx + 1));
+const oturumIdx0 = argv.indexOf('--oturum');
+const pozisyonel = argv.filter((a, i) => !a.startsWith('--') && (siteIdx < 0 || i !== siteIdx + 1) && (oturumIdx0 < 0 || i !== oturumIdx0 + 1));
 const kok = resolve(siteArg || process.env.EGE_SITE || join(dirname(fileURLToPath(import.meta.url)), '..', 'giris-hikaye'));
 const out = pozisyonel[0] || 'sinama';
 const fileMode = pozisyonel[1] === 'file';
@@ -92,7 +94,8 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
   // 'GPU stall due to ReadPixels': başsız Chromium'un yazılımsal birleştirmesi her WebGL karesini geri okur
   // (en basit WebGL sayfasında da çıkar) → sayfa hatası değil, raporlanmaz
   page.on('console', (m) => {
-    if ((m.type() === 'error' || m.type() === 'warning') && !/GPU stall due to ReadPixels/.test(m.text())) hatalar.push(`${m.type()}: ${m.text()}`);
+    // 'software WebGL' uyarısı: başsız Chromium'da (GPU yok) finaldeki canlı gözenek katmanı açılınca çıkar → sayfa hatası değil
+    if ((m.type() === 'error' || m.type() === 'warning') && !/GPU stall due to ReadPixels|Automatic fallback to software WebGL/.test(m.text())) hatalar.push(`${m.type()}: ${m.text()}`);
   });
   page.on('pageerror', (e) => hatalar.push(`pageerror: ${e.message}`));
   const dis = [];
@@ -282,19 +285,25 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     return { kanvaslar, efektler, depolama: { localStorage: ls, sessionStorage: ss, cerez: document.cookie.length } };
   });
 
-  // 5) hikâyenin sonrası: rAF hiç çalışmamalı
-  await page.evaluate(() => document.getElementById('urunler').scrollIntoView());
+  // 5) hikâyenin sonrası: sayfanın en altına inilince akış görüş alanından çıkmışsa rAF hiç çalışmamalı.
+  //    (Maketteki sonraki bölümler kısa: akış hâlâ görünüyorsa fare eğimi yumuşaması bitene dek beklenir, sonra boşta durmalı.)
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForTimeout(1500);
+  const akisHalaGorunur = await page.evaluate(() => document.querySelector('[data-akis]').getBoundingClientRect().bottom > 0);
   const sonra1 = await page.evaluate(() => window.__ege.raf);
   await page.mouse.move(200, 200);
   await page.mouse.move(400, 300);
+  await page.waitForTimeout(akisHalaGorunur ? 3000 : 1500);
+  const sonra1b = akisHalaGorunur ? await page.evaluate(() => window.__ege.raf) : sonra1;
   await page.waitForTimeout(1500);
   const sonra2 = await page.evaluate(() => window.__ege.raf);
+  await page.evaluate(() => document.getElementById('urunler').scrollIntoView());
   await shot('urunler');
 
   // 6) dil (not: düğme arayuz.js'te tarayıcı depolamasına yazıyorsa aşağıda uyarı verilir)
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.click('[data-dil-sec="en"]');
+  // sayfada birden çok dil düğmesi olabilir (üst çubuk + menü): görünür olan ilki tıklanır
+  await page.locator('[data-dil-sec="en"]:visible').first().click({ timeout: 8000 }).catch((e) => uyari.push(`${ad}: EN düğmesi tıklanamadı (${String(e.message).split('\n')[0]})`));
   await page.waitForTimeout(600);
   await shot('en');
   const depolamaDilSonrasi = await page.evaluate(() => {
@@ -313,7 +322,8 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     plan,
     bostaCalisiyor: bosta.calisiyor,
     bostaKareArtisi: bosta2 - bosta.sayac,
-    hikayeSonrasiKareArtisi: sonra2 - sonra1,
+    hikayeSonrasiKareArtisi: sonra2 - sonra1b,
+    akisHalaGorunur,
     ilkBoyama: { ms: ilkBoyamaMs, tamam: ilkBoyamaOk, acilisBellek: acilisBellek.sahne },
     dikis,
     sarma: hiz,
@@ -360,11 +370,21 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
   await ctx.close();
 }
 
-await oturum('masaustu', { width: 1600, height: 900 }, { dsf: 1 });
-if (!kisa) {
-  await oturum('telefon', { width: 768, height: 1366 }, { dsf: 2, tamTur: false });
-  await oturum('az', { width: 1280, height: 800 }, { extra: 'az' });
+// bir oturumdaki beklenmedik hata diğerlerini ve raporu yok etmesin: başarısızlık olarak kaydedilir
+async function guvenli(ad, ...a) {
+  try {
+    await oturum(ad, ...a);
+  } catch (e) {
+    basarisiz.push(`${ad}: sınama oturumu çöktü (${String(e && e.message).split('\n')[0].slice(0, 160)})`);
+  }
 }
+// --oturum masaustu|telefon|az : yalnız o oturum (varsayılan: masaüstü; --kisa/--sarma yoksa üçü de)
+const oIdx = argv.indexOf('--oturum');
+const secili = oIdx >= 0 ? argv[oIdx + 1].split(',') : null;
+const calistir = (ad) => (secili ? secili.includes(ad) : ad === 'masaustu' || !kisa);
+if (calistir('masaustu')) await guvenli('masaustu', { width: 1600, height: 900 }, { dsf: 1 });
+if (calistir('telefon')) await guvenli('telefon', { width: 768, height: 1366 }, { dsf: 2, tamTur: false });
+if (calistir('az')) await guvenli('az', { width: 1280, height: 800 }, { extra: 'az' });
 sonuc.denetim = { basarisiz, uyari, mod: fileMode ? 'file' : 'http', site: kok };
 await writeFile(join(out, 'sinama.json'), JSON.stringify(sonuc, null, 2));
 console.log(JSON.stringify(sonuc, null, 2));

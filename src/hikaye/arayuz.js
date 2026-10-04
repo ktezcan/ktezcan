@@ -84,7 +84,8 @@ export function arayuzKur({ sahneler, ortak, debug }) {
     kartKapat();
     for (const s of sahneler) for (const [id, btn] of s.noktalar) etiketYaz(btn, id);
   }
-  for (const b of $$('[data-dil-sec]')) b.addEventListener('click', () => dilDegistir(b.dataset.dilSec));
+  // iki grup: üst çubuk (data-dil-sec) ve telefon menüsü (data-dil-menu); ikisi de aynı dili seçer
+  for (const b of $$('[data-dil-sec], [data-dil-menu]')) b.addEventListener('click', () => dilDegistir(b.dataset.dilSec || b.dataset.dilMenu));
   // tarayıcı dili Türkçe değilse hero'da "View in English" önerisi (otomatik geçiş yok) ve ihracat çipi öne
   const dilOneri = $('[data-dil-oneri]');
   if (dilOneri && !/^tr/i.test(navigator.language || 'tr')) {
