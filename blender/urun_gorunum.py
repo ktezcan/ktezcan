@@ -27,6 +27,7 @@ import bpy  # noqa: E402
 import stil_r as R  # noqa: E402
 
 LIME = '#b8d84a'
+LIME_DOYGUN = '#a2d52c'  # ışıyan çizgi için: ton eşlemesi açığa kaçırdığından biraz doygun
 CIZGI_MAVI = '#2d6fc7'  # teknik çizim çizgisi
 DOLGU = '#f6f9ff'  # hafif saydam beyaz iç
 ISI_TURUNCU = '#ff7a2e'
@@ -35,7 +36,7 @@ SICAK_PENCERE = (1.0, 0.70, 0.42)
 # tür → (çizgi opaklığı, dolgu opaklığı, çizgi genişliği çarpanı)
 TUR_AYAR = {
     'kolon': (0.95, 0.20, 1.15), 'kiris': (0.95, 0.20, 1.15), 'doseme': (0.9, 0.16, 1.15), 'temel': (0.9, 0.16, 1.15),
-    'blok': (0.42, 0.05, 0.85), 'ublok': (0.55, 0.06, 1.0), 'hatil': (0.7, 0.12, 1.0), 'lento': (0.75, 0.10, 1.0),
+    'blok': (0.30, 0.05, 0.8), 'ublok': (0.55, 0.06, 1.0), 'hatil': (0.7, 0.12, 1.0), 'lento': (0.75, 0.10, 1.0),
     'panel': (0.62, 0.09, 1.0), 'egepor': (0.8, 0.14, 1.0),
     'sove': (0.45, 0.06, 0.8), 'denizlik': (0.55, 0.08, 0.9), 'dograma': (0.6, 0.08, 0.9),
     'cam': (0.3, 0.10, 0.8), 'kapi': (0.6, 0.10, 0.9), 'donati': (0.7, 0.10, 1.0),
@@ -223,18 +224,25 @@ def teknik_malzeme(asil, ad, tur='blok', harc=False):
     nt.links.new(m1.outputs[0], m2.inputs[1])
     nt.links.new(tr2.outputs[0], m2.inputs[2])
 
-    # --- lime vurgu: kenar çizgisi + yumuşak hale (kenara yakın)
-    HWL = 1.15
+    # --- lime vurgu: kenar çizgisi (yüzeyi örter: doygun lime) + yumuşak hale (ışıma)
+    HWL = 1.7
     kenar = N.math('SUBTRACT', HWL + 0.5, oran, clamp=True)
-    hale = N.math('SUBTRACT', 1.0, N.math('DIVIDE', oran, 9.0), clamp=True)
+    hale = N.math('SUBTRACT', 1.0, N.math('DIVIDE', oran, 5.0), clamp=True)
     hale = N.math('MULTIPLY', hale, hale)
     vgm = N.math('SUBTRACT', 1.0, V, clamp=True)
-    guc = N.math('MULTIPLY', N.math('MULTIPLY', hh, vgm), N.math('ADD', N.math('MULTIPLY', kenar, 5.0), N.math('MULTIPLY', hale, 0.9)))
-    lem = nt.nodes.new('ShaderNodeEmission')
-    lem.inputs['Color'].default_value = kit.srgb(LIME)
-    nt.links.new(guc, lem.inputs['Strength'])
+    hv = N.math('MULTIPLY', hh, vgm)
+    lcizgi = nt.nodes.new('ShaderNodeEmission')
+    lcizgi.inputs['Color'].default_value = kit.srgb(LIME_DOYGUN)
+    lcizgi.inputs['Strength'].default_value = 1.35
+    ml = nt.nodes.new('ShaderNodeMixShader')
+    nt.links.new(N.math('MULTIPLY', N.math('MINIMUM', hv, 1.0), kenar), ml.inputs['Fac'])
+    nt.links.new(m2.outputs[0], ml.inputs[1])
+    nt.links.new(lcizgi.outputs[0], ml.inputs[2])
+    lem = nt.nodes.new('ShaderNodeEmission')  # hale
+    lem.inputs['Color'].default_value = kit.srgb(LIME_DOYGUN)
+    nt.links.new(N.math('MULTIPLY', N.math('MULTIPLY', hv, hale), 0.16), lem.inputs['Strength'])
     add = nt.nodes.new('ShaderNodeAddShader')
-    nt.links.new(m2.outputs[0], add.inputs[0])
+    nt.links.new(ml.outputs[0], add.inputs[0])
     nt.links.new(lem.outputs[0], add.inputs[1])
     son = add.outputs[0]
 

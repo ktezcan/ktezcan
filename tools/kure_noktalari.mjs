@@ -6,8 +6,10 @@
 //   <adım> (sayı, örn. 1.25)  L2 küre: land-110m + countries-110m           → tex/kara_noktalari.json
 //   bolge                     L0 bölge: land-10m + countries-10m (Türkiye 10 m poligonu), 36,3-40,0 K / 24,5-29,7 D,
 //                             ≈1,25 km altıgen ızgara                       → tex/bolge_L0.json
-//   l1                        L1: land-50m + countries-50m, 30-46 K / 15-45 D, 0,09° (≈10 km) altıgen ızgara
+//   l1                        L1: land-50m + countries-50m, 28-48 K / 12-48 D, 0,09° (≈10 km) altıgen ızgara
 //                                                                           → tex/kara_L1.json
+//   l15                       L1.5: land-110m, 0,4° (≈44 km) ızgara, yalnız İzmir'e 82° içindeki kap (küre doğuşu)
+//                                                                           → tex/kara_L15.json
 // Kıta kimlikleri üç seviyede aynıdır (küre dönerken seviyeler arası geçişte renk/dalga tutarlı kalsın).
 // Bölge/L1 kipinde kara + ülke maskeleri satır tarama (scanline) ile çıkarılır: 10 m halkalar (>80 bin köşe) için hızlı.
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -79,7 +81,7 @@ function icinde(lon, lat, h) {
 // ---------------------------------------------------------------------------
 //  L2 küre (110 m): önceki oturumdaki davranış aynen
 // ---------------------------------------------------------------------------
-function kureKipi(step) {
+function kureKipi(step, kapak = 0) {
   const topo = atlas('land-110m');
   const land = feature(topo, topo.objects.land);
   const polys = [];
@@ -148,6 +150,7 @@ function kureKipi(step) {
     // enlemle seyrekleşen boylam aralığı → küre üstünde eşit yoğunluk
     const dlon = step / Math.max(0.25, Math.cos((lat * Math.PI) / 180));
     for (let lon = -180; lon < 180; lon += dlon) {
+      if (kapak > 0 && acisalUzaklik(lat, lon, 38.42, 27.14) > kapak) continue;
       if (isLand(lon, lat)) {
         const k = continent(lat, lon);
         if (k !== 9) out.push([+lat.toFixed(3), +lon.toFixed(3), k]);
@@ -155,6 +158,12 @@ function kureKipi(step) {
     }
   }
   yaz(out, ulkesiz);
+}
+
+function acisalUzaklik(la1, lo1, la2, lo2) {
+  const r = Math.PI / 180;
+  const c = Math.sin(la1 * r) * Math.sin(la2 * r) + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.cos((lo1 - lo2) * r);
+  return (Math.acos(Math.max(-1, Math.min(1, c))) * 180) / Math.PI;
 }
 
 function kabaKita(lat, lon) {
@@ -223,7 +232,7 @@ function bolgeKipi(tur) {
   // pencere ve ızgara: bolge = 1,25 km, l1 = 0,09° ≈ 10 km. Satırlar altıgen düzende (tek satırlar yarım adım kayık).
   const P = tur === 'bolge'
     ? { lat0: 36.3, lat1: 40.0, lon0: 24.5, lon1: 29.7, dlat: 1.25 / 111.19, km: 1.25, kara: 'land-10m', ulke: 'countries-10m' }
-    : { lat0: 30.0, lat1: 46.0, lon0: 15.0, lon1: 45.0, dlat: 0.09, km: 10.0, kara: 'land-50m', ulke: 'countries-50m' };
+    : { lat0: 28.0, lat1: 48.0, lon0: 12.0, lon1: 48.0, dlat: 0.09, km: 10.0, kara: 'land-50m', ulke: 'countries-50m' };
   const n = Math.floor((P.lat1 - P.lat0) / P.dlat) + 1;
   const kt = atlas(P.kara);
   const kara = feature(kt, kt.objects.land);
@@ -262,4 +271,5 @@ function bolgeKipi(tur) {
 }
 
 if (mod === 'bolge' || mod === 'l1') bolgeKipi(mod);
+else if (mod === 'l15') kureKipi(0.4, 82);
 else kureKipi(Number(mod));
