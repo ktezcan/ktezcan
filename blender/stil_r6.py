@@ -50,12 +50,12 @@ def bina_ve_odalar(sc, isik=True):
     return P
 
 
-def sokak_doldur(y0):
+def sokak_doldur(y0, yakin=(-17.0, -9.5, 8.5, 16.0), uzak=(-20.0, 13.0, 24.0)):
     S.yol(y0)
     rnd = random.Random(3)
-    for i, x in enumerate((-17.0, -9.5, 8.5, 16.0)):
+    for i, x in enumerate(yakin):
         S.agac((x, y0 - 2.6, 0.15), boy=rnd.uniform(6.5, 8.0), seed=i)
-    for i, x in enumerate((-20.0, 13.0, 24.0)):
+    for i, x in enumerate(uzak):
         S.agac((x, y0 - 12.9, 0.15), boy=rnd.uniform(6.0, 7.5), seed=10 + i)
     for x in (-11.0, 4.5, 18.0):
         S.lamba((x, y0 - 3.1, 0.15), yon=-math.pi / 2)
