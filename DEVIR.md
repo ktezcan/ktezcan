@@ -153,3 +153,14 @@ Render ortamı: `EGE_RES=<yüzde>` (kit.py) küçük çözünürlük, örnek say
 - s4 yol: Söke fabrikası için kullanıcı referans verecek (gelene dek temsilî); tır çıkışı 8 kare/sn (128 kare).
 - s5 dünya: Türkiye lime (marka vurgusu); kıta etiketleri VAR (HTML, ülke adı yok).
 - son: üst çubuk logosu baştan görünür. Süre 146 sn. Ses YOK. Bu oturumda seyrek set (her 8. kare, küçük çözünürlük) render edilir; tam render kuyruğu işyerinde.
+
+## 9. Yön değişikliği: yapay zekâ videosu (bu oturumun sonu)
+
+**Karar (kullanıcı):** giriş hikâyesi Blender yerine **yapay zekâ videosuyla** üretilecek (MiniMax / Seedance). Bu, daha önceki "yapay zekâ görseli yok" kuralını **bilerek kaldırır**.
+Blender sahneleri (blender/, tools/s0_birlestir.py, render kuyruğu) **yedek** olarak durur; iş akışları durduruldu.
+- Çekim listesi: `docs/uretim/ai-video/cekimler.json` (37 çekim, 146 sn; her çekimde zaman, kamera, ekran metni, hazır İngilizce prompt). Kullanıcıya verilen HTML sayfa bunun görünümüdür.
+- Yöntem: dört ana resim (ev, tır, palet, fabrika) → "Ana görsel" çekimleri resimden videoya; "Zincir" çekimlerinde önceki klibin son karesi ilk kare.
+- Klipler gelince: ffmpeg ile kare dizisine (8–12 kare/sn, 1600×900; telefon için ortadan dikey kırpma), `{kök}/<sahne><d|m>/NNN.png + meta.json` sözleşmesi, sonra `tools/kareler.py`. Perde→sahne: P1→s0 … P6→s5, Final→s6 (motor henüz bilmiyor).
+- Uyarlamalar: ürün turunda mavi-beyaz teknik çizim kalkar; Dünya her kıta için ayrı sabit kadraj (yaylar/etiketler HTML ile); nokta konumları klibe bakarak elle.
+- Ücretsiz hesap klipleri MiniMax filigranlıdır, ticari hak yoktur: son klipler ücretli planla yeniden üretilecek. Plan seçimi için kota netleştirilmedi (MiniMax Design 76 $ planı saniye bazında en net).
+- Öneri/bekleyen: ürün çekimlerine "düz beyaz fon" ekleyip arka planı silmek; bloğu three.js ile (gazbeton gözenek dokusu `tex/` altında) döndürülebilir 3B nesne olarak kodlamak. Blok kalınlığı (5–35 cm) teyit bekliyor.
