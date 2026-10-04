@@ -8,9 +8,10 @@
  *   0,40–0,50 (t 140–141)  logo + slogan "Bugünden Yarına Güvenle" (HTML); canlı gözenek katmanı merkezden dışa açılır
  *   0,50–1,00 (t 141–146)  logo küçülür; teklif başlığı → ana CTA + ikincil (142) → kitle çipleri (143) → 3 kanıt kartı (144) → baştan izle (145)
  *
- * Sözleşme (motor): finalKur(ortak) → { konumla(p), ciz(ctx, w, h, p, dpr) }
+ * Sözleşme (motor): finalKur(ortak) → { konumla(p), ciz(ctx, w, h, p, dpr), onyukle(saniye) }
  *   • konumla: finale etkinken her karede (DOM evresi, canlı katman yaşam döngüsü)
  *   • ciz: ana kanvasta s5'in son karesi çizildikten SONRA çağrılır; tuval piksel boyutunda, 2B bağlam (blend yalnız tuval içi 'lighter')
+ *   • onyukle: arayuz.js her karede film saniyesini verir; canli.js yalnız t ≥ 116'dan sonra (boşta) indirilir
  * Büyük logo YALNIZ burada görünür (üst çubuktaki yer tutucu logo hariç). WebGL yalnız finale etkinken ve boşta, DPR ≤ 1,25 (src/canli).
  */
 
@@ -72,15 +73,19 @@ export function finalKur(ortak) {
     const baglanti = navigator.connection;
     if (baglanti && baglanti.saveData) return;
     betikYuklendi = true;
-    const sc = document.createElement('script');
-    sc.src = 'assets/js/canli.js';
-    sc.async = true;
-    document.body.appendChild(sc);
+    const ekle = () => {
+      const sc = document.createElement('script');
+      sc.src = 'assets/js/canli.js';
+      sc.async = true;
+      document.body.appendChild(sc);
+    };
+    // kaydırma sürerken çözümleme takılması olmasın: tarayıcı boşalınca (en geç 2 sn) eklenir
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(ekle, { timeout: 2000 });
+    else setTimeout(ekle, 300);
   }
-  if (typeof ortak.abone === 'function') {
-    ortak.abone((d) => {
-      if (!betikYuklendi && d.saniye >= 116) betikYukle();
-    });
+  /** Her karede arayuz.js çağırır (finalKur çağrıldığında ortak.abone henüz yok): s4 sonundan (t ≥ 116) itibaren betik boşta iner. */
+  function onyukle(saniye) {
+    if (!betikYuklendi && saniye >= 116) betikYukle();
   }
 
   const canli = () => window.EgeCanli || null;
@@ -370,5 +375,5 @@ export function finalKur(ortak) {
     ctx.globalCompositeOperation = 'source-over';
   }
 
-  return { konumla, ciz };
+  return { konumla, ciz, onyukle };
 }

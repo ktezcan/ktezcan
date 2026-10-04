@@ -381,6 +381,15 @@ class Sahne:
         self.ep = M.egepor_gruplari(EP, sira, 6, lambda g: G.teknik_malzeme(mats['egepor'], f'T_egepor{g}', 'egepor'))
         self.ep_gm = [m for _, m, _ in self.ep]
         self.EP = EP
+        # --- gölge vekili: hayalet kütle gölge ışınlarını katman katman geçmesin (hız); zemine tek yumuşak temas gölgesi düşer
+        self.g_son = {}
+        self.golge_m = bpy.data.materials.new('GolgeVekil')
+        self.golge_m.use_nodes = True
+        self.golge_b = self.golge_m.node_tree.nodes['Principled BSDF']
+        self.golge_b.inputs['Base Color'].default_value = (0, 0, 0, 1)
+        self.golge_ob = kit.box('GolgeVekil', (12.4, 9.4, 9.3), (0, 0, 4.65), self.golge_m)
+        for a in ('visible_camera', 'visible_diffuse', 'visible_glossy', 'visible_transmission', 'visible_volume_scatter'):
+            setattr(self.golge_ob, a, False)
         # --- zemin, kamera, sinema
         F.zemin(0.0)
         self.cam = kit.camera('Kamera', lens=LENS[v], loc=(0, -30, 8), target=HEDEF)
@@ -389,6 +398,27 @@ class Sahne:
         # her teknik malzeme (piksel ölçeği için)
         self.tum_mat = [m for m in self.gm.values()] + [self.gm_kom, self.gm_odak, self.gm_kesit] + self.ep_gm
         self.ana_turler = turler
+
+    # ------------------------------------------------------------------ gölge
+    def golge_ayarla(self, dal, g_taban, ev_gizli):
+        """Yalnız gerçek (G<0,5) nesneler gölge düşürür; hayalet kütlenin zemin gölgesi tek vekil kutudan gelir.
+        Hayalet katmanların her gölge ışınını onlarca saydam yüzeyden geçirmesi render süresinin ~%25'iydi."""
+        gs = self.g_son
+        for t, ob in self.obs.items():
+            ob.visible_shadow = gs.get(t, g_taban) < 0.5 and not ev_gizli
+        for ob in self.heroes + [self.lento_ob, self.kom_ob, self.odak_ob, self.kesit_ob]:
+            ob.visible_shadow = True
+        for ob in self.u_kabuk:
+            ob.visible_shadow = gs.get('ublok', 1.0) < 0.5
+        self.u_donati.visible_shadow = True
+        self.hatil_ob.visible_shadow = True
+        for _, ob in self.panel_obs:
+            ob.visible_shadow = gs.get('panel', 1.0) < 0.5
+        for ob, mm, _ in self.ep:
+            ob.visible_shadow = mm.node_tree.nodes['G'].outputs[0].default_value < 0.5
+        a = (0.30 + 0.30 * (1.0 - kit.seg(g_taban, 0.6, 1.0))) * (1.0 - kit.smooth(kit.seg(dal, 0.0, 0.9)))
+        self.golge_b.inputs['Alpha'].default_value = a
+        self.golge_ob.hide_render = a < 0.01
 
     # ------------------------------------------------------------------ kare
     def uygula(self, f):
@@ -431,13 +461,14 @@ class Sahne:
         isi = 1.0 if once else agirlik(Tz, 60.9, 61.4, 62.2, 63.3)
         sicak = S0_SICAK * (1 - kit.smooth(kit.seg(Tz, 32.0, 33.0)))
         herhangi = max(w_blok, w_lento, w_ub, w_harc, w_panel, w_son)
-        g_diger = kit.lerp(g_taban, 0.93, herhangi)
+        g_diger = kit.lerp(g_taban, 1.0, herhangi)  # saf teknik çizim: gerçek gazbeton gölgelendiricisi hesaplanmaz (hız + temiz görünüm)
 
         def hizala(t, w, h, hz, hd=(0, 0, 1), g_ek=None, v_=None):
             g = g_diger if w < 0.001 else kit.lerp(g_diger, 0.0, w)
             if g_ek is not None:
                 g = g_ek
             gu = g if Tz >= tarama_son else (gu_taban if w < 0.001 else g)
+            self.g_son[t] = g
             G.ayarla(gm[t], g=g, gu=gu, tz=tz, v=(dal if v_ is None else max(dal, v_)), h=h, hz=hz, hd=hd)
         wallV = solgun
         # duvar bloğu: dalga alttan üste (36→37,2)
@@ -604,7 +635,8 @@ class Sahne:
             if t in ('icblok', 'harc'):
                 continue
             ob.hide_render = ev_gizli
-        sc.cycles.transparent_max_bounces = 32 if 0.02 < dal < 0.98 else 12
+        self.golge_ayarla(dal, g_taban, ev_gizli)
+        sc.cycles.transparent_max_bounces = 12
         return Tz, loc, hedef, cam
 
 
@@ -693,8 +725,10 @@ def main():
         if ARGS.skip_existing and os.path.exists(path):
             continue
         t0 = time.time()
+        c0 = os.times()
         kit.render_to(path)
-        print(f'KARE {f} {time.time() - t0:.1f}s', flush=True)
+        c1 = os.times()
+        print(f'KARE {f} {time.time() - t0:.1f}s cpu={c1.user + c1.system - c0.user - c0.system:.0f}s', flush=True)
     kit.write_json(meta_path, meta)
 
 

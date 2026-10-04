@@ -87,10 +87,12 @@ def build(variant):
     S.world = ds.dunya_world()
     S.gunes = ds.gunes_isigi()
 
-    S.govde, S.govde_bsdf = ds.govde()
-    # çift atmosfer: iç (ince, mavi-arduvaz) + dış (geniş yumuşak hale); ikisi de gündüz yarıda güçlü
-    S.atm_ic, S.atm_ic_n = ds.atmosfer('AtmosferIc', R * 1.028, kit.srgb('#6a93b0'), ATM_IC, 0.232, 0.232, 0.45, 0.20)
-    S.atm_dis, S.atm_dis_n = ds.atmosfer('AtmosferDis', R * 1.085, kit.srgb('#5f86b8'), ATM_DIS, 0.388, 0.388, 0.07, 0.28)
+    S.govde, S.govde_bsdf, S.govde_cam = ds.govde()
+    # çift atmosfer: iç (ince kenar çizgisi) + dış (geniş yumuşak hale); gündüz yarıda güçlü, gece yarıda çok zayıf,
+    # terminatöre yakın kenar gün batımı turuncusuna kayar (sıcak ton lime DEĞİL)
+    SICAK_KENAR = (1.0, 0.58, 0.34, 1.0)
+    S.atm_ic, S.atm_ic_n = ds.atmosfer('AtmosferIc', R * 1.028, kit.srgb('#5f9ad0'), ATM_IC, 0.232, 0.232, 0.24, 0.07, sicak=SICAK_KENAR)
+    S.atm_dis, S.atm_dis_n = ds.atmosfer('AtmosferDis', R * 1.085, kit.srgb('#4f82c0'), ATM_DIS, 0.388, 0.388, 0.07, 0.05, sicak=SICAK_KENAR)
     S.bulut, S.bulut_n = ds.bulut_kabugu('Bulut', R * 1.011, olcek=5.0, ege_delik=True)
     S.ortu, S.ortu_n = ds.bulut_kabugu('BulutOrtusu', R * 1.01, olcek=40.0, ege_delik=False)
     S.arka, S.arka_guc = ds.arka_isima()
@@ -100,7 +102,7 @@ def build(variant):
     S.dots = {}
     for ad, Sv in S.sev.items():
         rr = dv.SEV[ad]['km'] * dv.KM * dv.SEV[ad]['rmax']
-        S.dots[ad] = ds.nokta_nesnesi(Sv, kaldirma=0.45 * rr)
+        S.dots[ad] = ds.nokta_nesnesi(Sv, kaldirma=0.5 * dv.SEV[ad]['rmin'] * dv.SEV[ad]['km'] * dv.KM, alt=(2 if ad == 'L2' else 1))   # bölge seviyeleri: 20 yüzlü küre (5-8 px)
 
     # yaylar + damla + varış halkaları
     m_cek, m_isi = ds.yay_malzemeleri()
@@ -162,11 +164,12 @@ def goruntule(S, f):
     k_gun = float(dv.sm(dv.sg(f, 0, 30)))
     S.gunes.data.energy = kit.lerp(3.6, 4.6, k_gun)
     S.gunes.data.color = kit.vlerp((1.0, 0.74, 0.48), (1.0, 0.94, 0.86), k_gun)
-    S.gunes.data.angle = math.radians(kit.lerp(0.5, 0.9, k_gun))
+    S.gunes.data.angle = math.radians(kit.lerp(2.6, 0.9, k_gun))   # bölgede yumuşak penumbralı uzun gölgeler
 
     # --- gövde (cam evresi: saydamlık 0 → 0,35)
     cam_k = float(dv.sm(dv.sg(f, 156, 167)))
-    S.govde_bsdf.inputs['Alpha'].default_value = 1.0 - 0.35 * cam_k
+    S.govde_cam['on'].default_value = 0.30 * cam_k       # ön yüz saydamlığı (plan: 0→0,35; ön yüz biraz daha opak)
+    S.govde_cam['arka'].default_value = 0.80 * cam_k     # iç (arka) duvar çok saydam: arkadaki ışıklı kıtalar görünür
     S.govde.hide_render = False
 
     # --- atmosfer (çift) — küre açılırken doğar; cam evresinde kenar parıltısı artar; nefes (±%6, 2 sn)
@@ -197,7 +200,7 @@ def goruntule(S, f):
     # --- arka ışıma (cam evresi)
     ak = float(dv.sm(dv.sg(f, 150, 176)))
     S.arka.hide_render = ak < 0.01
-    S.arka_guc.default_value = 0.30 * ak
+    S.arka_guc.default_value = 0.075 * ak
     sr = 1.55 * (D + 1.6) / max(D, 1.0)
     S.arka.location = (0, 1.6, 0)
     S.arka.scale = (sr, sr, sr)

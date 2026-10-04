@@ -69,6 +69,8 @@ def gunes_yonlendir(ob, sun_to):
 #  Küre gövdesi (koyu arduvaz; cam evresinde yarı saydam), çift atmosfer, bulut
 # ---------------------------------------------------------------------------
 def govde():
+    """Küre gövdesi. Döner: (nesne, Principled, {'on': Değer, 'arka': Değer}) — 'on' ve 'arka' cam evresinde ön yüz
+    ve arka (iç) yüz saydamlığıdır (0 = opak). Arka yüz iç duvar gibi daha saydam: arkadaki ışıklı kıtalar görünür."""
     bpy.ops.mesh.primitive_uv_sphere_add(segments=160, ring_count=80, radius=R)
     g = bpy.context.active_object
     g.name = 'Kure'
@@ -89,27 +91,40 @@ def govde():
     nt.link(tc.outputs['Object'], n2.inputs['Vector'])
     m1 = nt.node('ShaderNodeMix', (-350, 0), data_type='RGBA')
     nt.link(n1.outputs['Fac'], m1.inputs['Factor'])
-    m1.inputs['A'].default_value = kit.srgb('#2a4252')
-    m1.inputs['B'].default_value = kit.srgb('#36546a')
+    m1.inputs['A'].default_value = kit.srgb('#24394a')
+    m1.inputs['B'].default_value = kit.srgb('#33516a')
     m2 = nt.node('ShaderNodeMix', (-150, 0), data_type='RGBA')
     nt.link(n2.outputs['Fac'], m2.inputs['Factor'])
     m2.inputs['Factor'].default_value = 1.0
     nt.link(m1.outputs['Result'], m2.inputs['A'])
-    m2.inputs['B'].default_value = kit.srgb('#3d5e75')
+    m2.inputs['B'].default_value = kit.srgb('#3d6079')
     mf = nt.math('MULTIPLY', n2.outputs['Fac'], 0.35, loc=(-350, -250))
     nt.link(mf, m2.inputs['Factor'])
     nt.link(m2.outputs['Result'], b.inputs['Base Color'])
-    b.inputs['Roughness'].default_value = 0.6
-    b.inputs['Coat Weight'].default_value = 0.12
-    b.inputs['Coat Roughness'].default_value = 0.4
-    b.inputs['Specular IOR Level'].default_value = 0.35
+    b.inputs['Roughness'].default_value = 0.52          # okyanus: güneş yansıması (geniş, çok yumuşak parıltı)
+    b.inputs['Coat Weight'].default_value = 0.06
+    b.inputs['Coat Roughness'].default_value = 0.50
+    b.inputs['Specular IOR Level'].default_value = 0.38
+    # cam evresi: alpha = 1 − (ön·(1−arkaYüz) + arka·arkaYüz)
+    geo = nt.node('ShaderNodeNewGeometry', (-650, -500))
+    v_on = nt.node('ShaderNodeValue', (-650, -650))
+    v_ar = nt.node('ShaderNodeValue', (-650, -750))
+    v_on.outputs[0].default_value = 0.0
+    v_ar.outputs[0].default_value = 0.0
+    kar = nt.node('ShaderNodeMix', (-350, -600), data_type='FLOAT')
+    nt.link(geo.outputs['Backfacing'], kar.inputs['Factor'])
+    nt.link(v_on.outputs[0], kar.inputs['A'])
+    nt.link(v_ar.outputs[0], kar.inputs['B'])
+    al = nt.math('SUBTRACT', 1.0, kar.outputs['Result'], loc=(-150, -600), clamp=True)
+    nt.link(al, b.inputs['Alpha'])
     g.data.materials.append(mat)
-    return g, b
+    return g, b, {'on': v_on.outputs[0], 'arka': v_ar.outputs[0]}
 
 
-def atmosfer(ad, yaricap, renk, guc, a, b, c, gunes_orani=0.25):
+def atmosfer(ad, yaricap, renk, guc, a, b, c, gunes_orani=0.25, sicak=None):
     """Kabuk atmosfer: emisyon = guc · bump(cos) · (gunes_orani + (1-gunes_orani)·gündüz).
-    bump(cos) = smooth(cos/a) · (1 − smooth((cos−b)/c)); cos = |normal·gelen|. Dönenler: nesne, düğüm sözlüğü."""
+    bump(cos) = smooth(cos/a) · (1 − smooth((cos−b)/c)); cos = |normal·gelen|. Dönenler: nesne, düğüm sözlüğü.
+    sicak: verilirse terminatöre (gündüz-gece sınırı) yakın kenar bu renge (gün batımı turuncusu) kayar."""
     bpy.ops.mesh.primitive_uv_sphere_add(segments=128, ring_count=64, radius=yaricap)
     ob = bpy.context.active_object
     ob.name = ad
@@ -144,7 +159,7 @@ def atmosfer(ad, yaricap, renk, guc, a, b, c, gunes_orani=0.25):
     nt.link(sx.outputs['Vector'], dn.inputs[1])
     gd = nt.node('ShaderNodeMapRange', (-250, -300), interpolation_type='SMOOTHSTEP')
     nt.link(dn.outputs['Value'], gd.inputs['Value'])
-    gd.inputs['From Min'].default_value = -0.30
+    gd.inputs['From Min'].default_value = -0.14
     gd.inputs['From Max'].default_value = 0.55
     gd.inputs['To Min'].default_value = gunes_orani
     gd.inputs['To Max'].default_value = 1.0
@@ -153,6 +168,24 @@ def atmosfer(ad, yaricap, renk, guc, a, b, c, gunes_orani=0.25):
     gv.outputs[0].default_value = guc
     em = nt.node('ShaderNodeEmission', (700, 100))
     em.inputs['Color'].default_value = renk
+    if sicak is not None:
+        # sıcak ton: yalnız terminatörün gündüz tarafındaki dar kuşakta (gün batımı turuncusu); gece yarıda ve tam gündüzde yok
+        k1 = nt.node('ShaderNodeMapRange', (250, 250), interpolation_type='SMOOTHSTEP')
+        nt.link(dn.outputs['Value'], k1.inputs['Value'])
+        k1.inputs['From Min'].default_value = -0.04
+        k1.inputs['From Max'].default_value = 0.07
+        k2 = nt.node('ShaderNodeMapRange', (250, 400), interpolation_type='SMOOTHSTEP')
+        nt.link(dn.outputs['Value'], k2.inputs['Value'])
+        k2.inputs['From Min'].default_value = 0.10
+        k2.inputs['From Max'].default_value = 0.40
+        k2.inputs['To Min'].default_value = 1.0
+        k2.inputs['To Max'].default_value = 0.0
+        kz = nt.math('MULTIPLY', k1.outputs['Result'], k2.outputs['Result'], loc=(450, 330))
+        cm = nt.node('ShaderNodeMix', (550, 250), data_type='RGBA')
+        nt.link(kz, cm.inputs['Factor'])
+        cm.inputs['A'].default_value = renk
+        cm.inputs['B'].default_value = sicak
+        nt.link(cm.outputs['Result'], em.inputs['Color'])
     nt.link(gv.outputs[0], em.inputs['Strength'])
     tr = nt.node('ShaderNodeBsdfTransparent', (700, -100))
     mx = nt.node('ShaderNodeMixShader', (1000, 0))
@@ -168,7 +201,8 @@ def atmosfer(ad, yaricap, renk, guc, a, b, c, gunes_orani=0.25):
 
 
 def bulut_kabugu(ad, yaricap, olcek=3.2, ege_delik=True):
-    """İnce bulut kabuğu: Noise alfa + Ege üstü açık (küreye sabit delik), gürültü deseni kürenin üstünde ayrıca döner."""
+    """İnce bulut kabuğu: enlem yönünde gerilmiş (doğu-batı bantlı) çok katmanlı gürültü + ince doku kırılması;
+    Ege (İzmir) üstü açık (küreye sabit delik); gürültü deseni kürenin üstünde ayrıca döner."""
     bpy.ops.mesh.primitive_uv_sphere_add(segments=96, ring_count=48, radius=1.0)
     ob = bpy.context.active_object
     ob.name = ad
@@ -178,45 +212,60 @@ def bulut_kabugu(ad, yaricap, olcek=3.2, ege_delik=True):
     mat.use_nodes = True
     nt = kit.NT(mat.node_tree)
     nt.n.clear()
-    out = nt.node('ShaderNodeOutputMaterial', (1400, 0))
-    tc = nt.node('ShaderNodeTexCoord', (-1100, 0))
-    mp = nt.node('ShaderNodeMapping', (-900, 0))
+    out = nt.node('ShaderNodeOutputMaterial', (1600, 0))
+    tc = nt.node('ShaderNodeTexCoord', (-1300, 0))
+    mp = nt.node('ShaderNodeMapping', (-1100, 0))
+    mp.inputs['Scale'].default_value = (1.0, 1.0, 1.9 if olcek < 20 else 1.0)    # küre bulutu: doğu-batı bantları
     nt.link(tc.outputs['Object'], mp.inputs['Vector'])
-    nz = nt.node('ShaderNodeTexNoise', (-650, 100))
+    nz = nt.node('ShaderNodeTexNoise', (-850, 100))
     nz.inputs['Scale'].default_value = olcek
-    nz.inputs['Detail'].default_value = 6.0
-    nz.inputs['Roughness'].default_value = 0.55
-    nz.inputs['Distortion'].default_value = 0.7
+    nz.inputs['Detail'].default_value = 7.0
+    nz.inputs['Roughness'].default_value = 0.58
+    nz.inputs['Distortion'].default_value = 0.9
     nt.link(mp.outputs['Vector'], nz.inputs['Vector'])
-    cov = nt.node('ShaderNodeMapRange', (-400, 100), interpolation_type='SMOOTHSTEP')
+    cov = nt.node('ShaderNodeMapRange', (-600, 100), interpolation_type='SMOOTHSTEP')
     nt.link(nz.outputs['Fac'], cov.inputs['Value'])
-    cov.inputs['From Min'].default_value = 0.54
-    cov.inputs['From Max'].default_value = 0.78
+    cov.inputs['From Min'].default_value = 0.52
+    cov.inputs['From Max'].default_value = 0.70
     alfa = cov.outputs['Result']
+    if olcek < 20:
+        # ince doku: kümelerin içinde boşluk/lif (kabarmış kenar, ince bantlar)
+        n2 = nt.node('ShaderNodeTexNoise', (-850, -150))
+        n2.inputs['Scale'].default_value = olcek * 5.5
+        n2.inputs['Detail'].default_value = 5.0
+        n2.inputs['Roughness'].default_value = 0.6
+        nt.link(mp.outputs['Vector'], n2.inputs['Vector'])
+        r2 = nt.node('ShaderNodeMapRange', (-600, -150), interpolation_type='SMOOTHSTEP')
+        nt.link(n2.outputs['Fac'], r2.inputs['Value'])
+        r2.inputs['From Min'].default_value = 0.30
+        r2.inputs['From Max'].default_value = 0.72
+        r2.inputs['To Min'].default_value = 0.45
+        r2.inputs['To Max'].default_value = 1.0
+        alfa = nt.math('MULTIPLY', alfa, r2.outputs['Result'], loc=(-350, 0))
     if ege_delik:
         # Ege (İzmir) üstü açık: nesne uzayında İzmir yönüyle iç çarpım (küreye sabit)
         import dunya_veri as dv
         iz = dv.birim(*dv.IZMIR)
-        sab = nt.node('ShaderNodeCombineXYZ', (-900, -300))
+        sab = nt.node('ShaderNodeCombineXYZ', (-900, -450))
         sab.inputs[0].default_value, sab.inputs[1].default_value, sab.inputs[2].default_value = float(iz[0]), float(iz[1]), float(iz[2])
-        dt = nt.node('ShaderNodeVectorMath', (-650, -300), operation='DOT_PRODUCT')
+        dt = nt.node('ShaderNodeVectorMath', (-650, -450), operation='DOT_PRODUCT')
         nt.link(tc.outputs['Object'], dt.inputs[0])
         nt.link(sab.outputs['Vector'], dt.inputs[1])
-        hole = nt.node('ShaderNodeMapRange', (-400, -300), interpolation_type='SMOOTHSTEP')
+        hole = nt.node('ShaderNodeMapRange', (-400, -450), interpolation_type='SMOOTHSTEP')
         nt.link(dt.outputs['Value'], hole.inputs['Value'])
         hole.inputs['From Min'].default_value = math.cos(math.radians(26))   # 26° dışında bulut tam
         hole.inputs['From Max'].default_value = math.cos(math.radians(9))    # 9° içinde tamamen açık
         hole.inputs['To Min'].default_value = 1.0
         hole.inputs['To Max'].default_value = 0.0
         alfa = nt.math('MULTIPLY', alfa, hole.outputs['Result'], loc=(-100, 0))
-    mx_node = nt.node('ShaderNodeValue', (-100, -150))
+    mx_node = nt.node('ShaderNodeValue', (-100, -250))
     mx_node.outputs[0].default_value = 0.55
     alfa2 = nt.math('MULTIPLY', alfa, mx_node.outputs[0], loc=(100, 0), clamp=True)
     df = nt.node('ShaderNodeBsdfDiffuse', (500, 100))
-    df.inputs['Color'].default_value = (0.86, 0.90, 0.95, 1.0)
+    df.inputs['Color'].default_value = (0.90, 0.93, 0.97, 1.0)
     em = nt.node('ShaderNodeEmission', (500, -50))
     em.inputs['Color'].default_value = (0.55, 0.65, 0.80, 1.0)
-    em.inputs['Strength'].default_value = 0.012      # gece yarıda da çok hafif okunsun
+    em.inputs['Strength'].default_value = 0.010      # gece yarıda da çok hafif okunsun
     ad_ = nt.node('ShaderNodeAddShader', (750, 50))
     nt.link(df.outputs[0], ad_.inputs[0])
     nt.link(em.outputs[0], ad_.inputs[1])
@@ -248,18 +297,19 @@ def arka_isima():
     vm.inputs[1].default_value = (0.5, 0.5, 0.0)
     ln = nt.node('ShaderNodeVectorMath', (-300, 0), operation='LENGTH')
     nt.link(vm.outputs['Vector'], ln.inputs[0])
+    # profil: küre silueti arkasında gizli (r<0,22) → yumuşak yükseliş → uzun, ince sönüm (sert kenar yok)
     m1 = nt.node('ShaderNodeMapRange', (-100, 150), interpolation_type='SMOOTHSTEP')
     nt.link(ln.outputs['Value'], m1.inputs['Value'])
-    m1.inputs['From Min'].default_value = 0.20
-    m1.inputs['From Max'].default_value = 0.29
+    m1.inputs['From Min'].default_value = 0.17
+    m1.inputs['From Max'].default_value = 0.26
     m2 = nt.node('ShaderNodeMapRange', (-100, -50), interpolation_type='SMOOTHSTEP')
     nt.link(ln.outputs['Value'], m2.inputs['Value'])
-    m2.inputs['From Min'].default_value = 0.30
+    m2.inputs['From Min'].default_value = 0.28
     m2.inputs['From Max'].default_value = 0.50
     m2.inputs['To Min'].default_value = 1.0
     m2.inputs['To Max'].default_value = 0.0
     sq0 = nt.math('MULTIPLY', m1.outputs['Result'], m2.outputs['Result'], loc=(100, 100))
-    sq = nt.math('POWER', sq0, 1.6, loc=(250, 100))
+    sq = nt.math('POWER', sq0, 2.4, loc=(250, 100))
     gv = nt.node('ShaderNodeValue', (100, -200))
     gv.outputs[0].default_value = 0.0
     em = nt.node('ShaderNodeEmission', (400, 100))
@@ -284,7 +334,7 @@ def arka_isima():
 _NOKTA_GN = {}
 
 
-def nokta_nesnesi(S, kaldirma):
+def nokta_nesnesi(S, kaldirma, alt=2):
     n = S.n
     pos = S.u * (R + kaldirma)
     me = bpy.data.meshes.new('Kara_' + S.ad)
@@ -330,7 +380,7 @@ def nokta_nesnesi(S, kaldirma):
     ng.links.new(cmp_.outputs['Result'], dl.inputs['Selection'])
     ico = ng.nodes.new('GeometryNodeMeshIcoSphere')
     ico.inputs['Radius'].default_value = 1.0
-    ico.inputs['Subdivisions'].default_value = 2
+    ico.inputs['Subdivisions'].default_value = alt
     sh = ng.nodes.new('GeometryNodeSetShadeSmooth')
     ng.links.new(ico.outputs['Mesh'], sh.inputs['Geometry'])
     sm_ = ng.nodes.new('GeometryNodeSetMaterial')

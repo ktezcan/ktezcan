@@ -126,9 +126,12 @@ def kam_uzaklik(f, v):
 
 
 def gunes_yonu(f):
-    """Dünya uzayında güneşe yön (birim): F000'da alçak sabah güneşi, küre doğarken sağ-öne döner."""
-    k = float(sm(sg(f, 0, 40)))
-    a = GUNES_BOLGE * (1 - k) + GUNES_KURE * k
+    """Dünya uzayında güneşe yön (birim): F000'da alçak sabah güneşi (13°, s4 ile aynı); bölge yükselirken güneş 26°'ye
+    çıkar (nokta gölgeleri kısalır, kuyruklu 'komet' görünümü olmaz), sonra küre fazında sağ-öne döner."""
+    el = math.radians(13.0 + 13.0 * float(sm(sg(f, 0, 14))))
+    ab = np.array([math.sin(_az) * math.cos(el), -math.sin(el), math.cos(_az) * math.cos(el)])
+    k = float(sm(sg(f, 14, 46)))
+    a = ab * (1 - k) + GUNES_KURE * k
     return (a / np.linalg.norm(a)).astype(np.float32)
 
 
@@ -139,7 +142,7 @@ def gunes_yonu(f):
 #            büyüme (başla, bitir), sönme (başla, bitir))
 SEV = {
     'L0': dict(km=1.25, rmin=0.12, rmax=0.30, buyu=None, son=(5, 15)),
-    'L1': dict(km=10.0, rmin=0.10, rmax=0.28, buyu=(3, 11), son=(28, 38)),
+    'L1': dict(km=10.0, rmin=0.15, rmax=0.28, buyu=(3, 11), son=(28, 38)),
     'L15': dict(km=44.0, rmin=0.10, rmax=0.27, buyu=(24, 32), son=(46, 56)),
     'L2': dict(km=139.0, rmin=0.14, rmax=0.30, buyu=(44, 54), son=None),
 }
@@ -299,10 +302,11 @@ def boya(S, f, rot3, sun, ndv, arka_zayif=0.0, nefes=1.0):
         c = S.sehir * gece * (0.9 + 1.4 * wave_boost) * yan
         col = col * (1 - np.clip(c * 0.9, 0, 1)[:, None]) + SEHIR * np.clip(c * 0.9, 0, 1)[:, None]
         glow = glow + 1.1 * c
-    # cam gövde evresi: arka yüzdeki noktalar zayıflar (%40)
+    # cam gövde evresi: arka yüzdeki noktalar iki saydam duvardan (ön yüz + iç duvar ≈ %25 geçirgenlik) görünür;
+    # ışık ≈ ×1,7 verilir → ekranda ön yüzün ≈ %40'ı kadar soluk ve biraz daha loş renkte belirir
     if arka_zayif > 0:
         arka = sm((0.06 - ndv) / 0.22)
-        glow = glow * (1 - 0.6 * arka * arka_zayif)
-        col = col * (1 - 0.35 * (arka * arka_zayif))[:, None]
+        glow = glow * (1 + 0.7 * arka * arka_zayif)
+        col = col * (1 - 0.18 * (arka * arka_zayif))[:, None]
     glow = glow * nefes
     return col.astype(np.float32), glow.astype(np.float32)

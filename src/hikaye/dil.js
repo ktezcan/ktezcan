@@ -197,6 +197,7 @@ export const EN = {
   'kaynak': 'Source',
   'dil.oneri': 'Türkçe göster',
   'sayfa.baslik': 'Ege Gazbeton | AAC Blocks, Lintels and Panels · Söke & İzmir',
+  'sayfa.aciklama': 'AAC blocks, lintels, panels and adhesive made in two plants in Söke and İzmir. Follow the story from idea to home and get a quote for your project.',
   'aria.kita': 'Five continents counter',
   'aria.kitalar': 'Continents',
   'yol.s0': 'Idea',
@@ -418,6 +419,11 @@ export function dilUygula(lang) {
   document.documentElement.lang = current;
   if (document.documentElement.dataset.trTitle === undefined) document.documentElement.dataset.trTitle = document.title;
   document.title = current === 'en' ? EN['sayfa.baslik'] : document.documentElement.dataset.trTitle;
+  const aciklama = document.querySelector('meta[name="description"]');
+  if (aciklama) {
+    if (aciklama.dataset.tr === undefined) aciklama.dataset.tr = aciklama.content;
+    aciklama.content = current === 'en' ? EN['sayfa.aciklama'] : aciklama.dataset.tr;
+  }
   for (const el of document.querySelectorAll('[data-i18n]')) {
     if (el.dataset.tr === undefined) el.dataset.tr = el.innerHTML;
     const key = el.dataset.i18n;

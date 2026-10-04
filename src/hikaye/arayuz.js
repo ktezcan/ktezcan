@@ -88,7 +88,12 @@ export function arayuzKur({ sahneler, ortak, debug }) {
   for (const b of $$('[data-dil-sec], [data-dil-menu]')) b.addEventListener('click', () => dilDegistir(b.dataset.dilSec || b.dataset.dilMenu));
   // tarayıcı dili Türkçe değilse hero'da "View in English" önerisi (otomatik geçiş yok) ve ihracat çipi öne
   const dilOneri = $('[data-dil-oneri]');
-  if (dilOneri && !/^tr/i.test(navigator.language || 'tr')) {
+  const turkceDegil = !/^tr/i.test(navigator.language || 'tr');
+  if (dilOneri && turkceDegil) {
+    // dilUygula (main.js, ?dil=en dahil) 'ege:dil' olayı verir: öneri yalnız Türkçe gösterilirken görünür
+    document.addEventListener('ege:dil', () => {
+      dilOneri.hidden = dil() === 'en';
+    });
     dilOneri.hidden = false;
     dilOneri.addEventListener('click', () => dilDegistir('en'));
     for (const a of $$('[data-kitle="bayi"]')) a.style.order = '-1';
@@ -345,6 +350,19 @@ export function arayuzKur({ sahneler, ortak, debug }) {
   );
   for (const el of $$('.eg-icerik')) icerikIO.observe(el);
 
+  // --- Derin bağlantı: adres #sahne-s2 ya da #teklif ise açılışta ilgili parçaya/CTA anına iner (akış tek yapışkan sahne: tarayıcı çapası s0'a düşer) ---
+  function hashGit() {
+    const h = location.hash;
+    if (h === '#teklif') saniyeyeGit(FINALE_CTA_SN);
+    else if (/^#sahne-s[0-5]$/.test(h) && ortak.sahneyeGit) ortak.sahneyeGit(h.slice(7));
+  }
+  if (/^#(teklif|sahne-s[0-5])$/.test(location.hash)) {
+    window.addEventListener('load', () => {
+      hashGit();
+      setTimeout(hashGit, 250);
+    }, { once: true });
+  }
+
   // --- Zamana bağlı öğeler (guncelle içinde yalnız değişince yazılır) ------------------------------------
   const heroEylem = [$('[data-giris-eylem]'), $('.eg-giris__alt')].filter(Boolean);
   let heroOp = -1;
@@ -414,6 +432,21 @@ export function arayuzKur({ sahneler, ortak, debug }) {
     }
   }
 
+  // --- Sağ kenara yakın noktalar: etiket sola açılır (sahne.js noktayı transform ile yerleştirir; x oradan okunur) ---
+  const SOL_ESIK = 230;
+  function noktaYonleri(list) {
+    for (const s of list) {
+      if (!s.visible || !s.noktalar) continue;
+      for (const [, el] of s.noktalar) {
+        if (el.hidden || el.classList.contains('is-gizli')) continue;
+        const m = /translate3d\((-?[\d.]+)px/.exec(el.style.transform);
+        if (!m) continue;
+        const sol = +m[1] > window.innerWidth - SOL_ESIK;
+        if (sol !== el.classList.contains('eg-nokta--sol')) el.classList.toggle('eg-nokta--sol', sol);
+      }
+    }
+  }
+
   // --- Hata ayıklama paneli ---------------------------------------------------
   const hud = debug ? document.createElement('pre') : null;
   let hudVis = [];
@@ -443,6 +476,8 @@ export function arayuzKur({ sahneler, ortak, debug }) {
         iz('ege_hikaye_gor', { varyant: list[0].variant, hareket: ortak.azHareket ? 'az' : 'normal', ekran: window.innerWidth < 480 ? 0 : window.innerWidth < 761 ? 1 : window.innerWidth < 1281 ? 2 : 3 });
       }
       zamanOgeleri(t, durum);
+      noktaYonleri(list);
+      if (ortak.final && ortak.final.onyukle) ortak.final.onyukle(t);
       // üst çubuktaki Teklif Al: hikâye ekranda iken kaynak=hikaye, değilken kaynak=ust
       const ustK = durum.gorunur ? 'hikaye' : 'ust';
       if (ustK !== sonUst) {

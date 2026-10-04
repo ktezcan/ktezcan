@@ -158,7 +158,9 @@ button { font: inherit; color: inherit; }
   transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
   display: flex; flex-direction: column; align-items: flex-end;
 }
-.eg-yol.is-gorunur { opacity: 1; transform: none; pointer-events: auto; }
+.eg-yol.is-gorunur { opacity: 1; transform: none; }
+/* tam genişlikli kap tıklamayı yutmaz (altındaki durak çipleri tıklanabilsin): yalnız düğme ve liste tıklanır */
+.eg-yol.is-gorunur .eg-yol__ac, .eg-yol.is-gorunur .eg-yol__liste { pointer-events: auto; }
 .eg-yol__cubuk { align-self: stretch; height: 2px; background: rgba(255, 255, 255, 0.14); }
 .eg-yol__cubuk span { display: block; height: 100%; background: var(--lime); transform-origin: left; transform: scaleX(0); }
 .eg-yol__ac {
@@ -313,6 +315,10 @@ button { font: inherit; color: inherit; }
 .eg-nokta--kita .eg-nokta__halka::after { border-color: var(--white); }
 .eg-nokta--kita .eg-nokta__etiket { background: rgba(12, 22, 28, 0.82); font-size: 16px; padding: 8px 12px; }
 @keyframes eg-nabiz { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(2.1); opacity: 0; } }
+/* sağ kenara yakın nokta: etiket noktanın soluna açılır (arayuz.js eg-nokta--sol verir); 'translate' özelliği satır içi transform'a eklenir */
+.eg-nokta--sol { flex-direction: row-reverse; translate: calc(-100% + 28px) 0; }
+.eg-nokta--etiket.eg-nokta--sol { translate: calc(-100% + 16px) 0; }
+.eg-nokta--kita.eg-nokta--sol { translate: calc(-100% + 24px) 0; }
 
 /* eskiz kalemi: meta.pen kalem ucuna oturur (2B, blend yok); ucu elemanın orijinine hizalıdır */
 .eg-kalem { position: absolute; left: 0; top: 0; width: 0; height: 0; transition: opacity 0.3s var(--ease); pointer-events: none; }
@@ -595,7 +601,8 @@ button { font: inherit; color: inherit; }
   .menu-acik .eg-menu a { padding: 16px 0; font-size: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
   .menu-acik .eg-dil--menu { display: inline-flex; align-self: flex-start; margin-top: 16px; }
 }
-@media (max-width: 760px) {
+/* telefon düzeni: dar ekran YA DA dikey oran (oynatıcı da aynı eşikle telefon karelerine 'm' geçer: ayarlar.js DIKEY_ESIK = 0,82 → 41/50) */
+@media (max-width: 760px), (max-aspect-ratio: 41/50) {
   :root { --ust-h: 64px; }
   body { font-size: 16px; }
   .eg-ust { gap: 10px; }
@@ -644,9 +651,12 @@ button { font: inherit; color: inherit; }
   /* ana CTA penceresi: başparmak bölgesi, 3B konuyu örtmeden alt şerit */
   .eg-cta-kutu { left: var(--gutter); right: var(--gutter); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
   .eg-cta-kutu .eg-dugme { flex: 1 1 100%; }
-  .eg-durak { top: calc(var(--ust-h) + 8px); right: var(--gutter); }
-  .eg-durak ol { gap: 4px; }
-  .eg-durak button { min-height: 32px; padding: 0 7px; font-size: 11.5px; letter-spacing: 0.06em; }
+  /* çip çubuğu yolculuk düğmesinin (sağ üst) altında tek satır; s1 anlatımı bunun kadar aşağı kayar */
+  .eg-durak { top: calc(var(--ust-h) + 54px); right: var(--gutter); }
+  .eg-durak ol { flex-wrap: nowrap; gap: 4px; }
+  .eg-durak li { flex: 1 1 auto; }
+  .eg-durak button { width: 100%; min-height: 32px; padding: 0 4px; font-size: 11px; letter-spacing: 0.04em; }
+  #sahne-s1 .eg-anlatim { top: calc(var(--ust-h) + 96px); height: calc(46svh - var(--ust-h) - 30px); }
   .eg-kita-sayac { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
   .eg-nokta--kita .eg-nokta__etiket { font-size: 14px; padding: 6px 9px; }
   .eg-kart { position: fixed !important; left: 12px !important; right: 12px; top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto; transform: none !important; max-height: 60svh; overflow: auto; z-index: 60; }
