@@ -676,6 +676,8 @@ def toplu_mesh(name, sablon_vf, merkez, olcek, donme=None, mat=None, yumusak=Fal
     tv, tf = sablon_vf
     merkez = np.asarray(merkez, dtype=np.float32)
     n, k = len(merkez), len(tv)
+    if isinstance(olcek, (list, tuple)) and any(np.ndim(o) for o in olcek):
+        olcek = [(o, o, o) if np.ndim(o) == 0 else o for o in olcek]  # karışık ölçek listesi
     olcek = np.asarray(olcek, dtype=np.float32)
     if olcek.ndim == 1:
         olcek = np.repeat(olcek[:, None], 3, axis=1)
@@ -712,8 +714,8 @@ def toplu_mesh(name, sablon_vf, merkez, olcek, donme=None, mat=None, yumusak=Fal
     me.polygons.foreach_set('loop_start', starts)
     me.update(calc_edges=True)
     me.validate()
-    if yumusak:
-        me.polygons.foreach_set('use_smooth', np.ones(len(me.polygons), dtype=bool))
+    # Blender 4.1+: yeni yüzler varsayılan yumuşak gölgeli; kutular için açıkça düz yap
+    me.polygons.foreach_set('use_smooth', np.full(len(me.polygons), bool(yumusak)))
     ob = bpy.data.objects.new(name, me)
     link(ob)
     if mat:

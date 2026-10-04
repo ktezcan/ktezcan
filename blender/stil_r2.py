@@ -254,7 +254,7 @@ def sahne_bina2(sc, aksam=False):
     R.kamera(hedef=(0, 0, 0.12), uzak=4.6, lens=55, fstop=8.0)
 
 
-def aksam_studyo(sc, koyu='#2f3846'):
+def aksam_studyo(sc, koyu='#2f3846', olcek=1.0, hedef=(0, 0, 0)):
     """Gün biter: zemin akşam mavisi, anahtar ışık sıcak ve alçak, dolgu soğuk."""
     w = sc.world.node_tree
     for n in w.nodes:
@@ -265,8 +265,8 @@ def aksam_studyo(sc, koyu='#2f3846'):
         if ob.type != 'LIGHT':
             continue
         if ob.name.startswith('Anahtar'):
-            ob.location = (-2.4, -0.6, 0.55)
-            kit.aim(ob, (0, 0, 0))
+            ob.location = Vector((-2.4, -0.6, 0.55)) * olcek + Vector(hedef)
+            kit.aim(ob, hedef)
             ob.data.color = (1.0, 0.62, 0.36)
             ob.data.energy *= 0.55
         elif ob.name.startswith('Dolgu'):
