@@ -10,7 +10,7 @@
  *  • Finale parçasının kendi karesi yoktur: konak sahne (s5) son karesini çizerken final.js 2B efektini üstüne çizer.
  */
 import {
-  KARE_KOK, KOPRU_BASLA, EGIM_PX, DPR_ENFAZLA, PENCERE, ANAHTAR_ADIM, KOMSU_KARE, MAKS_BOSLUK,
+  KARE_KOK, KOPRU_BASLA, EGIM_PX, DPR_ENFAZLA, PENCERE, ANAHTAR_ADIM, KOMSU_KARE, MAKS_BOSLUK, HIZLI_ESIK,
 } from './ayarlar.js';
 
 const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -41,10 +41,10 @@ function cevre(keys, f) {
   return [lo, hi];
 }
 
-/** Ortak indirme kuyruğu: öncelikli, eş zamanlı sınırı olan. */
+/** Ortak indirme kuyruğu: öncelikli, eş zamanlı sınırı olan (limit sayı ya da her seferinde sorulan işlev). */
 export class Kuyruk {
   constructor(limit) {
-    this.limit = limit;
+    this.limitFn = typeof limit === 'function' ? limit : () => limit;
     this.active = 0;
     this.jobs = [];
   }
@@ -54,12 +54,15 @@ export class Kuyruk {
     this.pump();
   }
 
+  /** Sahibin henüz başlamamış işlerini kuyruktan çıkarır; çıkarılanları döndürür (sahibi 'iniyor' kaydını silebilsin). */
   drop(owner) {
-    this.jobs = this.jobs.filter((j) => j.owner !== owner);
+    const atilan = this.jobs.filter((j) => j.owner === owner);
+    if (atilan.length) this.jobs = this.jobs.filter((j) => j.owner !== owner);
+    return atilan;
   }
 
   pump() {
-    while (this.active < this.limit && this.jobs.length) {
+    while (this.active < this.limitFn() && this.jobs.length) {
       let bi = 0;
       for (let i = 1; i < this.jobs.length; i++) if (this.jobs[i].pri > this.jobs[bi].pri) bi = i;
       const job = this.jobs.splice(bi, 1)[0];
@@ -94,6 +97,9 @@ export class Sahne {
     this.katman = el.querySelector('.eg-sahne__katman');
     this.canvas = el.querySelector('.eg-sahne__tuval');
     this.ctx = this.canvas ? this.canvas.getContext('2d', { alpha: false }) : null;
+    // opak kanvas çizilene dek siyah görünür ve altındaki poster'i örter: ilk kare çizilene kadar gizli
+    this.hazir = false;
+    if (this.canvas) this.canvas.style.visibility = 'hidden';
     this.kopru = el.querySelector('.eg-sahne__kopru');
     this.kopruAcik = cfg.kopru !== false;
     this.noktaKatman = el.querySelector('.eg-noktalar');
@@ -119,6 +125,7 @@ export class Sahne {
     this.izin = false;
     this.yaricap = PENCERE;
     this.odak = -1000;
+    this.odakYon = 0; // odağın son hareket yönü (+1 ileri, -1 geri): hareket yönündeki kareler önce iner
     this.tutFn = () => false;
     this.planKirli = true;
 
@@ -135,6 +142,8 @@ export class Sahne {
     this.lastTransform = '';
     this.fGoster = -1; // gösterilen kare konumu (seyrek sette durunca en yakın kareye oturur)
     this.sonF = -1; // en son çizimdeki gerçek kare konumu
+    this.yon = 1; // kaydırmanın son yönü (+1 ileri, -1 geri)
+    this.hiz = 0; // kare/çizim cinsinden yumuşatılmış kaydırma hızı
     this.fHedef = 0;
     this.seyrek = false;
     this.finaleP = -1; // konak sahnede: finale ilerlemesi (0..1), finale dışında -1
@@ -232,6 +241,7 @@ export class Sahne {
     const degisti =
       this.planKirli || rol !== this.rol || izin !== this.izin || r !== this.yaricap || (!sabitOdak && Math.abs(odak - this.odak) >= 2) || (sabitOdak && odak !== this.odak);
     if (!degisti) return;
+    if (rol === 'aktif' && Math.abs(odak - this.odak) < 200 && odak !== this.odak) this.odakYon = odak > this.odak ? 1 : -1;
     this.rol = rol;
     this.izin = izin;
     this.yaricap = r;
@@ -255,7 +265,8 @@ export class Sahne {
         this.drawnKey = '';
       }
     }
-    this.ortak.kuyruk.drop(this);
+    // kuyruktan atılan (henüz başlamamış) işlerin 'iniyor' kaydı silinir: yoksa o kareler bir daha hiç istenmez
+    for (const j of this.ortak.kuyruk.drop(this)) this.loading.delete(j.idx);
     const yukler = this.rol === 'aktif' || this.rol === 'sabit' || ((this.rol === 'ileri' || this.rol === 'geri') && this.izin);
     if (!yukler) return;
     const o = this.odak;
@@ -275,11 +286,18 @@ export class Sahne {
     }
     // sıra: odak kare → penceredeki anahtar kareler (kaba kapsam, hızlı ilk boyama) → penceredeki diğerleri → uzaktaki anahtarlar
     const kademe = (i, d) => (i === en ? 0 : d <= r + 8 && (i % ANAHTAR_ADIM === 0 || i === n - 1) ? 1 : d <= r + 8 ? 2 : 3);
-    aday.sort((x, y) => kademe(x[0], x[1]) - kademe(y[0], y[1]) || x[1] - y[1]);
+    // aynı kademede hareket yönündeki kare, arkada kalandan önce iner (hızlı kaydırmada pencere önde dolsun)
+    const yon = this.odakYon;
+    const agirlik = (i, d) => (yon && (i - o) * yon < 0 ? d * 1.6 : d);
+    // çok hızlı kaydırmada pencere yetişmez: yalnız odak kare ve yakın anahtar kareler iner (bkz. ayarlar.YUKLEME_DURAKLAT_VH)
+    if (this.ortak.cokHizli) {
+      for (let k = aday.length - 1; k >= 0; k--) if (kademe(aday[k][0], aday[k][1]) > 1) aday.splice(k, 1);
+    }
+    aday.sort((x, y) => kademe(x[0], x[1]) - kademe(y[0], y[1]) || agirlik(x[0], x[1]) - agirlik(y[0], y[1]));
     const taban = this.visible ? 3000 : this.rol === 'aktif' ? 2000 : 1000;
     aday.forEach(([i], k) => {
       this.loading.add(i);
-      this.ortak.kuyruk.add({ owner: this, pri: taban - k, run: () => this.load(i) });
+      this.ortak.kuyruk.add({ owner: this, idx: i, pri: taban - k, run: () => this.load(i) });
     });
   }
 
@@ -388,6 +406,7 @@ export class Sahne {
     }
     // kaydırma durunca gösterilen konum hedef kareye oturur (seyrek sette ara kare erimesi hayalet bırakmasın)
     if (this.v && this.visible && this.fGoster >= 0 && this.frameFloat() === this.sonF) {
+      this.hiz = 0;
       const d = this.fHedef - this.fGoster;
       if (Math.abs(d) > 0.02) {
         this.fGoster += d * (1 - Math.exp(-14 * dt));
@@ -444,6 +463,10 @@ export class Sahne {
     const f = this.frameFloat();
     // konum değiştikçe gösterilen konum gerçek konumdur; durunca fGoster en yakın kareye oturur (bkz. step)
     if (f !== this.sonF || this.fGoster < 0) {
+      if (this.sonF >= 0 && f !== this.sonF) {
+        this.yon = f > this.sonF ? 1 : -1;
+        this.hiz = this.hiz * 0.6 + Math.abs(f - this.sonF) * 0.4;
+      }
       this.fGoster = f;
       this.sonF = f;
     }
@@ -452,16 +475,19 @@ export class Sahne {
     const nb = this.neighbors(fg);
     if (nb) {
       const [a, b, t0] = nb;
-      // Seyrek karelerde (inmemiş/bırakılmış ara kareler) uzun çapraz geçiş çift görüntü bırakır:
+      // Seyrek karelerde (inmemiş/bırakılmış ara kareler) uzun çapraz geçiş çift görüntü (hayalet) bırakır:
       // aralık büyüdükçe erime ortaya sıkıştırılır; çok büyük aralıkta (≥ 3 anahtar) erime yok, en yakın kare.
+      // Hızlı kaydırmada erime daha da kısalır ve hareket yönüne doğru öne alınır (yeni kare önden gelir, eski iz uzun kalmaz).
       // Ardışık karelerde (aralık ≤ 2) doğrusal kalır.
       const gap = b - a;
       this.seyrek = gap > 2;
       this.fHedef = this.seyrek ? (t0 < 0.5 ? a : b) : f;
       let t = t0;
       if (gap > 2) {
-        const w = Math.min(0.5, 1.25 / gap);
-        t = gap > ANAHTAR_ADIM * 3 ? (t0 < 0.5 ? 0 : 1) : smooth(0.5 - w, 0.5 + w, t0);
+        const hizli = this.hiz > HIZLI_ESIK;
+        const w = Math.min(0.5, (hizli ? 0.7 : 1.25) / gap);
+        const c = 0.5 - this.yon * (hizli ? 0.1 : 0);
+        t = gap > ANAHTAR_ADIM * 3 ? (t0 < c ? 0 : 1) : smooth(c - w, c + w, t0);
       }
       const fin = this.finaleP >= 0 && this.ortak.final && !this.finaleHata && !this.ortak.azHareket ? this.finaleP : -1;
       const key = `${a}|${b}|${t.toFixed(3)}|${fin < 0 ? '' : fin.toFixed(4)}`;
@@ -487,7 +513,11 @@ export class Sahne {
             console.error('final.ciz hatası:', e);
           }
         }
-        this.el.classList.add('is-hazir');
+        if (!this.hazir) {
+          this.hazir = true;
+          this.canvas.style.visibility = '';
+          this.el.classList.add('is-hazir');
+        }
       }
     }
     this.renderHotspots(fg);

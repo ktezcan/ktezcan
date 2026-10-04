@@ -44,8 +44,9 @@ export class HeroScene {
    * @param {'live'|'static'} o.mode
    * @param {boolean} [o.reducedMotion]  static modun nedeni hareket azaltma mı
    * @param {HTMLElement|null} [o.debugEl]
+   * @param {boolean} [o.aktif]  false ise döngü yalnız setAktif(true) ile başlar (finale yaşam döngüsü: hikâye finali yönetir)
    */
-  constructor(THREE, { root, canvas, tier = 'mid', mode = 'live', reducedMotion = false, debugEl = null }) {
+  constructor(THREE, { root, canvas, tier = 'mid', mode = 'live', reducedMotion = false, debugEl = null, aktif = true }) {
     this.THREE = THREE;
     this.root = root;
     this.canvas = canvas;
@@ -56,6 +57,8 @@ export class HeroScene {
     this.debugEl = debugEl;
 
     this.running = false;
+    this.aktif = aktif; // dışarıdan açılıp kapanan etkinlik (finale etkin değilken hiçbir kare çizilmez)
+    this.introBekliyor = !aktif; // açılış (gazlanma) animasyonu ac() ile başlar: ilk render hazırlıktır, perde açılışına denk gelir
     this.destroyed = false;
     this.raf = 0;
     this.inView = false;
@@ -434,10 +437,27 @@ export class HeroScene {
 
   /** Döngünün çalışması gerekip gerekmediğine karar veren tek yer. */
   _sync() {
-    const shouldRun = this.inView && this.pageVisible && !this.contextLost && !this.staticMode && !this.destroyed;
+    const shouldRun = this.inView && this.aktif && this.pageVisible && !this.contextLost && !this.staticMode && !this.destroyed;
     if (shouldRun && !this.running) this._start();
     else if (!shouldRun && this.running) this._stop();
     this._debugState();
+  }
+
+  /** Etkinliği dışarıdan aç/kapat (kapalıyken rAF iptal, işaretçi dinleyicileri sökülür). */
+  setAktif(v) {
+    this.aktif = !!v;
+    this._sync();
+  }
+
+  /** Açılış animasyonunu başlat (hazırlıkta intro 0'da bekler). */
+  introBaslat() {
+    this.introBekliyor = false;
+  }
+
+  /** İlk (görünmez) render: gölgelendirici derleme ve GPU yüklemesi önceden yapılır, ilk karede takılma olmaz. */
+  hazirla() {
+    if (this.staticMode) return;
+    this._renderOnce();
   }
 
   _start() {
@@ -605,7 +625,7 @@ export class HeroScene {
 
   _update(dt) {
     this.time += dt;
-    if (this.intro < 1) this.intro = Math.min(1, this.intro + dt / LOOK.introDuration);
+    if (this.intro < 1 && !this.introBekliyor) this.intro = Math.min(1, this.intro + dt / LOOK.introDuration);
 
     // Yerleşim okuması karenin başında, hiçbir DOM yazımından önce (layout thrash yok)
     const b = this.root.getBoundingClientRect();
@@ -797,6 +817,7 @@ export class HeroScene {
     this.poreMat?.dispose();
     this.moteMat?.dispose();
     this.renderer?.dispose();
+    this.renderer?.forceContextLoss?.(); // WebGL bağlamı bırakılır (finale bitince GPU belleği serbest)
     this.root.classList.remove('is-live');
   }
 }

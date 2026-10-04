@@ -1,13 +1,14 @@
 """
-Dünya (s5) verisi ve zaman yardımcıları — Blender'sız, numpy ile.
+Dünya (s5) verisi, zaman çizelgeleri ve renk/ışık fonksiyonları — Blender sahnesiz, numpy ile.
 
 Nokta seviyeleri (tools/kure_noktalari.mjs ile üretilir, EGE_TEX klasöründe):
-  L0  bolge_L0.json   ≈1,25 km altıgen ızgara, İzmir çevresi (10 m poligon)     F000–F013
-  L1  kara_L1.json    ≈10 km, 28–48 K / 12–48 D (50 m)                          F005–F038
-  L15 kara_L15.json   ≈44 km, İzmir'e 82° kap (110 m)                           F025–F058
+  L0  bolge_L0.json   ≈1,25 km altıgen ızgara, İzmir çevresi (10 m poligon)     F000–F015
+  L1  kara_L1.json    ≈10 km, 28–48 K / 12–48 D (50 m)                          F004–F040
+  L15 kara_L15.json   ≈44 km, İzmir'e 82° kap (110 m)                           F026–F060
   L2  kara_noktalari.json 1,25° (≈139 km) küre (110 m)                          F046–F192
 Her seviyenin kıta kimlikleri aynıdır (0 Avrupa, 1 Asya, 2 Afrika, 3 Amerika, 4 Okyanusya, 5 Türkiye, 8 nötr).
 Renk/ışık fonksiyonu (`boya`) tüm seviyelerde aynı olduğundan seviyeler arası geçişte dalga ve renk tutarlı kalır.
+Seviyeler arası geçiş nokta BOYUTUYLA yapılır (biri küçülürken öteki büyür): `seviye_boyut`.
 """
 import json
 import math
@@ -21,6 +22,7 @@ R = 1.0
 KM = 1.0 / 6371.0            # 1 km kaç R
 IZMIR = (38.42, 27.14)
 SOKE = (37.76, 27.40)        # Söke çevresi (temsilî nokta: fabrika konumu iddia edilmez)
+BOLGE_MERKEZ = {'d': (38.09, 27.27), 'm': (38.09, 27.27)}   # F000 nadir noktası: İzmir–Söke ortası
 
 # yay hedefleri: (kıta id, lat, lon, yay başı F, yay bitişi F, varış dalgası bitişi F) — plan kare programı
 TARGETS = [
@@ -33,8 +35,32 @@ TARGETS = [
 AD = ('avrupa', 'afrika', 'amerika', 'asya', 'okyanusya')
 
 SOGUK = np.array([0.66, 0.72, 0.76, 1.0], dtype=np.float32)    # kara noktası: serin gri-beyaz
-SICAK = np.array([1.0, 0.90, 0.72, 1.0], dtype=np.float32)     # varış sonrası: sıcak beyaz
+SICAK = np.array([1.0, 0.86, 0.62, 1.0], dtype=np.float32)     # varış sonrası: sıcak beyaz
 SEHIR = np.array([1.0, 0.78, 0.46, 1.0], dtype=np.float32)     # gece ışıkları (sıcak beyaz, lime değil)
+
+# ---------------------------------------------------------------------------
+#  Kamera / küre anahtarları (plan: akt-s5.json gecis_notu)
+# ---------------------------------------------------------------------------
+# küre merkez boylamı c(F): ease'li geçişler, tepe hız ≈ 32°/sn (12 kare/sn); F073'te batıya dönüş biter, doğuya döner
+BOYLAM = [(0, 27.27), (36, 27.14), (48, 14.0), (60, -5.0), (71, -20.0), (73, -22.0), (84, -9.0), (95, 20.0), (107, 52.0),
+          (119, 74.0), (131, 78.0), (143, 78.0), (155, 70.0), (167, 60.0), (179, 50.0), (192, 40.0)]
+# küre eğimi (derece): nadirde tam bölge enlemi, küre doğarken Anadolu üstte, sonra ekvatora yaklaş
+EGIM = [(0, 38.09), (24, 36.0), (36, 30.0), (73, 18.0), (112, 7.0), (192, 12.0)]
+# kamera: yüksekliğin (yüzeyden, R) logaritmik anahtarları. F000 ≈ 250 km; F012 450 km; F024 1500 km; F036 küre (d=2,0)
+H_ANAHTAR = {
+    'd': [(0, 250 * KM), (12, 450 * KM), (24, 1500 * KM), (36, 1.0)],
+    'm': [(0, 190 * KM), (12, 400 * KM), (24, 1500 * KM), (36, 0.55)],
+}
+# küre fazı: kamera merkezden uzaklık d (R): F036 → F048 (ufuk kıvrılır) → F132 → çıkış → F192 (durur)
+D_ANAHTAR = [(36, 2.0), (48, 3.4), (132, 6.0), (144, 6.2), (156, 6.5), (168, 7.3), (180, 8.3), (192, 9.0)]
+D_CARPAN = {'d': 1.0, 'm': 0.66}
+D_MIN = {'d': 2.0, 'm': 1.55}
+
+# güneş (kameraya göre sabit): F000 sabah 13°, azimut 125° (s4 ile aynı); küre fazında sağ-ön
+# yerel (D = +X, K = +Z, yukarı = −Y) → dünya: (E·X + N·Z + U·(−Y))
+_az, _el = math.radians(125.0), math.radians(13.0)
+GUNES_BOLGE = np.array([math.sin(_az) * math.cos(_el), -math.sin(_el), math.cos(_az) * math.cos(_el)])
+GUNES_KURE = np.array([0.80, -0.50, 0.26]) / np.linalg.norm([0.80, -0.50, 0.26])
 
 
 # ---------------------------------------------------------------------------
@@ -85,11 +111,61 @@ def aci(u, v):
     return np.arccos(np.clip(u @ np.asarray(v, dtype=np.float32), -1.0, 1.0))
 
 
+def kam_yukseklik(f, v):
+    """Yüzeyden kamera yüksekliği (R): F036'ya dek logaritmik pchip."""
+    keys = [(a, math.log(b)) for a, b in H_ANAHTAR[v]]
+    return math.exp(pchip(min(f, 36), keys))
+
+
+def kam_uzaklik(f, v):
+    """Küre merkezinden kamera uzaklığı D (R)."""
+    if f < 36:
+        return 1.0 + kam_yukseklik(f, v)
+    d = pchip(f, D_ANAHTAR)
+    return max(D_MIN[v], d * D_CARPAN[v]) if v != 'd' else d
+
+
+def gunes_yonu(f):
+    """Dünya uzayında güneşe yön (birim): F000'da alçak sabah güneşi, küre doğarken sağ-öne döner."""
+    k = float(sm(sg(f, 0, 40)))
+    a = GUNES_BOLGE * (1 - k) + GUNES_KURE * k
+    return (a / np.linalg.norm(a)).astype(np.float32)
+
+
 # ---------------------------------------------------------------------------
 #  Nokta seviyeleri
 # ---------------------------------------------------------------------------
+#  seviye → (aralık km, boyut çarpanı min, maks, ekran yarıçapı (kare genişliğinin oranı),
+#            büyüme (başla, bitir), sönme (başla, bitir))
+SEV = {
+    'L0': dict(km=1.25, rmin=0.12, rmax=0.30, buyu=None, son=(5, 15)),
+    'L1': dict(km=10.0, rmin=0.10, rmax=0.28, buyu=(3, 11), son=(28, 38)),
+    'L15': dict(km=44.0, rmin=0.10, rmax=0.27, buyu=(24, 32), son=(46, 56)),
+    'L2': dict(km=139.0, rmin=0.14, rmax=0.30, buyu=(44, 54), son=None),
+}
+EKRAN_YARICAP = 0.0021   # nokta yarıçapı ≈ kare genişliğinin bu kadarı (1600 px'te ≈3,4 px)
+
+
+def seviye_zaman(ad, f):
+    """Seviyenin kare f'deki varlık oranı (0 = görünmez … 1 = tam)."""
+    s = SEV[ad]
+    k = 1.0
+    if s['buyu']:
+        k = float(sm(sg(f, *s['buyu'])))
+    if s['son']:
+        k *= 1.0 - float(sm(sg(f, *s['son'])))
+    return k
+
+
+def seviye_yaricap(ad, kare_genislik_R):
+    """Seviye noktasının yarıçapı (R): ekranda ~sabit kalır, ızgara aralığıyla sınırlı."""
+    s = SEV[ad]
+    aralik = s['km'] * KM
+    return float(np.clip(EKRAN_YARICAP * kare_genislik_R, s['rmin'] * aralik, s['rmax'] * aralik))
+
+
 class Seviye:
-    """Bir nokta ızgarası: konumlar, kıta, rastgele sapma, İzmir'e açı, gece ışığı bayrakları."""
+    """Bir nokta ızgarası: konumlar, kıta, rastgele sapma, İzmir'e açı, gece ışığı bayrakları, kıyı."""
 
     def __init__(self, ad, dosya, tohum, sehir=True):
         yol = os.path.join(kit.TEX_DIR, dosya)
@@ -103,6 +179,7 @@ class Seviye:
         self.jit = rng.random(self.n).astype(np.float32)
         self.dI = aci(self.u, birim(*IZMIR))          # İzmir'e açı (radyan): Türkiye lime dalgası
         self.dS = aci(self.u, birim(*SOKE))
+        self.kiyi = self._kiyi(SEV[ad]['km'] * KM)
         # stilize gece ışıkları: kümeli (gürültü) + rastgele; toplam oran ≤ %8, sıcak beyaz
         self.sehir = np.zeros(self.n, dtype=np.float32)
         if sehir:
@@ -118,6 +195,20 @@ class Seviye:
             self.sehir[bayrak] = (0.45 + 0.55 * rng.random(int(bayrak.sum()))).astype(np.float32)
         self.dn = []   # hedef başına (maske, normalleştirilmiş uzaklık) — MAXANG ile doldurulur
         self.hedefa = []
+
+    def _kiyi(self, aralik):
+        """Komşu sayısı iç noktalardan az olan noktalar = kıyı (veya veri penceresi kenarı). 0..1 float."""
+        from mathutils import kdtree
+        kd = kdtree.KDTree(self.n)
+        for i, p in enumerate(self.u):
+            kd.insert((float(p[0]), float(p[1]), float(p[2])), i)
+        kd.balance()
+        r = aralik * 1.55
+        sayi = np.zeros(self.n, dtype=np.int32)
+        for i, p in enumerate(self.u):
+            sayi[i] = len(kd.find_range((float(p[0]), float(p[1]), float(p[2])), r)) - 1
+        ic = int(np.bincount(sayi).argmax())
+        return (sayi < ic).astype(np.float32)
 
     def dalga_hazirla(self, maxang):
         self.hedefa = []
@@ -150,7 +241,7 @@ def seviyeleri_yukle():
 # ---------------------------------------------------------------------------
 #  Renk / ışık: tüm seviyelerde aynı fonksiyon
 # ---------------------------------------------------------------------------
-def boya(S, f, rot3, sun, ndv, cam_gece=1.0, arka_zayif=0.0, nefes=1.0):
+def boya(S, f, rot3, sun, ndv, arka_zayif=0.0, nefes=1.0):
     """Seviye S için kare f'de (renk (n,4), ışık (n,)).
     rot3: küre dönüşü 3x3 (numpy), sun: güneşe yön (dünya, birim), ndv: nokta normali · kameraya yön (n,) (ufuk testi),
     arka_zayif: 0..1 cam gövde evresi (arka yüzdeki noktalar %40 ışığa iner)."""
@@ -162,15 +253,31 @@ def boya(S, f, rot3, sun, ndv, cam_gece=1.0, arka_zayif=0.0, nefes=1.0):
     ns = nrm @ sun
     gece = sm((0.06 - ns) / 0.32).astype(np.float32)           # 0 gündüz … 1 gece
     glow += 0.07 * gece                                          # karanlıkta kıta silüeti okunsun
+    # kıyıda ince ışıma (gündüz yarıda; küre uzaklaştıkça sönük kalır)
+    kk = 1.0 - 0.7 * float(sm(sg(f, 10, 50)))
+    glow += S.kiyi * (0.55 * kk) * (1 - gece)
+    # bölge açılışı: İzmir'den (F000) ve Söke'den (F004) tek halka dalgası dışa yayılır (nokta boyu, lime ucu)
+    if f <= 15 and S.ad in ('L0', 'L1'):
+        for t0, d_rad in ((0, S.dI), (4, S.dS)):
+            tt = f - t0
+            if tt < 0:
+                continue
+            r_km = 3.0 + 5.2 * tt
+            gen = 4.5 + 0.35 * tt
+            a = float(np.clip(1.0 - tt / 11.0, 0.0, 1.0)) ** 1.2
+            g = np.exp(-(((d_rad / KM) - r_km) / gen) ** 2) * a
+            col = col * (1 - 0.55 * g)[:, None] + np.array(kit.LIME_HI, dtype=np.float32) * (0.55 * g)[:, None]
+            glow = glow + 1.5 * g.astype(np.float32)
     # Türkiye: kaynak, lime. İzmir'den dışa dolan dalga (F022 → F040)
     tr = S.kita == 5
     if tr.any():
         ta = 22.0 + 14.0 * np.minimum(S.dI[tr] / 0.26, 1.0)
         k = sm(sg(f, ta, ta + 6.0))
-        col[tr] = SOGUK * (1 - k)[:, None] + np.array(kit.LIME_HI, dtype=np.float32) * k[:, None]
-        glow[tr] = 0.05 + 1.25 * k + 0.1 * gece[tr]
+        col[tr] = col[tr] * (1 - k)[:, None] + np.array(kit.LIME_HI, dtype=np.float32) * k[:, None]
+        glow[tr] = glow[tr] + 1.25 * k + 0.1 * gece[tr]
     # kıta varış dalgaları: serin gri → sıcak beyaz, dalga ucu parlak
     wave_boost = np.zeros(n, dtype=np.float32)
+    ulasti = np.zeros(n, dtype=np.float32)
     for (kid, lat, lon, fa, fb, fw), (m, dn, ang) in zip(TARGETS, S.hedefa):
         if f < fb or not m.any():
             continue
@@ -182,11 +289,14 @@ def boya(S, f, rot3, sun, ndv, cam_gece=1.0, arka_zayif=0.0, nefes=1.0):
         on = np.sin(np.pi * np.clip(pr, 0, 1)).astype(np.float32)       # dalga ucu: 1,6 parlaklık
         glow[m] = glow[m] + 0.62 * p + 1.0 * on
         wave_boost[m] = np.maximum(wave_boost[m], on)
+        ulasti[m] = np.maximum(ulasti[m], p)
+    # ulaşmış kıtalarda hafif titreme (ışık canlı kalsın)
+    if ulasti.any():
+        glow = glow * (1.0 + 0.07 * ulasti * np.sin(f * 0.33 + S.jit * 40.0))
     # gece ışıkları (stilize, ≤ %8): yalnız karanlık yarıda; varış dalgasıyla parlar
     if S.sehir.any():
         yan = np.clip(0.6 + 0.4 * np.sin(f * 0.21 + S.jit * 40.0), 0, 1)   # hafif titreme
         c = S.sehir * gece * (0.9 + 1.4 * wave_boost) * yan
-        c = c * (1.0 + 0.0 * ns)
         col = col * (1 - np.clip(c * 0.9, 0, 1)[:, None]) + SEHIR * np.clip(c * 0.9, 0, 1)[:, None]
         glow = glow + 1.1 * c
     # cam gövde evresi: arka yüzdeki noktalar zayıflar (%40)

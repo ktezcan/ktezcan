@@ -14,15 +14,15 @@ export const THREE_VERSION = '0.186.1';
  * çalışma sırasında kare süresi izlenir ve gerekirse kalite kademeli düşürülür.
  *  particles : gözenek + taneli doku parçacık bütçesi
  *  motes     : havada süzülen "gaz kabarcığı" parçacıkları
- *  dprMax    : en yüksek piksel oranı (retina keskinliği ↔ GPU yükü)
+ *  dprMax    : en yüksek piksel oranı (retina keskinliği ↔ GPU yükü); hikâye kuralı: hiçbir kademede 1,25'i aşmaz
  *  cell      : dalga simülasyonu hücre boyu (dünya birimi; küçük = daha detaylı)
  *  attempts  : gözenek yerleştirme deneme sayısı (açılış süresini etkiler)
  *  octaves   : rölanti dalgası gürültü katmanı (1 = daha hafif)
  */
 export const TIERS = {
   low: { particles: 9000, motes: 90, dprMax: 1, cell: 0.32, attempts: 9000, octaves: 1 },
-  mid: { particles: 17000, motes: 160, dprMax: 1.5, cell: 0.26, attempts: 15000, octaves: 2 },
-  high: { particles: 30000, motes: 240, dprMax: 2, cell: 0.21, attempts: 24000, octaves: 2 },
+  mid: { particles: 17000, motes: 160, dprMax: 1.25, cell: 0.26, attempts: 15000, octaves: 2 },
+  high: { particles: 30000, motes: 240, dprMax: 1.25, cell: 0.21, attempts: 24000, octaves: 2 },
 };
 
 /** Fizik: imlecin "ağırlığı" ve yüzeyin akışkanlığı. */

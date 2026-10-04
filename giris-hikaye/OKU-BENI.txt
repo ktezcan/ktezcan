@@ -1,70 +1,86 @@
-EGE GAZBETON — GİRİŞ SAYFASI HİKÂYESİ ("Hammaddeden binaya")
-=============================================================
+EGE GAZBETON — GİRİŞ SAYFASI HİKÂYESİ (MAKET)  ·  "Bugünden Yarına Güvenle"
+=============================================================================
 
 AÇMAK
-  index.html dosyasına çift tıklayın. İnternet gerekmez (yazı tipleri, betik ve
-  kareler klasörün içinde). Chrome veya Edge önerilir.
-  Hata ayıklama görünümü: index.html?debug  (sol altta döngü durumu)
-  İngilizce: sağ üstteki EN düğmesi ya da index.html?dil=en
-  Kaydırma kaydı (telefonda izlemek için): paketle birlikte gönderilen MP4 dosyaları.
+  index.html dosyasına çift tıklayın. İnternet gerekmez (yazı tipleri, betikler ve
+  kareler klasörün içinde; dışarıya hiçbir istek gitmez). Chrome veya Edge önerilir.
+  Sayfa video DEĞİLDİR: fareyle/parmakla KAYDIRDIKÇA önceden hesaplanmış kareler
+  oynar; metin, kıta etiketleri ve kartlar sayfada (HTML/SVG) çizilir.
+  Bağlantı parametreleri (index.html'in sonuna eklenir):
+    ?dil=en      İngilizce açılır (sağ üstteki TR/EN düğmesi de aynı işi görür)
+    ?t=62        film saniyesi 62'den açılır (plan saniyeleri, 0–146)
+    ?az          hareket azaltma kipi (kaydırma boyunca tek kare, sakin)
+    ?debug       sol altta durum paneli (kare belleği, çizim döngüsü)
+  Hiçbir veri tarayıcıda saklanmaz (localStorage/oturum/çerez yok); bağlam yalnız bellekte
+  ve bağlantı parametresindedir. Ses yoktur.
 
-HİKÂYE (yalnız giriş sayfası; TEK AKIŞ — ayrı içerik sayfası yok)
-  Tek bir sabit sahnede beş bölüm, kaydırdıkça birbirine erir:
-  0  Blok      Tanıtım videosu bloğun ön yüzüne küçülür; blok sağa geçer.
-  1  Üretim    Blok hammaddelerine çözülür; kaidelerde kum, kireç, çimento, alçı,
-               ortada alüminyum; kalıpta kabarır, tellerle kesilir.
-  2  Yapı      Kesit yüzünden gözeneğe dalış: kapalı hava hücresi; numune küpü.
-  3  Sistem    Küp → şantiyedeki bir blok; apartman doğru sırayla yükselir
-               (karkas → duvar → lento → çatı → doğrama); gün batar, ışıklar yanar,
-               kamera tepeye çıkar.
-  4  Dünya     Tepeden bakış İzmir'e erir; küre açılır, yaylar 5 kıtaya.
-  Son          Teklif çağrısı; logo en sonda.
-  Metin ve rakamlar sahneyle birlikte, sabit anlatım alanında belirir
-  (masaüstünde solda, telefonda üstte); 3B konu karşı tarafta durur.
+HİKÂYE (146 saniye = 3212 ekran-yüksekliği yüzdesi; 1 film saniyesi = 22 vh kaydırma)
+  Tek yapışkan sahne, 7 parça uç uca. Parça sınırında son kare = sonraki ilk kare
+  olduğundan geçişte erime/titreme yoktur.
+   0  Hayalden yuvaya (0–32 sn)     Kıvılcım → kâğıtta plan kalemle çizilir → ev çizilir →
+                                    gazbeton duvar örülür → gerçek sokak (araba, bisikletli,
+                                    Ege Gazbeton tırı) → akşam, pencereler zamanla yanar
+   1  Ürün turu (32–70)             "Bu evi iyi yapan ne?" Evin etrafında altı durak: duvar
+                                    bloğu, lento, U blok, gazbeton tutkalı, panel, EGEPOR
+   2  Doğuş (70–90)                 Blok hammaddeye çözülür; karışım, kabarma, tel kesim, otoklav
+   3  Gözenek (90–104)              Kapalı hava hücresi; λ 0,08 · A1 · 300–600
+   4  Yol (104–120)                 Fabrikadan sahaya: lime streçli paletler, tır çıkar, tepeye yükselir
+   5  Dünya (120–136)               Ege'den beş kıtaya (kıta etiketleri; ülke adı yok)
+   6  Finale (136–146)              Güven → logo → "Bugünden Yarına Güvenle" → teklif
+  Masaüstü kareleri 1600×900 (d), dikey telefon kareleri 768×1366 (m); sayfa ekran oranına göre seçer.
+  Slogan yalnız finalde görünür; üst çubuktaki logo baştan görünür.
 
 YÖNTEM
-  Sahneler Blender (Cycles) ile önceden hesaplanmış karelerdir, kaydırmayla
-  oynar: masaüstü 1600×900, telefon için ayrı dikey 768×1366 kadraj.
-  Tarayıcıda WebGL çalışmaz; kareler 2B tuvale çizilir.
+  Sahneler Blender (Cycles) ile önceden hesaplanır, WebP kareler olarak gelir. Sayfa yalnız kare
+  oynatır; 3B/WebGL yalnız finaldeki canlı gözenek katmanındadır (src/canli, yalnız görünürken).
+  Render sürerken paket SEYREK kare setiyle (örn. her 8. kare) gelebilir: sayfa aradaki kareleri
+  kısa erimeyle doldurur, kaydırma durunca en yakın kareye oturur. Tam render gelince kareler/
+  klasörü yenilenir, başka bir şey değişmez (kareler-meta.js hangi karelerin var olduğunu bilir).
 
 PERFORMANS ("kasmasın" kuralı)
-  • Döngü (requestAnimationFrame) yalnız kaydırırken / fare hareket ederken
-    çalışır; hareket durunca kendiliğinden durur.
-  • Hikâye bittikten sonra (ürünler, blog, katalog) hiç animasyon döngüsü yok.
-  • Kareler sahne yaklaşınca iner: önce her 8. kare, sonra aralar.
-    Sahne uzaklaşınca ara kareler bellekten bırakılır.
-  • backdrop-filter / mix-blend yok, ekran oranı en fazla 1,25.
-  • Hareket azaltma tercihinde sahneler tek kare olarak durur, video oynamaz.
+  • Çizim döngüsü (requestAnimationFrame) yalnız kaydırırken/fare hareket ederken çalışır;
+    hareket durunca kendiliğinden durur. Hikâye bittikten sonra sayfada hiç döngü yok.
+  • Kare belleği pencerelidir: etkin sahnede odak karenin ±16 karesi çözülü tutulur, geri kalanı
+    bırakılır; komşu sahnelerde yalnız anahtar kareler (her 8.) ve dikişe yakın kareler. Açılışta
+    yalnız ilk sahne iner; sonraki sahne, önceki %60 geçilince yüklenir (en kötü durum ≈ 0,6 GB;
+    eski sürümde ≈ 2,9 GB'tı). Kaydırma sürerken eşzamanlı çözme azaltılır (kare hızı korunur).
+  • Tüm kanvaslarda ekran oranı en fazla 1,25. backdrop-filter / mix-blend kanvas üstünde yok.
+  • Hareket azaltma tercihinde (işletim sistemi ya da ?az) sahneler tek kare durur.
+  • Hedef ≥ 50 kare/sn; tools/sinama.mjs bunu başsız tarayıcıda ölçer.
 
 DEĞİŞTİRİLECEK YER TUTUCULAR
-  1. Video: assets/video/tanitim-hero.mp4 → kod\public\video\tanitim-hero-720.mp4
-     (aynı adla kopyalayın). Kapak: assets/video/tanitim-hero.jpg
-  2. Logo: index.html içinde "YER TUTUCU LOGO" yazan iki SVG
-     → LP\img\logo_white.svg içeriği
-  3. Gazbeton yüzey dokusu kodla üretildi (kendi kesit fotoğrafınız cut-surface.jpg
-     bende yoktu). Fotoğrafla dokular yeniden üretilip sahneler yeniden hesaplanmalı.
-  4. Bağlantılar: /teklif/ /katalog/ /teknik-foyler/ /duvar-tasarla/ /ihracat/
-     /urunler/... → sitenizdeki gerçek adresler.
+  1. Logo: index.html içinde "YER TUTUCU LOGO" yazan SVG'ler → LP\img\logo_white.svg içeriği
+     (üst çubuk ve finale). Tır kabininde logo yoktur (lime şerit + sitede takip eden etiket).
+  2. Bağlantılar: /teklif/ /katalog/ /teknik-foyler/ /duvar-tasarla/ /ihracat/ /urunler/...
+     → sitenizdeki gerçek adresler.
+  3. Fabrika (Söke) temsilîdir; gerçek referans gelince s4 yeniden hesaplanır.
+  4. Kareler: render bitince kareler/ ve assets/js/kareler-meta.js yeniden üretilir
+     (tools/teslim.sh); index.html'e dokunulmaz.
 
-KARTLARDAKİ RAKAMLAR (kaynakları kartta yazılı)
-  2 fabrika (Söke, İzmir) · 1.100.000 m³ üretim kapasitesi · TS EN 771-4
-  (CE 2179-CPR-0043 / 0052) · λ 0,08 W/mK (G2/350 duvar tasarım değeri) ·
-  A1 yangına tepki sınıfı (EN 13501-1) · 300–600 kg/m³ (G1–G4) ·
-  ODTÜ hesabı: 8 katlı örnek binada yapı kütlesi −%17, taban kesme kuvveti −%14 ·
-  25+ ülke, 5 kıta · Söke'de günde 200 ton kireç tesisi.
-  Uyulan kurallar: ülke adı yok; "yanmaz" denmez; yeşil yalnız bizim ürüne
-  (sahadaki paletlerin streç örtüsü); 3B görüntüde yazı ve rakam yok.
+KARTLARDAKİ RAKAMLAR (kaynakları kartta yazılı; doğrulanamayan rakam ekranda yok)
+  Kaynaklar: Ürün föyleri · Ege Gazbeton ortak rakamlar · CE belgeleri · ODTÜ çalışması · ihracat bölümü.
+  Kurallar: ihracatta ülke adı/sınırı/müşteri sayısı/fiyat yok ("25+ ülke · 5 kıta");
+  A1 = "yangına tepki sınıfı" (EN 13501-1), "yanmaz" denmez; yeşil (lime) yalnız Ege Gazbeton
+  ürünü/ambalajı/şeridi/marka vurgusu; 3B görüntü içinde yazı ve rakam yok.
+  Yayın öncesi teyit bekleyenler: gerçek logo dosyası, duvar bloğu kalınlık aralığı (5–35 cm),
+  ODTÜ −%17 kapsamı, 1.100.000 m³ süre ibaresi (yıllık mı), "25+ ülke · 5 kıta" güncelliği.
 
 YAYINA ALMA (Natro)
-  Notlarınıza göre FTP'de .js dosyaları engelli. Klasörü zip olarak panelden
-  yükleyip "Extract" ile açın. Önce önizleme alt alan adında deneyin.
-  Astro sitenize taşımak için: src/hikaye/ (kaynak modüller), assets/css/hikaye.css
-  ve kareler/ klasörü yeterli; Astro bileşeni olarak bölümler index.html'deki
-  işaretlemeyle aynıdır.
+  Natro FTP'de .js dosyaları engelli olabilir: bu klasörü ZIP olarak panelden (Dosya Yöneticisi)
+  yükleyin ve SUNUCUDA AÇIN ("Extract" / "Arşivden çıkar"). Önce bir önizleme alt alan adında deneyin.
+  Zip'i açınca "giris-hikaye" klasörü oluşur; içeriği (index.html, assets/, kareler/) hedef
+  dizine taşıyabilirsiniz. Tüm yollar göreli olduğundan alt dizinde de çalışır.
+  Astro sitenize taşımak için: src/hikaye/ (kaynak modüller), assets/css/hikaye.css ve kareler/
+  klasörü yeterli; bölümler index.html'deki işaretlemeyle aynıdır.
+  Boyut: kareler ≈ 100 MB'ı geçmeyecek biçimde sıkıştırılır (tools/kareler.py bütçe raporu verir).
 
-GELİŞTİRİCİ İÇİN (depo: github.com/ktezcan/ktezcan, dal claude/ege-gazbeton-site-animation-cxwzho)
-  blender/      sahne betikleri (Blender 5.x / bpy): kit.py, s0…s4, dokular.py
-  tools/        kareler.py (PNG → WebP + meta), derle.mjs (tek dosyalık betik),
-                sinama.mjs (başsız tarayıcı sınaması), kayit.mjs (kaydırma kaydı → MP4),
-                yer_tutucu_video.sh
-  src/hikaye/   sayfa betiğinin kaynak modülleri
+GELİŞTİRİCİ İÇİN (depo: github.com/ktezcan/ktezcan)
+  blender/      sahne betikleri (Blender 5.x / bpy): kit.py, s0…s5 sahneleri, spec/ (render kuyruğu işleri)
+  src/hikaye/   sayfa betiğinin kaynak modülleri (main.js akış/oynatıcı, sahne.js kare belleği, ayarlar.js)
+  tools/        render_kuyruk.py (aşama-öncelikli render), dikis_kopyala.py (dikiş kareleri),
+                kareler.py (PNG → WebP + meta + poster + bütçe raporu), derle.mjs (tek dosyalık betik),
+                teslim.sh (iki zip: maket + kaynak), sinama.mjs (başsız tarayıcı sınaması: bellek, fps,
+                dikişler, DPR, depolama), kare_taklit.py (sınama için yer tutucu kareler), kayit.mjs
+  Teslim:       tools/teslim.sh <render_kök> <node_modules> <çıktı_klasörü> [python]
+                → Ege-Gazbeton-giris-maket_<tarih>.zip ve Ege-Gazbeton-kaynak_<tarih>.zip
+  Ayrıntılı devir notu: DEVIR.md, hikâye planı: docs/HIKAYE_OZET.md ve docs/plan/*.json

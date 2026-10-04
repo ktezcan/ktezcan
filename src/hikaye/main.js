@@ -15,7 +15,7 @@
  * önceki parçanın son karesi sonrakinin ilk karesidir, kare seti anında değişir (ek erime yok).
  * Bağlantı parametreleri: ?debug (HUD + __ege), ?kayit (tanıtım kaydı), ?az (hareket azaltma), ?dil=en, ?t=<film saniyesi>.
  */
-import { SAHNELER, DIKEY_ESIK, YUMUSAKLIK, ES_ZAMANLI, SANIYE_VH, ATLAMA_VH, DPR_ENFAZLA, ONYUKLE_P, ONYUKLE_GERI, PENCERE_FINALE } from './ayarlar.js';
+import { SAHNELER, DIKEY_ESIK, YUMUSAKLIK, ES_ZAMANLI, ES_HAREKETLI, SANIYE_VH, ATLAMA_VH, DPR_ENFAZLA, ONYUKLE_P, ONYUKLE_GERI, PENCERE_FINALE, YUKLEME_DURAKLAT_VH } from './ayarlar.js';
 import { Sahne, Kuyruk } from './sahne.js';
 import { dilUygula } from './dil.js';
 import { arayuzKur } from './arayuz.js';
@@ -33,13 +33,17 @@ const azHareket = window.matchMedia('(prefers-reduced-motion: reduce)').matches 
 if (azHareket) root.classList.add('az-hareket');
 
 const META = window.EGE_KARELER || {};
-const kuyruk = new Kuyruk(ES_ZAMANLI);
 
 let raf = 0;
 let last = 0;
 let rafSayac = 0;
+// ?debug / ?kayit: her karenin betik süresi (ms) burada toplanır; sınama aracı kare hızı darboğazının JS mi, tarayıcı mı olduğunu ayırır
+const sureler = debug || kayit ? [] : null;
+let hizVh = 0; // yumuşatılmış kaydırma hızı (vh/sn)
 let ilk = true; // ilk karede (yenileme / bağlantıyla gelişte) yumuşatmadan doğrudan otur
 const aboneler = new Set();
+// kare indirme/çözme kuyruğu: kaydırma sürerken eşzamanlılık düşer (ortak.hareketli, kare başına güncellenir)
+const kuyruk = new Kuyruk(() => (ortak.hareketli ? ES_HAREKETLI : ES_ZAMANLI));
 const ortak = {
   kuyruk,
   azHareket,
@@ -47,6 +51,8 @@ const ortak = {
   kick,
   /** Kaydırma yumuşatması sürüyor mu (sahneler bunu seyrek kare oturması için okur). */
   hareketli: false,
+  /** Kaydırma çok hızlı mı (> YUKLEME_DURAKLAT_VH): pencere kareleri indirilmez, yalnız anahtar kareler. */
+  cokHizli: false,
   /** Kanvas çözünürlük çarpanı (≤ DPR_ENFAZLA): final.js kanvas piksel boyutunu bununla bilir. */
   dpr: () => Math.min(DPR_ENFAZLA, window.devicePixelRatio || 1),
   noktaOlustur: () => document.createElement('button'),
@@ -190,6 +196,7 @@ function kick() {
 function frame(now) {
   raf = 0;
   rafSayac++;
+  const basla = sureler ? performance.now() : 0;
   const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
   last = now;
   const vh = window.innerHeight;
@@ -199,6 +206,7 @@ function frame(now) {
   const akisGorunur = r.bottom > 0 && r.top < vh;
   const akisYakin = r.bottom > -vh * 1.5 && r.top < vh * 2.5;
   // tek yumuşatma: gösterilen konum ham konuma yaklaşır; çok uzaksa (menüden atlama, çubuk sürükleme) doğrudan atlar
+  const ySOnce = yS;
   const fark = yHam - yS;
   if (ilk || kayit || azHareket || Math.abs(fark) > ATLAMA_VH) yS = yHam;
   else {
@@ -208,6 +216,13 @@ function frame(now) {
   ilk = false;
   const hareketli = yS !== yHam;
   ortak.hareketli = hareketli;
+  // hız: çok hızlıyken pencere yüklemesi durur; yavaşlayınca yeniden planlanır
+  hizVh = hareketli ? hizVh * 0.7 + (Math.abs(yS - ySOnce) / Math.max(dt, 1e-3)) * 0.3 : 0;
+  const hizli = hizVh > YUKLEME_DURAKLAT_VH;
+  if (hizli !== ortak.cokHizli) {
+    ortak.cokHizli = hizli;
+    if (!hizli) for (const s of sahneler) s.planKirli = true;
+  }
   // hareket azaltma: akış durağan sütun, her sahne kendi yerinde tek kare
   const ham = azHareket ? { out: SAHNELER.map(() => [1, true, 1]), aktif: 0 } : dagit(yHam);
   const { out, aktif } = azHareket ? ham : dagit(yS);
@@ -242,6 +257,7 @@ function frame(now) {
   for (const fn of aboneler) fn(akisDurum);
   if (more) raf = requestAnimationFrame(frame);
   else last = 0;
+  if (sureler) sureler.push(performance.now() - basla);
 }
 
 window.addEventListener('scroll', kick, { passive: true });
@@ -339,6 +355,14 @@ if (debug || kayit) {
         sahne[s.id] = { adet: b.adet, mb: +b.mb.toFixed(1) };
       }
       return { adet, mb: +mb.toFixed(1), sahne };
+    },
+    /** Kare başına betik süresi (ms): { say, ort, p95, enBuyuk }; sifirla=true ise sayaç sıfırlanır */
+    sureler(sifirla = false) {
+      const d = [...sureler].sort((a, b) => a - b);
+      const say = d.length;
+      const r = say ? { say, ort: +(d.reduce((a, b) => a + b, 0) / say).toFixed(2), p95: +d[Math.floor(say * 0.95)].toFixed(2), enBuyuk: +d[say - 1].toFixed(2) } : { say: 0, ort: 0, p95: 0, enBuyuk: 0 };
+      if (sifirla) sureler.length = 0;
+      return r;
     },
     get raf() {
       return rafSayac;

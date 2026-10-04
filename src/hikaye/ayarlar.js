@@ -42,8 +42,13 @@ export const ATLAMA_VH = 300;
 /** Fare ile sahne eğimi (piksel, en fazla). 0 = kapalı. */
 export const EGIM_PX = 14;
 
-/** Aynı anda en fazla kaç kare indirilir/çözülür. */
-export const ES_ZAMANLI = 6;
+/**
+ * Aynı anda en fazla kaç kare indirilir/çözülür. Kaydırma sürerken az tutulur: çözme işçileri tarayıcının
+ * çizim/birleştirme işini aç bırakıp kare hızını düşürür (ölçüm: 6 eşzamanlı → ≈35 fps, 2 → ≈57 fps).
+ * Boştayken (kaydırma durmuş) hızlı dolsun diye ES_ZAMANLI kullanılır.
+ */
+export const ES_ZAMANLI = 4;
+export const ES_HAREKETLI = 2;
 
 /** Kanvas çözünürlük çarpanı üst sınırı (tüm kanvaslar). */
 export const DPR_ENFAZLA = 1.25;
@@ -66,5 +71,12 @@ export const ONYUKLE_P = 0.6;
 export const ONYUKLE_GERI = 0.4;
 /** Finale sırasında s5 yalnız son karesini gösterir: odak çevresinde tutulacak kare yarıçapı. */
 export const PENCERE_FINALE = 2;
+/**
+ * Kaydırma bu hızı (vh/sn) aşınca pencere kareleri indirilmez, yalnız odak kare ve anahtar kareler (hızlı sarmada
+ * pencere zaten yetişmez; çözme işçileri çizimi aç bırakır). Hız düşünce pencere dolar.
+ */
+export const YUKLEME_DURAKLAT_VH = 110;
+/** Hızlı kaydırmada (kare/çizim) bu eşiğin üstünde ara kare erimesi kısalır ve hareket yönüne kayar (hayalet azaltma). */
+export const HIZLI_ESIK = 0.35;
 /** Yüklü karelerin bu aralıktan (kare) geniş boşluklu seti baştan sona kapsamış sayılmaz (bkz. Sahne.setVariant). */
 export const MAKS_BOSLUK = 16;

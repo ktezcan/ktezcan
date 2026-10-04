@@ -5,10 +5,12 @@
 //   file    : http yerine file:// ile aç (çift tıkla açılışı)
 //   --site  : sınanacak site klasörü (varsayılan giris-hikaye/; EGE_SITE ile de verilebilir)
 //   --kisa  : yalnız masaüstü, az ekran görüntüsü
+//   --sarma : yalnız masaüstü, plan saniyelerine gitmeden hızlı sarma (fps/bellek) testi
 // Çıkış kodu: 0 = tüm denetimler geçti, 1 = en az biri başarısız.
 import { createServer } from 'node:http';
 import { existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import { loadavg } from 'node:os';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { extname, join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -24,7 +26,8 @@ const pozisyonel = argv.filter((a, i) => !a.startsWith('--') && (siteIdx < 0 || 
 const kok = resolve(siteArg || process.env.EGE_SITE || join(dirname(fileURLToPath(import.meta.url)), '..', 'giris-hikaye'));
 const out = pozisyonel[0] || 'sinama';
 const fileMode = pozisyonel[1] === 'file';
-const kisa = bayrak('--kisa');
+const sarmaYalniz = bayrak('--sarma');
+const kisa = bayrak('--kisa') || sarmaYalniz;
 await mkdir(out, { recursive: true });
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.mp4': 'video/mp4', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
@@ -77,6 +80,9 @@ function surecRss() {
 /** Plan saniyeleri (docs/plan): 7 parçalı akışın sınır ve orta noktaları, dikişin iki yanı. */
 const SANIYELER = [0.5, 12, 24, 31.5, 32.5, 45, 62, 69.5, 70.5, 80, 89.5, 90.5, 97, 103.5, 104.5, 112, 119.5, 120.5, 128, 135.5, 136.5, 141, 145.8];
 const SANIYELER_KISA = [0.5, 31.5, 32.5, 50, 100, 112, 128, 141, 145.8];
+/** Parça dikişleri (saniye): iki yanındaki görüntü aynı kare olmalı (son kare = sonraki ilk kare), motor araya boşluk/parıltı koymamalı. */
+const DIKISLER = [32, 70, 90, 104, 120, 136];
+const DIKIS_ESIK = 8; // 32×18 küçültülmüş RGB ortalama mutlak fark (0..255)
 
 async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {}) {
   const az = extra.includes('az');
@@ -122,7 +128,12 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     return b;
   }
 
+  // ilk boyama: s0 kanvasına ilk kare çizilene dek (poster ile gelen boyama sayılmaz)
+  const ilkT0 = Date.now();
+  const ilkBoyamaOk = await page.waitForFunction(() => document.querySelector('[data-sahne="s0"].is-hazir'), null, { timeout: 15000 }).then(() => true, () => false);
+  const ilkBoyamaMs = Date.now() - ilkT0;
   await hazirBekle();
+  const acilisBellek = await page.evaluate(() => window.__ege.bellek());
   const shots = [];
   async function shot(name) {
     const f = join(out, `${ad}_${name}.png`);
@@ -134,7 +145,7 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
   const vh = viewport.height;
 
   // 1) 7 parçalı akış: plan saniyelerine git, kare belleği ve görüntü al
-  const liste = az ? [] : kisa ? SANIYELER_KISA : tamTur ? SANIYELER : SANIYELER_KISA;
+  const liste = az || sarmaYalniz ? [] : kisa ? SANIYELER_KISA : tamTur ? SANIYELER : SANIYELER_KISA;
   for (const t of liste) {
     await page.evaluate((s) => window.__ege.ortak.saniyeyeGit(s), t);
     await page.waitForTimeout(120);
@@ -142,6 +153,42 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     await page.waitForTimeout(az ? 100 : 900); // vuruş geçişleri (CSS)
     await belleklerEkle(`t=${t}`);
     await shot(`t${String(Math.round(t * 10)).padStart(4, '0')}`);
+  }
+
+  // 1b) dikişler: önceki parçanın son karesi ile sonrakinin ilk karesi aynı görüntü olmalı (kanvas özeti karşılaştırılır)
+  const dikis = [];
+  if (!az) {
+    const ozet = () => {
+      const s = window.__ege.sahneler.find((x) => x.visible && x.canvas);
+      if (!s) return { hata: 'görünen kanvas yok' };
+      try {
+        const c = document.createElement('canvas');
+        c.width = 32;
+        c.height = 18;
+        const g = c.getContext('2d');
+        g.drawImage(s.canvas, 0, 0, 32, 18);
+        return { id: s.id, v: Array.from(g.getImageData(0, 0, 32, 18).data) };
+      } catch (e) {
+        return { hata: String(e.message || e) };
+      }
+    };
+    for (const t of DIKISLER) {
+      const ornek = [];
+      for (const d of [-0.03, 0.03]) {
+        await page.evaluate((x) => window.__ege.ortak.saniyeyeGit(x), t + d);
+        await page.waitForTimeout(150);
+        await hazirBekle(8000);
+        await page.waitForTimeout(250);
+        ornek.push(await page.evaluate(ozet));
+      }
+      const [A, B] = ornek;
+      if (A.hata || B.hata) dikis.push({ t, atlandi: A.hata || B.hata });
+      else {
+        let top = 0;
+        for (let i = 0; i < A.v.length; i += 4) top += Math.abs(A.v[i] - B.v[i]) + Math.abs(A.v[i + 1] - B.v[i + 1]) + Math.abs(A.v[i + 2] - B.v[i + 2]);
+        dikis.push({ t, once: A.id, sonra: B.id, fark: +(top / (A.v.length / 4) / 3).toFixed(2) });
+      }
+    }
   }
 
   // 2) rAF boşta durmalı (kaydırma bitti → döngü duruyor)
@@ -164,12 +211,15 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
         new Promise((bit) => {
           const dt = [];
           let enBellek = 0;
+          let hizliKare = 0;
           let prev = performance.now();
           const t0 = prev;
+          window.__ege.sureler(true);
           const f = (now) => {
             const u = Math.min(1, (now - t0) / ms);
             window.scrollTo(0, from + (to - from) * u);
             dt.push(now - prev);
+            if (window.__ege.ortak.cokHizli) hizliKare++;
             prev = now;
             if (dt.length % 10 === 0) enBellek = Math.max(enBellek, window.__ege.bellek().mb);
             if (u < 1) requestAnimationFrame(f);
@@ -184,14 +234,20 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
                 enKotuMs: +s[s.length - 1].toFixed(1),
                 yavas33: dt.filter((x) => x > 33.4).length,
                 enBellekMB: enBellek,
+                hizliOran: +(hizliKare / dt.length).toFixed(2), // kayıtta 'çok hızlı' (pencere yüklemesi duraklatılmış) kare oranı
+                betik: window.__ege.sureler(true), // kare başına betik süresi (ms): yavaşlık betikten mi tarayıcıdan mı
               });
             }
           };
           requestAnimationFrame(f);
         });
+      // normal: ≈ 80 vh/sn (hızlı ama gerçekçi okuma; s0 → s1 dikişini geçer); ileri/geri: ≈ 320 vh/sn (uç durum, bayrak çevirme)
+      const normal = await faz(0, top + (800 * vhPx) / 100, 10000);
+      window.scrollTo(0, 0);
+      await new Promise((r) => setTimeout(r, 800));
       const ileri = await faz(0, son, 10000);
       const geri = await faz(son, 0, 5000);
-      return { ileri, geri };
+      return { normal, ileri, geri };
     });
     await hazirBekle(8000);
     await belleklerEkle('sarma sonrası');
@@ -250,7 +306,7 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
   });
 
   clearInterval(zamanlayici);
-  const enBitmap = Math.max(0, ...bellekler.map((b) => b.mb), hiz ? hiz.ileri.enBellekMB : 0, hiz ? hiz.geri.enBellekMB : 0);
+  const enBitmap = Math.max(0, ...bellekler.map((b) => b.mb), hiz ? hiz.normal.enBellekMB : 0, hiz ? hiz.ileri.enBellekMB : 0, hiz ? hiz.geri.enBellekMB : 0);
   const r = {
     hatalar,
     disIstek: dis.slice(0, 10),
@@ -258,6 +314,8 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     bostaCalisiyor: bosta.calisiyor,
     bostaKareArtisi: bosta2 - bosta.sayac,
     hikayeSonrasiKareArtisi: sonra2 - sonra1,
+    ilkBoyama: { ms: ilkBoyamaMs, tamam: ilkBoyamaOk, acilisBellek: acilisBellek.sahne },
+    dikis,
     sarma: hiz,
     enBitmapMB: +enBitmap.toFixed(1),
     surecRssMB: { basta: +rss0.toFixed(0), enFazla: +rssMax.toFixed(0) },
@@ -278,7 +336,20 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     if (r.hikayeSonrasiKareArtisi !== 0) basarisiz.push(`${ad}: hikâye sonrası rAF çalışıyor (${r.hikayeSonrasiKareArtisi})`);
     if (JSON.stringify(plan.bas) !== JSON.stringify([0, 704, 1540, 1980, 2288, 2640, 2992]) || plan.toplamVh !== 3212) basarisiz.push(`${ad}: akış boyları plana uymuyor ${JSON.stringify(plan)}`);
     if (hiz) {
-      for (const k of ['ileri', 'geri']) if (hiz[k].ortFps < 50) uyari.push(`${ad}: ${k} sarma ortalama ${hiz[k].ortFps} fps (< 50; başsız yazılımsal tarayıcıda CPU paylaşımı etkiler)`);
+      // başsız Chromium yazılımsal çizer (her yeni kare "GPU"ya yazılımla yüklenir) ve makine paylaşımlı olabilir:
+      // normal hızda 50 fps altı yalnız makine boşken (yük < 3) başarısızlık sayılır; uç hızlı sarmada yalnız uyarı
+      const yuk = loadavg()[0];
+      if (hiz.normal.ortFps < 50) (yuk < 3 ? basarisiz : uyari).push(`${ad}: normal hızlı sarma ${hiz.normal.ortFps} fps (< 50; makine yükü ${yuk.toFixed(1)})`);
+      for (const k of ['ileri', 'geri']) if (hiz[k].ortFps < 50) uyari.push(`${ad}: ${k} uç hızlı sarma (~320 vh/sn) ortalama ${hiz[k].ortFps} fps (< 50; başsız yazılımsal tarayıcıda her yeni kare yüklemesi pahalı)`);
+    }
+    // açılışta bant genişliği yalnız s0'a gider (komşu yüklemesi s0 ilerlemesi > 0,6 sonrasına ertelenir)
+    const baskaYuklu = Object.entries(acilisBellek.sahne).filter(([id, b]) => id !== 's0' && b.adet > 0);
+    if (baskaYuklu.length) basarisiz.push(`${ad}: açılışta s0 dışında kare yüklenmiş ${JSON.stringify(baskaYuklu)}`);
+    if (acilisBellek.adet > 72) basarisiz.push(`${ad}: açılışta ${acilisBellek.adet} kare çözülü (> 72)`);
+    if (!ilkBoyamaOk) basarisiz.push(`${ad}: s0 kanvasına ilk kare çizilmedi`);
+    for (const d of dikis) {
+      if (d.atlandi) uyari.push(`${ad}: dikiş ${d.t} sn denetimi atlandı (${d.atlandi})`);
+      else if (d.fark > DIKIS_ESIK) basarisiz.push(`${ad}: dikiş ${d.t} sn görüntü sıçraması ${d.fark} (> ${DIKIS_ESIK}; ${d.once} → ${d.sonra})`);
     }
     if (r.enBitmapMB > 700) basarisiz.push(`${ad}: çözülmüş kare belleği ${r.enBitmapMB} MB (> 700)`);
   }
