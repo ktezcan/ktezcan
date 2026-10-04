@@ -76,6 +76,53 @@ def tekerlek(x, y, z, M, r=0.52, w=0.32):
     silindir(r, w, (x, y, z), (math.pi / 2, 0, 0), M['lastik'], 40)
     silindir(r * 0.62, 0.02, (x, y + s * w / 2, z), (math.pi / 2, 0, 0), M['jant'], 40)
     silindir(r * 0.22, 0.05, (x, y + s * (w / 2 + 0.02), z), (math.pi / 2, 0, 0), M['krom'], 24)
+    silindir(r * 0.5, 0.025, (x, y + s * (w / 2 + 0.008), z), (math.pi / 2, 0, 0), M['sasi'], 32, smooth=False)
+    for k in range(10):  # bijon somunları
+        a = k * 2 * math.pi / 10
+        silindir(0.022, 0.05, (x + 0.17 * r * 2 * math.cos(a) / 2, y + s * (w / 2 + 0.035), z + 0.17 * r * 2 * math.sin(a) / 2),
+                 (math.pi / 2, 0, 0), M['krom'], 6, smooth=False)
+
+
+def tir_ayrinti(M):
+    """Kabin ve dorse ayrıntıları: cam çerçevesi, güneşlik, tepe lambaları, silecek, tutamak, egzoz,
+    kapı derzi, çamur paçalığı, bijon somunları, yan koruma, yan ve arka lambalar."""
+    amber = P('Amber', '#d98a1c', 0.2, 0.0, '#ffa030', 1.5)
+    kirmizi = P('TirStop', '#7a0d0d', 0.2, 0.0, '#ff2a1a', 1.0)
+    beyaz = P('TirPlaka', '#f2f2f0', 0.4)
+    kutu('CamCerceve', (0.05, 2.24, 1.14), (5.6, 0, 2.95), M['koyu'], 0.03)
+    kutu('OnCam', (0.06, 2.1, 1.0), (5.625, 0, 2.95), M['cam'])
+    kutu('Gunesluk', (0.4, 2.3, 0.08), (5.78, 0, 3.5), M['koyu'], 0.02)
+    for k in range(5):
+        kutu('TepeLamba', (0.08, 0.14, 0.06), (5.82, -0.6 + k * 0.3, 3.56), amber)
+    for y in (-0.5, 0.45):
+        kutu('Silecek', (0.03, 0.9, 0.03), (5.67, y, 2.5), M['koyu']).rotation_euler[0] = 0.35
+    for y in (-1, 1):
+        s = y * 1.255
+        kutu('KapiDerz', (0.02, 0.02, 1.9), (5.45, s, 2.3), M['koyu'])
+        kutu('KapiDerz', (0.02, 0.02, 1.9), (4.0, s, 2.3), M['koyu'])
+        kutu('KapiKolu', (0.18, 0.04, 0.05), (4.2, y * 1.27, 2.3), M['krom'])
+        silindir(0.025, 1.2, (3.95, y * 1.29, 2.0), (0, 0, 0), M['krom'], 12)  # tutamak
+        kutu('YanEtek', (1.2, 0.06, 0.55), (4.55, y * 1.24, 1.05), M['boya'], 0.02)
+        kutu('KoseLamba', (0.12, 0.06, 0.22), (5.55, y * 1.24, 1.5), amber)
+        kutu('Pacalik', (0.04, 0.5, 0.55), (3.7, y * 1.05, 0.55), M['koyu'])
+        kutu('Pacalik', (0.04, 0.5, 0.55), (0.55, y * 1.05, 0.55), M['koyu'])
+        kutu('Pacalik', (0.04, 0.5, 0.55), (-11.3, y * 1.05, 0.55), M['koyu'])
+        # egzoz bacası ve hava tankı
+        silindir(0.09, 2.4, (3.28, y * 1.15, 3.0), (0, 0, 0), M['krom'], 20)
+        silindir(0.18, 0.9, (2.2, y * 0.95, 0.85), (0, math.pi / 2, 0), M['sasi'], 20)
+        # dorse yan koruma rayı ve yan işaret lambaları
+        for z in (0.95, 0.65):
+            kutu('YanKoruma', (6.6, 0.04, 0.08), (-4.4, y * 1.2, z), M['krom'])
+        for k in range(7):
+            kutu('YanLamba', (0.1, 0.03, 0.06), (1.2 - k * 1.95, y * 1.265, 1.35), amber)
+        kutu('ArkaStop', (0.05, 0.4, 0.14), (-10.92, y * 0.95, 1.05), kirmizi)
+        kutu('ArkaSinyal', (0.05, 0.16, 0.14), (-10.92, y * 0.65, 1.05), amber)
+    kutu('ArkaKoruma', (0.12, 2.3, 0.14), (-10.95, 0, 0.6), M['koyu'])
+    kutu('Plaka', (0.02, 0.52, 0.12), (5.77, 0, 1.0), beyaz)
+    kutu('Plaka', (0.02, 0.52, 0.12), (-10.99, 0, 0.82), beyaz)
+    for y in (-0.95, 0.95):
+        kutu('FarCerceve', (0.04, 0.55, 0.26), (5.62, y, 1.35), M['krom'], 0.02)
+        kutu('GunduzLed', (0.05, 0.42, 0.03), (5.655, y, 1.48), M['far'])
 
 
 def tir(ox=0.0, oy=0.0, rz=0.0, palet=True, M=None, aac=None):
@@ -122,6 +169,7 @@ def tir(ox=0.0, oy=0.0, rz=0.0, palet=True, M=None, aac=None):
     for y in (-1.25, 1.25):
         kutu('Camurluk', (4.2, 0.35, 0.08), (-9.0, y, 1.15), M['koyu'])
         kutu('Ayak', (0.12, 0.12, 0.9), (0.4, y * 0.6, 0.7), M['sasi'])
+    tir_ayrinti(M)
     # yük: 2 sıra × 8 palet, 5 sıra blok, streç + kayış
     if palet:
         mer, boy = [], []

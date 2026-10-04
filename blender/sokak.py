@@ -101,7 +101,11 @@ def araba(konum=(0, 0, 0), yon=0.0, renk='#8f1f1a', ad='Araba'):
         c = pf.center
         u = (c.x + L / 2) / L
         _, bel, tavan, _ = profil(c.x)
-        if c.z > bel + 0.05 and c.z < tavan - 0.03 and 0.05 < u < 0.73:
+        nx, nz = pf.normal.x, pf.normal.z
+        yan = c.z > bel + 0.05 and c.z < tavan - 0.03 and 0.07 < u < 0.7 and abs(nz) < 0.7
+        on_cam = 0.62 < u < 0.8 and c.z > bel + 0.04 and nx > 0.25 and abs(pf.normal.y) < 0.75
+        arka_cam = u < 0.14 and c.z > bel + 0.08 and nx < -0.25 and abs(pf.normal.y) < 0.75
+        if yan or on_cam or arka_cam:
             pf.material_index = 1
     for pf in govde.data.polygons:
         pf.use_smooth = True
@@ -140,15 +144,38 @@ def araba(konum=(0, 0, 0), yon=0.0, renk='#8f1f1a', ad='Araba'):
     stop = pbr('Stop', '#7a0d0d', 0.2, 0.0, '#ff2a1a', 1.2)
     beyaz = pbr('Plaka', '#f2f2f0', 0.4)
     koyu = pbr('OtoKoyu', '#1d2024', 0.5)
+    sinyal = pbr('Sinyal', '#c87a1a', 0.2, 0.0, '#ff9a2a', 0.4)
+    plastik = pbr('OtoPlastik', '#232528', 0.7)
+    krom = pbr('OtoKrom', '#d6d8db', 0.15, 1.0)
     for s in (-1, 1):
-        f = kit.box('Far', (0.12, 0.34, 0.1), (L / 2 - 0.1, s * 0.62, 0.74), far)
+        # farlar: ön köşeye sarılan ince camlı gövde + gündüz ışığı şeridi
+        f = kit.box('Far', (0.22, 0.38, 0.11), (L / 2 - 0.2, s * 0.6, 0.66), far)
+        f.rotation_euler[2] = s * math.radians(14)
         kit.bevel(f, 0.03, 3)
-        kit.box('Stop', (0.06, 0.3, 0.12), (-L / 2 + 0.06, s * 0.66, 0.86), stop)
+        kit.box('Sinyal', (0.1, 0.12, 0.05), (L / 2 - 0.26, s * 0.8, 0.6), sinyal)
+        # stoplar: arka yüze gömülü, yandan taşmaz
+        st = kit.box('Stop', (0.1, 0.32, 0.12), (-L / 2 + 0.06, s * 0.5, 0.74), stop)
+        kit.bevel(st, 0.02, 2)
         kit.box('Ayna', (0.14, 0.18, 0.11), (0.65, s * (W / 2 + 0.06), 1.05), boya)
-        kit.box('KapiKolu', (0.12, 0.02, 0.03), (-0.1, s * (W / 2 + 0.005), 0.9), koyu)
-    kit.box('Plaka', (0.02, 0.5, 0.11), (L / 2 + 0.03, 0, 0.5), beyaz)
-    kit.box('Plaka', (0.02, 0.5, 0.11), (-L / 2 - 0.0, 0, 0.62), beyaz)
-    kit.box('Izgara', (0.04, 0.9, 0.16), (L / 2 - 0.01, 0, 0.5), koyu)
+        kit.box('AynaCam', (0.012, 0.15, 0.08), (0.58, s * (W / 2 + 0.07), 1.05), cam)
+        kit.box('KapiKolu', (0.12, 0.02, 0.03), (-0.1, s * (W / 2 + 0.005), 0.9), krom)
+        kit.box('KapiKolu', (0.12, 0.02, 0.03), (0.9, s * (W / 2 + 0.005), 0.9), krom)
+        # kapı derzleri (ince koyu çizgi), marşpiyel, camı çevreleyen siyah fitil
+        for xd in (-0.45, 0.62):
+            kit.box('Derz', (0.012, 0.012, 0.62), (xd, s * (W / 2 + 0.001), 0.62), koyu)
+        kit.box('Marspiyel', (2.0, 0.05, 0.1), (0.03, s * (W / 2 - 0.03), 0.27), plastik)
+        kit.box('Fitil', (2.65, 0.02, 0.025), (0.2, s * (W / 2 * 0.98), 0.955), plastik)
+        kit.box('Direk', (0.08, 0.02, 0.4), (0.2, s * (W / 2 * 0.86), 1.18), plastik)
+    kit.box('Plaka', (0.02, 0.5, 0.11), (L / 2 + 0.03, 0, 0.42), beyaz)
+    kit.box('Plaka', (0.02, 0.5, 0.11), (-L / 2 - 0.0, 0, 0.55), beyaz)
+    kit.box('Izgara', (0.04, 0.8, 0.12), (L / 2 - 0.02, 0, 0.56), koyu)
+    kit.box('IzgaraKrom', (0.045, 0.82, 0.02), (L / 2 - 0.015, 0, 0.63), krom)
+    kit.box('AltIzgara', (0.06, 1.2, 0.12), (L / 2 - 0.05, 0, 0.32), plastik)
+    kit.box('ArkaTampon', (0.08, 1.5, 0.1), (-L / 2 + 0.02, 0, 0.36), plastik)
+    kit.box('Silecek', (0.02, 0.5, 0.02), (L * 0.2, 0.25, 1.0), plastik).rotation_euler[2] = 0.25
+    kit.box('Silecek', (0.02, 0.5, 0.02), (L * 0.2, -0.3, 1.0), plastik).rotation_euler[2] = 0.25
+    for s in (-1, 1):
+        kit.box('TavanRayi', (1.7, 0.04, 0.04), (-0.35, s * 0.55, 1.465), plastik)
     yeni = [o for o in bpy.data.objects if o not in once]
     return _grupla(yeni, ad, konum, yon)
 
