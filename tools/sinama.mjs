@@ -160,7 +160,9 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
 
   // 1b) dikişler: önceki parçanın son karesi ile sonrakinin ilk karesi aynı görüntü olmalı (kanvas özeti karşılaştırılır)
   const dikis = [];
-  if (!az) {
+  // file:// kipinde kanvas "tainted" olur (piksel okunamaz): dikiş görüntü denetimi yalnız http kipinde yapılır
+  if (!az && fileMode && ad === 'masaustu') uyari.push('dikiş görüntü denetimi file:// kipinde yapılamaz (kanvas okunamaz); http kipiyle çalıştırın');
+  if (!az && !fileMode) {
     const ozet = () => {
       const s = window.__ege.sahneler.find((x) => x.visible && x.canvas);
       if (!s) return { hata: 'görünen kanvas yok' };

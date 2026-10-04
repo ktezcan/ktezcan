@@ -42,8 +42,9 @@ PERFORMANS ("kasmasın" kuralı)
     hareket durunca kendiliğinden durur. Hikâye bittikten sonra sayfada hiç döngü yok.
   • Kare belleği pencerelidir: etkin sahnede odak karenin ±16 karesi çözülü tutulur, geri kalanı
     bırakılır; komşu sahnelerde yalnız anahtar kareler (her 8.) ve dikişe yakın kareler. Açılışta
-    yalnız ilk sahne iner; sonraki sahne, önceki %60 geçilince yüklenir (en kötü durum ≈ 0,6 GB;
-    eski sürümde ≈ 2,9 GB'tı). Kaydırma sürerken eşzamanlı çözme azaltılır (kare hızı korunur).
+    yalnız ilk sahne iner; sonraki sahne, önceki %60 geçilince yüklenir (ölçülen en kötü durum: masaüstü
+    1600×900 ≈ 0,65 GB, dikey telefon ≈ 0,35 GB çözülmüş kare; eski sürümde ≈ 2,9 GB'tı).
+    Kaydırma sürerken eşzamanlı çözme azaltılır (kare hızı korunur).
   • Tüm kanvaslarda ekran oranı en fazla 1,25. backdrop-filter / mix-blend kanvas üstünde yok.
   • Hareket azaltma tercihinde (işletim sistemi ya da ?az) sahneler tek kare durur.
   • Hedef ≥ 50 kare/sn; tools/sinama.mjs bunu başsız tarayıcıda ölçer.

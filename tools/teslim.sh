@@ -4,7 +4,7 @@
 #   (b) Ege-Gazbeton-kaynak_<tarih>.zip        depo kaynağı (DEVIR.md, docs, blender, tools, src, giris-hikaye kaynakları);
 #                                              MakeHuman verisi, tex/ ve WebP kareler HARİÇ
 # Kullanım: tools/teslim.sh <render_kök> <node_modules> <çıktı_klasörü> [python]
-# Ortam değişkenleri: EGE_KALITE (temel WebP kalitesi, 90), EGE_BUTCE_MB (tam paket hedefi, 100),
+# Ortam değişkenleri: EGE_KALITE (temel WebP kalitesi, 80; s5 ek olarak -10 → q≈70), EGE_BUTCE_MB (tam paket hedefi, 100),
 #                     EGE_YERINDE=1 (hazırlığı depodaki giris-hikaye/ içinde yap; varsayılan: <çıktı>/_hazir/ — depo temiz kalır)
 # Sıra: dikiş kopyaları (dikis_kopyala.py) → PNG→WebP + meta + poster (kareler.py) → betik derleme (derle.mjs) → zip.
 # <çıktı>/_hazir/ kalıcıdır: yeniden çalıştırmada yalnız değişen kareler yeniden kodlanır.
@@ -20,7 +20,7 @@ NM=$(cd "$2" && pwd)
 mkdir -p "$3"
 OUT=$(cd "$3" && pwd)
 PY=${4:-python3}
-KALITE=${EGE_KALITE:-90}
+KALITE=${EGE_KALITE:-80}
 BUTCE=${EGE_BUTCE_MB:-100}
 TARIH=$(date +%Y-%m-%d_%H%M)
 ZIP_MAKET="$OUT/Ege-Gazbeton-giris-maket_$TARIH.zip"
