@@ -102,16 +102,37 @@ Süreler (4 çekirdek CPU, tam çözünürlük): s0 eğim ~25 sn/kare, dolum ~45
 | `blender/stil_r*.py`, `sokak.py`, `bina_detay.py` | Stil denemeleri ve ortak sahne parçaları (bina, sokak, araba, ağaç, oda, gök) |
 | `src/hikaye/dil.js` | EN metinler + tıklanır nokta kartları (TR/EN, kaynaklı) |
 
-## 7. Durum ve sıradaki işler
+## 7. Durum ve sıradaki işler (güncel — oturum sonu)
 
-- [x] Hikâye kararları, 6 sahne yapısı, TR/EN metinler, etiketler
-- [x] Perde 1, 2, yol, dünya betikleri ve önizleme testleri
-- [ ] Tam render'ların bitmesi (`tools/render_hepsi.sh`) → `kareler.py` → `derle.mjs` → sınama → zip
-- [ ] Müşteri geri bildirimi turu (aşağıdaki "bilinen eksikler" ile birlikte)
+**Karar özeti (müşteri onayladı):** süre 146 sn (1 film sn = 22 vh); slogan "Bugünden Yarına Güvenle" yalnız finalde, açılış başlığı
+"Her yuva bir çizgiyle başlar."; tır kabininde logo yok; A1 alev/"serin yüz" ve "suda yüzer" sahneleri yok (A1 = yalnız sınıf kartı);
+"25+ ülke · 5 kıta" güncel; Türkiye poligonu lime olabilir; Aliağa/Alsancak limanı ifadesi kaynaksız → kullanma; kaydırma kilidi yok;
+tarayıcı depolaması yok; fabrika temsilî. Teslim video DEĞİL: çift tıkla açılan sayfa maketi + kareler + kod.
 
-Bilinen eksikler / geliştirme önerileri:
-- Özellik animasyonları (ısı akışı, A1 alev, yüzme/hafiflik, testere) şimdilik ürün turunda kart olarak; `stil_r4.sahne_isi`,
-  `stil_r5.sahne_alev/yuzer/derz/testere` hazır taslaklar — her durağa kısa ek sahne olarak bağlanabilir.
-- Fabrika hâlâ "maket" dili (beyaz kütleler); daha gerçekçi cephe/malzeme istenebilir.
-- Yakın plan yüzler zayıf (bkz. kural). Bisikletli pedal çevirmez (serbest sürüş).
-- Sayfadaki logo ve tanıtım bağlantıları yer tutucu.
+**Tamam ve depoda**
+- Kod: `blender/s0_hayal.py` (egim/dolum/sokak/plaka), `s1_urun.py`, `s4_yol.py`, `s4_dunya.py`, `s1_dogus.py` (Doğuş), `s2_gozenek.py` (Gözenek),
+  `insan.py` (bisikletli IK, yürüyüş), `sokak.py` (araba detayları WIP), `stil_r5.py` (tır ayrıntıları WIP), `tools/s0_birlestir.py`.
+- Plan: `docs/HIKAYE_OZET.md` (kısa özet + 10 karar), `docs/HIKAYE_PLANI.md` (146 saniyenin her biri), kaynak `docs/plan/*.json`
+  (akt-s0..akt-son, moduller, pazarlama, denetim). `python tools/plan_md.py` belgeleri yeniden üretir.
+- Altyapı: `tools/render_kuyruk.py` (aşama-öncelikli render kuyruğu; `blender/spec/<id>.json` ile iş tanımı; docstring'e bak),
+  `tools/kare_taklit.py` (yer tutucu kareler: sayfa sınaması için), kayıt noktaları `src/hikaye/moduller/index.js`, `src/hikaye/final.js`.
+- `docs/uretim/is-akislari/*.js`: sahne sahne / web işi için hazır görev tanımları (bkz. OKU.txt) — yerel Claude'a olduğu gibi verilebilir.
+
+**Yapılmadı (sıradaki işler, öncelik sırasıyla)**
+1. Sahne betiklerini plana göre uygulamak: (s0) eskiz zeminden yükselmesin, ÇİZİLSİN; park halindeki kırmızı arabanın önü hatalı olabilir
+   (sokak.py araba() WIP, görsel doğrulanmadı); tır/araç ayrıntısı; (s1) donatıya lime uygulanıyor (KURAL İHLALİ), kamera başlangıç azimutu
+   s0 ile ayna kaymış (−32° ↔ +32°), panel modelde 8,8 m (kart 6 m), 152 kare ve render hızlandırma (transparent_max_bounces 32→12);
+   (s5) Amerika/Okyanusya küre dönmediği için arka yüzde, Amerika hedefi denizde; (s2/s3/s4) plandaki ayrıntılar. Her sahne bitince
+   `blender/spec/<id>.json` yazılır, kuyruk otomatik render eder.
+2. Render: `python tools/render_kuyruk.py --root <kök> --python <bpy python>` (EGE_TEX, EGE_MH ortam değişkenleri gerekir). ≈1230 kare, ≈26 saat
+   (4 çekirdek). Aşamalar sayesinde her an kesilebilir; sayfa seyrek karelerle de çalışır. Paylaşılan geçiş kareleri (s1[151]←s2[000],
+   s3[084]←s4[000], s4[095]←s5[000]) paketlemede kopyalanır (`tools/dikis_kopyala.py` henüz yazılmadı).
+3. Web: `index.html` hâlâ ESKİ 6 sahne vuruşlarını taşıyor; plana göre 7 parçalı akış (boylar vh: 704/836/440/308/352/352 + finale 220), GECIS=0
+   (eşleşen kare dikişleri), pencereli kare belleği (ImageBitmap; en kötü durumda ≈2,9 GB çözülmüş kare tutuluyor), finale (`final.js`),
+   CTA'lar ve etkileşimli modüller (MVP: ürün seçici, duvar hesap, maket blok sayacı, önce/sonra, kesit gezgini) yapılacak.
+4. Paket: `tools/paketle.sh <render_kök> <node_modules> <çıktı> [python]`; iki zip hedefi (maket + kaynak) için `tools/teslim.sh` yazılacak.
+
+**Teyit bekleyenler:** gerçek logo dosyası (yer tutucu logolar kalır); duvar bloğu 5–35 cm; ODTÜ −%17 kapsamı; 1.100.000 m³ süre ibaresi;
+otoklav/gözenek rakamları (ekranda yok). Denetim bulguları: `docs/plan/denetim.json`.
+
+**Bu oturumda teslim edilen önizleme maketi:** mevcut karelerle çalışır (eksik sahneler boş/eski karelerle görünür; Perde 1 yalnız masaüstü).

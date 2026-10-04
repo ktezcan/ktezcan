@@ -1,0 +1,3 @@
+Bu klasör, önceki oturumda çok-ajanlı çalışma için yazılan iş akışı betikleridir. Çalıştırılmaz (yollar eski ortama aittir);
+her betikteki `BAGLAM`, `SAHNELER` ve `IS` metinleri, ilgili işi yerel Claude'a vermek için hazır görev tanımlarıdır
+(sahne sahne: sahip olunan dosyalar, plan satırlarına uyum, kurallar, kabul ölçütleri). Uygulama başlamadan yarıda durdurulmuştur.
