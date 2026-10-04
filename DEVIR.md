@@ -136,3 +136,20 @@ tarayıcı depolaması yok; fabrika temsilî. Teslim video DEĞİL: çift tıkla
 otoklav/gözenek rakamları (ekranda yok). Denetim bulguları: `docs/plan/denetim.json`.
 
 **Bu oturumda teslim edilen önizleme maketi:** mevcut karelerle çalışır (eksik sahneler boş/eski karelerle görünür; Perde 1 yalnız masaüstü).
+
+## 8. Oturum notu — 2026-10-04 (bulut oturumu) ve MÜŞTERİ KARARLARI v2
+
+**Bu oturumda yapılanlar (dalda):** ürün turu dalış lekesi giderildi (`s1_urun.py`: dalışta saydam sıçrama 32, ev tam saydamlaşınca gizlenir);
+dünya (`s4_dunya.py`): 193 kare, küre boylam/eğim dönüşü (Amerika/Okyanusya ön yüzde), Amerika hedefi (15°, −88°) karada, varış dalgası,
+ufuk testli çapalar, zemin lime halkası + lime kontur ışığı kaldırıldı; eskiz (`s0_hayal.py egim`): **bina yükselmez, kalemle sırayla çizilir**
+(38 kare; üç render S/E/B + kenar maskesi; kalem ucu `meta.pen`; `s0_birlestir.py` ve `kareler.py` uyumlu).
+Render ortamı: `EGE_RES=<yüzde>` (kit.py) küçük çözünürlük, örnek sayısı aynı; `EGE_PREVIEW` ise örnek ≤ 8.
+
+**Müşteri kararları v2 (tıklamalı soru-cevap):**
+- s0 sokak: Ege atmosferi VAR (uzak tepeler, deniz sisi, zeytin/servi, taş duvar, bugenvil). Pencereler yalnız zamanla yansın; "ışığı sen yak" ve kapı/aile-girer animasyonu YOK.
+- s1 ürün turu: röntgen = mavi-beyaz teknik çizim; 152 kare (plana göre).
+- s2 doğuş: koyu fabrika havası kalsın; kalıp/tel kesme/otoklav temsilî tasarım.
+- s3 gözenek: bilimsel makro (küçük düzensiz hücreler, ince zarlar); ölçek/mm/hücre sayısı ekranda YOK.
+- s4 yol: Söke fabrikası için kullanıcı referans verecek (gelene dek temsilî); tır çıkışı 8 kare/sn (128 kare).
+- s5 dünya: Türkiye lime (marka vurgusu); kıta etiketleri VAR (HTML, ülke adı yok).
+- son: üst çubuk logosu baştan görünür. Süre 146 sn. Ses YOK. Bu oturumda seyrek set (her 8. kare, küçük çözünürlük) render edilir; tam render kuyruğu işyerinde.

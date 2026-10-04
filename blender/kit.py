@@ -80,7 +80,8 @@ def setup_render(w, h, samples=48, threshold=0.02, bounces=(4, 2, 2, 2), clamp=3
     sc.render.use_persistent_data = True  # dizide BVH yeniden kurulmaz
     sc.render.resolution_x = w
     sc.render.resolution_y = h
-    sc.render.resolution_percentage = int(os.environ.get('EGE_PREVIEW', '100'))
+    # EGE_PREVIEW=<yüzde>: hızlı önizleme (örnek ≤ 8). EGE_RES=<yüzde>: maket için küçük çözünürlük, örnek sayısı AYNI kalır
+    sc.render.resolution_percentage = int(os.environ.get('EGE_PREVIEW') or os.environ.get('EGE_RES') or '100')
     if os.environ.get('EGE_PREVIEW'):
         cy.samples = min(cy.samples, 8)
     sc.render.use_motion_blur = False
