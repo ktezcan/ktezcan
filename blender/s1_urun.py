@@ -5,7 +5,9 @@ Ev parlak stüdyoda (maket dili); kamera evin etrafında bir tur atar. Her durak
 parçaları gerçek malzemesinde kalır ve kenarında lime ışıltı belirir; geri kalan her şey
 röntgen gibi saydamlaşır. Ürün adları ve özellik kartları sitede (HTML, TR/EN, kaynaklı).
 
-Duraklar: duvar blokları → lento → gazbeton tutkalı (derz) → çatı paneli → Egepor (kolon/kiriş önü)
+Duraklar: duvar blokları → lento → U blok (çatı hatılı: kalıp yerine, içinde donatı + beton) → gazbeton tutkalı (derz)
+          → çatı paneli → Egepor (kolon/kiriş kaplaması)
+Kaynak: egegazbeton.com.tr ürün sayfaları (U Bloklar, Egepor).
 Sonuç   : ev bütünleşir, kamera ön cephedeki tek bloğa iner; blok dışarı çıkar, gerisi beyaza erir
           ("Bu blok nasıl doğdu?" → doğuş sahnesi).
 
@@ -34,12 +36,15 @@ UZAK = {'d': 34.0, 'm': 31.0}
 HEDEF = Vector((0, 0, 4.6))
 # (ad, türler, başla, bitir, kamera uzaklık çarpanı, yükseklik açısı)
 DURAK = [
-    ('duvar', ('blok',), 0.07, 0.21, 0.82, 14),
-    ('lento', ('lento',), 0.24, 0.37, 0.80, 12),
-    ('tutkal', ('harc',), 0.40, 0.52, 0.55, 8),
-    ('panel', ('panel',), 0.55, 0.67, 0.95, 42),
-    ('egepor', ('egepor',), 0.70, 0.82, 0.85, 16),
+    ('duvar', ('blok',), 0.06, 0.17, 0.82, 14),
+    ('lento', ('lento',), 0.185, 0.295, 0.80, 12),
+    ('ublok', ('ublok', 'donati'), 0.31, 0.42, 0.09, 56),
+    ('tutkal', ('harc',), 0.435, 0.545, 0.55, 8),
+    ('panel', ('panel',), 0.56, 0.67, 0.95, 42),
+    ('egepor', ('egepor',), 0.685, 0.795, 0.85, 16),
 ]
+# durağa özel bakış noktası (U blok: çatı hatılı, parapet üstü)
+DURAK_HEDEF = {'ublok': Vector((0.0, 0.0, B.KAT * B.FH + 0.35))}
 ODAK_BLOK = (-3.0, 0)  # son dalış: ön cephe, zemin kat, x≈−3 civarı blok
 
 
@@ -126,6 +131,28 @@ def egepor_parcalari():
     return P
 
 
+def u_blok_parcalari(ub):
+    """U blok: taban + iki yan cidar (U kesit); kanalda 4 donatı ve hatıl betonu."""
+    out = []
+    t = 0.05
+    for p in ub:
+        (cx, cy, cz), (sx, sy, sz) = p['c'], p['s']
+        x_ekseni = sx > sy
+        L, W = (sx, sy) if x_ekseni else (sy, sx)
+
+        def k(du, dw, dz, l, w, h, tur):
+            c = (cx + (0 if x_ekseni else dw), cy + (dw if x_ekseni else 0), cz + dz)
+            s_ = (l, w, h) if x_ekseni else (w, l, h)
+            out.append(dict(c=c, s=s_, tur=tur, n=p['n'], kat=p['kat'], sira=p['sira'], yuz=p['yuz'], zaman=p['zaman'], ana=p['c']))
+        k(0, 0, -sz / 2 + t / 2, L, W, t, 'ublok')
+        for sd in (-1, 1):
+            k(0, sd * (W / 2 - t / 2), t / 2, L, t, sz - t, 'ublok')
+            for dz in (-0.035, 0.045):
+                k(0, sd * 0.035, dz, L + 0.012, 0.014, 0.014, 'donati')
+        k(0, 0, t / 2 - 0.01, L + 0.012, W - 2 * t, sz - t - 0.02, 'hatil')
+    return out
+
+
 def kamera_pozu(u, variant):
     """Tur: −32°'den başlayıp 360° döner; duraklarda yavaşlar, yaklaşır."""
     # duraklarda yavaşlayan açı: hız fonksiyonunun integrali (sayısal)
@@ -139,14 +166,16 @@ def kamera_pozu(u, variant):
     kis = sum(hiz(i / N) for i in range(int(u * 0.86 / 1.0 * N)))  # 0.86'da tur tamam
     az = -32 + 360 * min(1.0, kis / (toplam * 0.86 + 1e-9))
     k_uz, k_el = 1.0, 18.0
-    for (_, _, a, b, ku, el) in DURAK:
+    hedef = HEDEF.copy()
+    for (ad, _, a, b, ku, el) in DURAK:
         w = kit.smooth(kit.seg(u, a - 0.04, a + 0.02)) * (1 - kit.smooth(kit.seg(u, b - 0.02, b + 0.04)))
         k_uz = kit.lerp(k_uz, ku, w)
         k_el = kit.lerp(k_el, el, w)
+        if ad in DURAK_HEDEF:
+            hedef = hedef.lerp(DURAK_HEDEF[ad], w)
     yon = Vector((math.sin(math.radians(az)) * math.cos(math.radians(k_el)),
                   -math.cos(math.radians(az)) * math.cos(math.radians(k_el)), math.sin(math.radians(k_el))))
-    loc = HEDEF + yon * UZAK[variant] * k_uz
-    hedef = HEDEF.copy()
+    loc = hedef + yon * UZAK[variant] * k_uz
     # son: ön cephedeki odak bloğa dalış
     d = kit.smoother(kit.seg(u, 0.86, 1.0))
     if d > 0:
@@ -178,9 +207,45 @@ def main():
     odak = min((p for p in P if p['tur'] == 'blok' and p['kat'] == 0 and p['yuz'] == 'on' and p['sira'] == 3),
                key=lambda p: abs(p['c'][0] - ODAK_BLOK[0]))
     P.remove(odak)
-    turler = sorted(set(p['tur'] for p in P)) + ['egepor']
+    # çatı hatılı: parapetin üst sırası U blok (kanal içinde donatı + hatıl betonu)
+    for p in P:
+        if p['tur'] == 'blok' and p['kat'] == B.KAT and p['sira'] == 2:
+            p['tur'] = 'ublok'
+    UB = u_blok_parcalari([p for p in P if p['tur'] == 'ublok'])
+    mats['ublok'] = mats['blok']
+    mats['hatil'] = mats['kolon']
+    mats['donati'] = bpy.data.materials.new('Donati')
+    mats['donati'].use_nodes = True
+    bd = mats['donati'].node_tree.nodes['Principled BSDF']
+    bd.inputs['Base Color'].default_value = kit.srgb('#3b3530')
+    bd.inputs['Metallic'].default_value = 0.8
+    bd.inputs['Roughness'].default_value = 0.45
+    turler = sorted(set(p['tur'] for p in P) | {'hatil', 'donati'}) + ['egepor']
     gm = {t: gecis_malzeme(mats[t], 'Gecis_' + t) for t in turler}
-    obs = B.kur(P, gm, ad='Ev')
+    # detay: kameraya bakan cephenin ortasındaki 3 U blok durakta havaya kalkar (açık kesit)
+    um = sum(DURAK[2][2:4]) / 2
+    _, _, az_m = kamera_pozu(um, v)
+    gz = Vector((math.sin(math.radians(az_m)), -math.cos(math.radians(az_m)), 0))
+    yuzn = max({tuple(p['n']) for p in UB}, key=lambda n: Vector(n).dot(gz))
+    # kameraya bakan parapetin önünde, havada 3'lü U blok kesiti (kanal, donatı, dolan hatıl betonu)
+    x_ekseni = abs(yuzn[1]) > 0.5
+    eksen = Vector((1, 0, 0)) if x_ekseni else Vector((0, 1, 0))
+    yuz_k = (B.YS[0] if yuzn[1] < 0 else B.YS[-1]) if x_ekseni else (B.XS[0] if yuzn[0] < 0 else B.XS[-1])
+    UT = Vector((0, yuz_k, 0)) if x_ekseni else Vector((yuz_k, 0, 0))
+    UT = UT + Vector(yuzn) * 2.2 + Vector((0, 0, B.KAT * B.FH + 1.2))
+    sahte = []
+    for i in range(3):
+        c = UT + eksen * (i - 1) * 0.6
+        sz = (0.588, 0.25, 0.238) if x_ekseni else (0.25, 0.588, 0.238)
+        sahte.append(dict(c=tuple(c), s=sz, tur='ublok', n=yuzn, kat=B.KAT, sira=2, yuz='', zaman=0))
+    DETAY = u_blok_parcalari(sahte)
+    UB_kalan = UB
+    DURAK_HEDEF['ublok'] = UT
+    obs = B.kur([p for p in P if p['tur'] != 'ublok'] + UB_kalan, gm, ad='Ev')
+    detay_obs = list(B.kur([p for p in DETAY if p['tur'] != 'hatil'], gm, ad='UDetay').values())
+    dh = [p for p in DETAY if p['tur'] == 'hatil']
+    hatil_ob = kit.toplu_mesh('UDetay_hatil', kit.sablon('kup'), [p['c'] for p in dh], [p['s'] for p in dh], None, gm['hatil'])
+    hz0 = min(p['c'][2] - p['s'][2] / 2 for p in dh)
     odak_m = gecis_malzeme(mats['blok'], 'Gecis_odak')
     odak_ob = kit.toplu_mesh('OdakBlok', kit.sablon('kup'), [odak['c']], [odak['s']], None, odak_m)
     ep_ob = kit.toplu_mesh('Ev_egepor', kit.sablon('kup'), [p['c'] for p in EP], [p['s'] for p in EP], None, gm['egepor'])
@@ -214,7 +279,7 @@ def main():
         dal = kit.smooth(kit.seg(u, 0.88, 0.97))
         for t in turler:
             g = herhangi * (1 - vurgu[t])
-            if t == 'harc':  # derz arkası harç: normalde görünmez; vurguda açık ve lime
+            if t in ('harc', 'donati'):  # içte kalan parçalar: hayalet olmaz, vurguda lime
                 g = 0.0
             ayarla(gm[t], g, dal, 6.0 * vurgu[t])
         # harç vurgusu: bloklar hayalete döner, harç ağı görünür
@@ -229,6 +294,22 @@ def main():
         if 0 < ea < 1:
             s = 1 + 0.35 * (1 - ea)
             ep_ob.scale = (s, s, 1 + 0.1 * (1 - ea))
+        # U blok detayı: durakta parapetten kalkar, sonra yerine oturur
+        a_, b_ = DURAK[2][2], DURAK[2][3]
+        kalk = kit.smoother(kit.seg(u, a_ - 0.01, a_ + 0.04)) * (1 - kit.smoother(kit.seg(u, b_ - 0.04, b_)))
+        for o in detay_obs + [hatil_ob]:
+            o.hide_render = kalk <= 0.001
+        for o in detay_obs:
+            o.location = UT * (1 - kalk)
+            o.scale = (kalk, kalk, kalk)
+        # hatıl betonu: kanal boş görünür, sonra dolar (U blok kalıp görevi görür)
+        dol = 1.0 - kalk * (1 - kit.smooth(kit.seg(u, a_ + 0.065, b_ - 0.01)))
+        dol = max(dol, 0.002)
+        S_ = Vector((kalk, kalk, kalk * dol))
+        Q = Vector((UT.x, UT.y, hz0))  # pivot: kanal tabanı (beton aşağıdan yukarı dolar)
+        hatil_ob.scale = S_
+        hatil_ob.location = Q - Vector((S_.x * Q.x, S_.y * Q.y, S_.z * Q.z))
+        ayarla(gm['hatil'], 0.0 if kalk > 0.01 else gm['hatil'].node_tree.nodes['G'].inputs['Fac'].default_value, dal, 0.0)
         # odak blok dışarı çıkar
         cik = kit.smoother(kit.seg(u, 0.92, 1.0))
         odak_ob.location = (0, -0.45 * cik, 0)
@@ -237,7 +318,7 @@ def main():
         if 0.0 < herhangi:
             for (ad, tl, a, b_, _, _) in DURAK:
                 if a + 0.02 <= u <= b_ - 0.01:
-                    kaynak = EP if ad == 'egepor' else [p for p in P if p['tur'] in tl]
+                    kaynak = EP if ad == 'egepor' else [q for q in DETAY if q['tur'] == 'ublok'] if ad == 'ublok' else [p for p in P if p['tur'] in tl]
                     goz = cam.location
                     adaylar = [p for p in kaynak if Vector(p['n']).dot(goz - Vector(p['c'])) > 0] or kaynak
                     pr = kit.project(cam, [p['c'] for p in adaylar])

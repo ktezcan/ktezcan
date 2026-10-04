@@ -31,7 +31,7 @@ Ana karar: **hikâye evle başlar** (önce duygu, sonra kanıt, en sonda güç).
 | id | Sahne | Betik | İçerik |
 |---|---|---|---|
 | s0 | **Hayalden yuvaya** (ana giriş) | `blender/s0_hayal.py` + `tools/s0_birlestir.py` | kıvılcım → kâğıtta vaziyet planı kendini çizer → kamera eğilir, bina kâğıttan yükselir (eskiz) → binadan açılan karanlık daire → tel kafes → gazbeton bloklar sıra sıra iner → lime çizgili çapraz silme → fotogerçekçi sokak (geçen araba, **eller gidonda bisikletli**, yayalar, **Ege Gazbeton tırı** lime streçli paletlerle) → gün ilerler → akşam, pencereler tek tek yanar |
-| s1 | **Ürün turu** "Bu evi iyi yapan ne?" | `blender/s1_urun.py` | maket stüdyo; kamera evin etrafında döner; duraklar: duvar blokları → lento → gazbeton tutkalı (derz) → panel → EGEPOR (kolon/kiriş önü). Durakta ürün gerçek malzemede + lime kenar ışıltısı, gerisi röntgen. Son: kamera ön cephedeki tek bloğa iner, blok dışarı çıkar, gerisi beyaza erir |
+| s1 | **Ürün turu** "Bu evi iyi yapan ne?" | `blender/s1_urun.py` | maket stüdyo; kamera evin etrafında döner; duraklar: duvar blokları → lento → U blok (çatı hatılı) → gazbeton tutkalı (derz) → panel → EGEPOR (kolon/kiriş kaplaması). Durakta ürün gerçek malzemede + lime kenar ışıltısı, gerisi röntgen. Son: kamera ön cephedeki tek bloğa iner, blok dışarı çıkar, gerisi beyaza erir |
 | s2 | Doğuş | `blender/s1_dogus.py` (önceki teslim) | blok hammaddeye çözülür, kabarma, tel kesim |
 | s3 | Gözenek | `blender/s2_gozenek.py` (önceki teslim) | kapalı hava hücresi, λ 0,08 · A1 · 300–600 |
 | s4 | **Yol** | `blender/s4_yol.py` | Söke fabrikası sabah ışığında; Ege tırı sahadan çıkar, kamera yandan izler, sonra tepeye yükselir |
@@ -42,11 +42,20 @@ Sonra: SON bölümü (teklif + logo + slogan "Bugünden Yarına Güvenle").
 Geçiş kuralı: bir sahnenin son şekli, sonrakinin ilk şekli olur (çizgi→plan, aks→kolon, kafes→blok, blok→gözenek, tepeden fabrika→tepeden İzmir).
 Sahne arası erime: `GECIS` (ayarlar.js).
 
+### Teyitli bilgiler (müşteri onayı + egegazbeton.com.tr ürün sayfaları)
+- **EGEPOR**: kolon ve kiriş kaplaması (müşteri onayladı). Sayfa: dış cephe, otopark ve bodrum tavanı, kolon/kiriş kaplaması;
+  60 × 25–50 cm, 5–35 cm; λkuru 0,051–0,062 W/mK; 150–200 kg/m³. Kaynak: https://www.egegazbeton.com.tr/urunlerimiz/egepor/
+- **U blok** (ürün turu 3. durak, çatı hatılı = parapet üst sırası, U kesit + donatı + dolan hatıl betonu): hatıllarda ahşap kalıp yerine;
+  yüksek duvar ara hatılı, çatı hizası, yatay/düşey betonarme hatıl, gizli baca, yağmur iniş borusunu gizleme.
+  G4/06: 60 × 25 cm, 20–25 cm; λkuru 0,16 W/mK; 50 kgf/cm²; 600 kg/m³. Kaynak: https://egegazbeton.com.tr/urunlerimiz/u-bloklar/
+- Not: üretici sayfası "A1 Hiç Yanmaz" yazıyor; bizim kuralımız yine **"A1 yangına tepki sınıfı"**.
+- Ürün kataloğu (PDF): https://www.egegazbeton.com.tr/wp-content/uploads/2025/10/Ege-Gazbeton_%C3%9Cr%C3%BCn-Katalo%C4%9Fu-22.09.25.pdf
+  (bu ortamdan erişilemedi; işyerinde rakamları buradan da teyit edin)
+
 ### Teyit bekleyenler (müşteriye sor)
-1. **EGEPOR'un evdeki yeri**: kolon/kiriş önü olarak modellendi (`s1_urun.egepor_parcalari`). Katalogla teyit.
-2. **Gerçek logo dosyası**: tır kabinine çıkartma için `EGE_LOGO=/yol/logo.png` verilirse `s0_hayal.ege_tiri()` kapılara basar.
+1. **Gerçek logo dosyası**: tır kabinine çıkartma için `EGE_LOGO=/yol/logo.png` verilirse `s0_hayal.ege_tiri()` kapılara basar.
    Şu an logosuz (sitede tırı takip eden "Ege Gazbeton" etiketi var). Sayfadaki logolar da YER TUTUCU (`LP\img\logo_white.svg` ile değiştir).
-3. **U blok ve köşe bloğu** ürün turunda yok (binada hatıl modellenmedi). İstenirse 6. durak olarak eklenir.
+2. **Köşe bloğu** ürün turunda yok (istenirse eklenir).
 
 ## 4. Kurulum
 

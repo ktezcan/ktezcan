@@ -477,3 +477,11 @@ button { font: inherit; color: inherit; }
   .eg-vurus .oz-ok, .eg-vurus .oz-levha { opacity: 1; transform: none; animation: none !important; }
   .eg-vurus .oz-olcu { stroke-dashoffset: 0; animation: none !important; }
 }
+
+.eg-ozellik .oz-ukabuk { fill: rgba(242, 239, 231, 0.2); stroke: var(--lime); stroke-width: 2; }
+.eg-ozellik .oz-beton { fill: rgba(163, 159, 151, 0.55); transform-box: fill-box; transform-origin: bottom; }
+.eg-ozellik .oz-donati { fill: #3b3530; stroke: rgba(242, 239, 231, 0.7); stroke-width: 1.5; }
+.eg-vurus .oz-beton { transform: scaleY(0); }
+.eg-vurus.is-aktif .oz-beton { animation: oz-dol 1.6s var(--ease) 0.9s forwards; }
+@keyframes oz-dol { to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .eg-vurus .oz-beton { transform: none; animation: none !important; } }
