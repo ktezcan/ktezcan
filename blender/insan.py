@@ -93,6 +93,223 @@ def _mat(ad, hexcol, rough=0.7, sheen=0.0):
     return m
 
 
+def _ten(ad, hexcol):
+    m = bpy.data.materials.get(ad)
+    if m:
+        return m
+    m = _mat(ad, hexcol, 0.42)
+    b = m.node_tree.nodes['Principled BSDF']
+    b.inputs['Subsurface Weight'].default_value = 0.12
+    b.inputs['Subsurface Radius'].default_value = (0.012, 0.005, 0.003)
+    b.inputs['Subsurface Scale'].default_value = 0.4
+    return m
+
+
+def _kumas(ad, hexcol, rough=0.85, sheen=0.3):
+    """Kumaş: sheen + uzamış gürültüyle hafif kırışık kabartısı."""
+    m = bpy.data.materials.get(ad)
+    if m:
+        return m
+    m = _mat(ad, hexcol, rough, sheen)
+    nt = m.node_tree
+    b = nt.nodes['Principled BSDF']
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    mp = nt.nodes.new('ShaderNodeMapping')
+    mp.inputs['Scale'].default_value = (14.0, 14.0, 4.0)
+    nz = nt.nodes.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 3.0
+    nz.inputs['Detail'].default_value = 6.0
+    nt.links.new(tc.outputs['Object'], mp.inputs['Vector'])
+    nt.links.new(mp.outputs['Vector'], nz.inputs['Vector'])
+    bp = nt.nodes.new('ShaderNodeBump')
+    bp.inputs['Strength'].default_value = 0.18
+    nt.links.new(nz.outputs['Fac'], bp.inputs['Height'])
+    nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
+    return m
+
+
+def _insan_mat(g):
+    """Tek malzeme: ten tabanı üzerine köşe özniteliklerine göre yumuşak sınırlı katmanlar
+    (pantolon, gömlek, ayakkabı, taban, saç, kaş, dudak). Kumaş ve saçta kabartı."""
+    ad = 'Insan_' + '_'.join(g[k] for k in ('ten', 'ust', 'alt', 'ayakkabi', 'sac'))
+    m = bpy.data.materials.get(ad)
+    if m:
+        return m
+    m = bpy.data.materials.new(ad)
+    m.use_nodes = True
+    nt = m.node_tree
+    N, L = nt.nodes.new, nt.links.new
+    b = nt.nodes['Principled BSDF']
+    b.inputs['Subsurface Weight'].default_value = 0.1
+    b.inputs['Subsurface Radius'].default_value = (0.012, 0.005, 0.003)
+    b.inputs['Subsurface Scale'].default_value = 0.35
+    renk = N('ShaderNodeRGB')
+    renk.outputs[0].default_value = kit.srgb(g['ten'])
+    cur_c, cur_r, cur_s = renk.outputs[0], None, None
+    pr = N('ShaderNodeValue')
+    pr.outputs[0].default_value = 0.55  # ten pürüzü (plastik parlaklık yok)
+    cur_r = pr.outputs[0]
+    sh = N('ShaderNodeValue')
+    sh.outputs[0].default_value = 0.0
+    cur_s = sh.outputs[0]
+    tc = N('ShaderNodeTexCoord')
+    mp = N('ShaderNodeMapping')
+    mp.inputs['Scale'].default_value = (14.0, 14.0, 4.0)
+    L(tc.outputs['Object'], mp.inputs['Vector'])
+    nz = N('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 3.0
+    nz.inputs['Detail'].default_value = 8.0
+    L(mp.outputs['Vector'], nz.inputs['Vector'])
+    mp2 = N('ShaderNodeMapping')
+    mp2.inputs['Scale'].default_value = (90.0, 90.0, 8.0)
+    L(tc.outputs['Object'], mp2.inputs['Vector'])
+    nz2 = N('ShaderNodeTexNoise')  # saç telleri
+    nz2.inputs['Scale'].default_value = 4.0
+    nz2.inputs['Detail'].default_value = 10.0
+    L(mp2.outputs['Vector'], nz2.inputs['Vector'])
+    kabart = None
+    for at, hexcol, rough, sheen, tur in (('r_alt', g['alt'], 0.8, 0.2, 'kumas'), ('r_ust', g['ust'], 0.85, 0.35, 'kumas'),
+                                          ('r_ayak', g['ayakkabi'], 0.35, 0.0, ''), ('r_taban', g.get('taban', '#ece9e3'), 0.6, 0.0, ''),
+                                          ('r_sac', g['sac'], 0.4, 0.08, 'sac'), ('r_kas', g['sac'], 0.6, 0.2, ''),
+                                          ('r_dudak', '#ad6a5b', 0.45, 0.0, '')):
+        a_ = N('ShaderNodeAttribute')
+        a_.attribute_name = at
+        mr = N('ShaderNodeMapRange')
+        mr.interpolation_type = 'SMOOTHSTEP'
+        mr.inputs['From Min'].default_value = 0.38
+        mr.inputs['From Max'].default_value = 0.62
+        L(a_.outputs['Fac'], mr.inputs['Value'])
+        f = mr.outputs['Result']
+        c = N('ShaderNodeRGB')
+        c.outputs[0].default_value = kit.srgb(hexcol)
+        cc = c.outputs[0]
+        if tur == 'sac':  # tellere göre ton farkı
+            mm = N('ShaderNodeMix')
+            mm.data_type = 'RGBA'
+            mm.blend_type = 'MULTIPLY'
+            mm.inputs['Factor'].default_value = 0.35
+            L(cc, mm.inputs['A'])
+            L(nz2.outputs['Color'], mm.inputs['B'])
+            cc = mm.outputs['Result']
+        mx = N('ShaderNodeMix')
+        mx.data_type = 'RGBA'
+        L(f, mx.inputs['Factor'])
+        L(cur_c, mx.inputs['A'])
+        L(cc, mx.inputs['B'])
+        cur_c = mx.outputs['Result']
+        for val, cur_name in ((rough, 'r'), (sheen, 's')):
+            vv = N('ShaderNodeValue')
+            vv.outputs[0].default_value = val
+            mf = N('ShaderNodeMix')
+            mf.data_type = 'FLOAT'
+            L(f, mf.inputs['Factor'])
+            L(cur_r if cur_name == 'r' else cur_s, mf.inputs['A'])
+            L(vv.outputs[0], mf.inputs['B'])
+            if cur_name == 'r':
+                cur_r = mf.outputs['Result']
+            else:
+                cur_s = mf.outputs['Result']
+        if tur:
+            src = nz.outputs['Fac'] if tur == 'kumas' else nz2.outputs['Fac']
+            mul = N('ShaderNodeMath')
+            mul.operation = 'MULTIPLY'
+            L(f, mul.inputs[0])
+            L(src, mul.inputs[1])
+            if kabart is None:
+                kabart = mul.outputs[0]
+            else:
+                ad_ = N('ShaderNodeMath')
+                L(kabart, ad_.inputs[0])
+                L(mul.outputs[0], ad_.inputs[1])
+                kabart = ad_.outputs[0]
+    L(cur_c, b.inputs['Base Color'])
+    L(cur_r, b.inputs['Roughness'])
+    L(cur_s, b.inputs['Sheen Weight'])
+    if kabart is not None:
+        bp = N('ShaderNodeBump')
+        bp.inputs['Strength'].default_value = 0.25
+        L(kabart, bp.inputs['Height'])
+        L(bp.outputs['Normal'], b.inputs['Normal'])
+    return m
+
+
+def _sac_kabuk(ad, hexcol):
+    """Saç kabuğu malzemesi: dikey tel bantları (dalga dokusu) + parlak şerit, hafif koyu kökler."""
+    m = bpy.data.materials.get(ad)
+    if m:
+        return m
+    m = _mat(ad, hexcol, 0.42, 0.6)
+    nt = m.node_tree
+    b = nt.nodes['Principled BSDF']
+    b.inputs['Coat Weight'].default_value = 0.25
+    b.inputs['Coat Roughness'].default_value = 0.3
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    mp = nt.nodes.new('ShaderNodeMapping')
+    mp.inputs['Scale'].default_value = (60.0, 60.0, 6.0)
+    nt.links.new(tc.outputs['Object'], mp.inputs['Vector'])
+    nz = nt.nodes.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 4.0
+    nz.inputs['Detail'].default_value = 10.0
+    nz.inputs['Distortion'].default_value = 0.6
+    nt.links.new(mp.outputs['Vector'], nz.inputs['Vector'])
+    bp = nt.nodes.new('ShaderNodeBump')
+    bp.inputs['Strength'].default_value = 0.45
+    nt.links.new(nz.outputs['Fac'], bp.inputs['Height'])
+    nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
+    mx = nt.nodes.new('ShaderNodeMix')
+    mx.data_type = 'RGBA'
+    mx.blend_type = 'MULTIPLY'
+    mx.inputs['Factor'].default_value = 0.5
+    mx.inputs['A'].default_value = kit.srgb(hexcol)
+    nt.links.new(nz.outputs['Color'], mx.inputs['B'])
+    nt.links.new(mx.outputs['Result'], b.inputs['Base Color'])
+    return m
+
+
+def _sac_mat(ad, hexcol):
+    m = bpy.data.materials.get(ad)
+    if m:
+        return m
+    m = bpy.data.materials.new(ad)
+    m.use_nodes = True
+    nt = m.node_tree
+    for x in list(nt.nodes):
+        nt.nodes.remove(x)
+    out = nt.nodes.new('ShaderNodeOutputMaterial')
+    h = nt.nodes.new('ShaderNodeBsdfHairPrincipled')
+    h.parametrization = 'COLOR'
+    h.inputs['Color'].default_value = kit.srgb(hexcol)
+    h.inputs['Roughness'].default_value = 0.35
+    nt.links.new(h.outputs[0], out.inputs['Surface'])
+    return m
+
+
+def _sac(ob, ao, tip, g, v, bolge, kafa):
+    """Tel saç (parçacık): kafa derisinden; kadın/kız: topuz ya da at kuyruğu hacmi."""
+    uzun = tip in ('kadin', 'kiz')
+    if uzun:  # at kuyruğu: başın arkasından omuz arasına inen, uca doğru incelen hacim
+        arka = v[(bolge == 'sac')]
+        p0 = arka[arka[:, 2] < np.percentile(arka[:, 2], 8)].mean(axis=0)
+        p0 = _mh2bl(p0)
+        cu = bpy.data.curves.new('AtKuyrugu', 'CURVE')
+        cu.dimensions = '3D'
+        cu.bevel_depth = 0.032 if tip == 'kadin' else 0.026
+        cu.bevel_resolution = 6
+        sp = cu.splines.new('BEZIER')
+        sp.bezier_points.add(2)
+        uz = 0.28 if tip == 'kadin' else 0.2
+        pts = [Vector(p0.tolist()) + Vector((0, 0.01, 0.02)), Vector(p0.tolist()) + Vector((0, 0.06, -uz * 0.45)),
+               Vector(p0.tolist()) + Vector((0, 0.05, -uz))]
+        for bp, p, r in zip(sp.bezier_points, pts, (0.9, 1.0, 0.25)):
+            bp.co = p
+            bp.handle_left_type = bp.handle_right_type = 'AUTO'
+            bp.radius = r
+        ko = bpy.data.objects.new('AtKuyrugu', cu)
+        kit.link(ko)
+        ko.data.materials.append(_sac_kabuk('SacKabuk_' + g['sac'], g['sac']))
+        ko.parent = ao
+
+
 def insan(tip='erkek', poz='yuru', faz=0.0, giysi=None, konum=(0, 0, 0), yon=0.0, boy=None, ad='Insan'):
     D = _veri()
     g = dict(ust='#3b4d66', alt='#2e2f33', ayakkabi='#1d1d1f', sac='#2a2018', ten='#c99b7a', kol='kisa')
@@ -130,48 +347,48 @@ def insan(tip='erkek', poz='yuru', faz=0.0, giysi=None, konum=(0, 0, 0), yon=0.0
         bolge[bolge == 'kol'] = 'ust'
     else:
         bolge[bolge == 'kol'] = 'ten'
-    # saç: kafa üstü ve arkası (alın çizgisinin üstü)
-    kafa = jt['head____head'] if 'head____head' in jt else v.max(axis=0)
+    # saç (kafa derisi): kafa üstü ve arkası, alın çizgisinin üstü
+    kafa = jt['head____head']
     ust_kafa = v[:, 1].max()
     on_z = v[:, 2]
-    sac = (bolge == 'ten') & (v[:, 1] > kafa[1] + (ust_kafa - kafa[1]) * (0.30 if tip in ('kadin', 'kiz') else 0.40)) & ~((on_z > kafa[2] + 0.55) & (v[:, 1] < kafa[1] + (ust_kafa - kafa[1]) * 0.75))
-    if tip in ('kadin', 'kiz'):  # uzun saç: ense ve omuz arkası
-        sac |= (bolge != 'ayakkabi') & (v[:, 1] > kafa[1] - 1.6) & (v[:, 1] < kafa[1] + 0.4) & (on_z < kafa[2] - 0.35) & (np.abs(v[:, 0]) < 1.0)
+    hk = ust_kafa - kafa[1]
+    esik = 0.24 if tip in ('kadin', 'kiz') else 0.3
+    sac = (bolge == 'ten') & (v[:, 1] > kafa[1] + hk * esik) & ~((on_z > kafa[2] + 0.45) & (v[:, 1] < kafa[1] + hk * 0.74))
     bolge[sac] = 'sac'
-    # giysi şişirme (köşe normalleri yaklaşık: merkezden uzaklık yönünde)
-    yuzler = [(f, gr) for f, gr in zip(D['f'], D['g']) if gr == 'body']
+    # yüz: kaşlar ve dudaklar (boyama)
+    eL, eR = jt['eye.L____head'], jt['eye.R____head']
+    ey, ez = (eL[1] + eR[1]) / 2, max(eL[2], eR[2])
+    kas = (bolge == 'ten') & (v[:, 1] > ey + 0.22) & (v[:, 1] < ey + 0.31) & (on_z > ez) & \
+        ((np.abs(v[:, 0] - eL[0]) < 0.3) | (np.abs(v[:, 0] - eR[0]) < 0.3))
+    bolge[kas] = 'kas'
+    dud = (bolge == 'ten') & (v[:, 1] > ey - 0.95) & (v[:, 1] < ey - 0.86) & (np.abs(v[:, 0]) < 0.19) & (on_z > ez + 0.1)
+    bolge[dud] = 'dudak'
+    # gömlek eteği: bel çizgisinin biraz altına iner (pantolon kemerini örter)
+    etek = jt['spine05____head'][1] - 0.25
+    bolge[(bolge == 'alt') & (v[:, 1] >= etek) & (v[:, 1] < bel)] = 'ust'
+    # yüzler: gövde + gözler + kirpikler
+    gruplar = {'body': None, 'helper-l-eye': 'goz', 'helper-r-eye': 'goz'}
+    yuzler = [(f, gr) for f, gr in zip(D['f'], D['g']) if gr in gruplar or gr.startswith('helper-l-eyelashes') or gr.startswith('helper-r-eyelashes')]
     vb = _mh2bl(v)
     me = bpy.data.meshes.new(ad)
     me.from_pydata(vb.tolist(), [], [f for f, _ in yuzler])
     me.update()
-    # normal yönünde şişir (giysi kalınlığı)
-    nrm = np.zeros((len(me.vertices), 3))
-    me.vertices.foreach_get('normal', nrm.ravel())
-    kal = {'ust': 0.007, 'alt': 0.006, 'ayakkabi': 0.014, 'sac': 0.016, 'ten': 0.0}
-    off = np.array([kal.get(b, 0.0) for b in bolge])[:, None] * nrm
-    me.vertices.foreach_set('co', (vb + off).ravel())
-    me.update()
     ob = bpy.data.objects.new(ad, me)
     kit.link(ob)
-    mats = {
-        'ten': _mat('Ten_' + g['ten'], g['ten'], 0.45),
-        'ust': _mat('Ust_' + g['ust'], g['ust'], 0.8, 0.3),
-        'alt': _mat('Alt_' + g['alt'], g['alt'], 0.75, 0.2),
-        'ayakkabi': _mat('Ayak_' + g['ayakkabi'], g['ayakkabi'], 0.4),
-        'sac': _mat('Sac_' + g['sac'], g['sac'], 0.55, 0.4),
-    }
-    sira = list(mats)
-    for k in sira:
-        ob.data.materials.append(mats[k])
-    fb = []
-    for f, _ in yuzler:
-        oy = {}
-        for i in f:
-            oy[bolge[i]] = oy.get(bolge[i], 0) + 1
-        fb.append(sira.index(max(oy, key=oy.get)))
+    # bölgeler köşe özniteliği olarak (yumuşak sınır: alt bölümlemede eğriye dönüşür)
+    ayak_min = v[bolge == 'ayakkabi', 1].min() if np.any(bolge == 'ayakkabi') else 0
+    taban = (bolge == 'ayakkabi') & (v[:, 1] < ayak_min + 0.12)
+    katman = {'r_alt': bolge == 'alt', 'r_ust': bolge == 'ust', 'r_ayak': bolge == 'ayakkabi', 'r_taban': taban,
+              'r_sac': bolge == 'sac', 'r_kas': bolge == 'kas', 'r_dudak': bolge == 'dudak'}
+    for k, mask in katman.items():
+        at = me.attributes.new(k, 'FLOAT', 'POINT')
+        at.data.foreach_set('value', mask.astype(np.float32))
+    ob.data.materials.append(_insan_mat(g))
+    ob.data.materials.append(_mat('Goz', '#2a1f18', 0.05))
+    ob.data.materials.append(_mat('Kirpik', '#16110d', 0.6))
+    fb = [1 if gr in ('helper-l-eye', 'helper-r-eye') else (0 if gr == 'body' else 2) for _, gr in yuzler]
     me.polygons.foreach_set('material_index', np.array(fb, dtype=np.int32))
     me.polygons.foreach_set('use_smooth', np.ones(len(me.polygons), dtype=bool))
-    # kullanılmayan köşeleri at
     # iskelet
     arm = bpy.data.armatures.new(ad + '_Iskelet')
     ao = bpy.data.objects.new(ad + '_Iskelet', arm)
@@ -193,10 +410,41 @@ def insan(tip='erkek', poz='yuru', faz=0.0, giysi=None, konum=(0, 0, 0), yon=0.0
         vg = ob.vertex_groups.new(name=kemik)
         for i, w in lst:
             vg.add([int(i)], float(w), 'REPLACE')
+    # giysi: kas/vücut ayrıntısını sil (yumuşat), kalınlık ver (bol kesim: etekte ve paçada daha bol)
+    giyim = np.isin(bolge, ['ust', 'alt', 'ayakkabi'])
+    ymin, ymax = v[:, 1].min(), v[:, 1].max()
+    yk = (v[:, 1] - ymin) / (ymax - ymin)
+    kal = np.zeros(n)
+    kal[bolge == 'ust'] = 0.35 + 0.6 * np.clip((bel + 0.6 - v[bolge == 'ust', 1]) / 1.2, 0, 1)
+    kal[bolge == 'alt'] = 0.3 + 0.5 * np.clip((0.5 - yk[bolge == 'alt']) / 0.45, 0, 1)
+    kal[bolge == 'ayakkabi'] = 0.75
+    kal[bolge == 'sac'] = 1.0 if tip in ('kadin', 'kiz') else (0.35 if tip == 'yasli' else 0.6)
+    vg_d = ob.vertex_groups.new(name='G_duz')
+    vg_k = ob.vertex_groups.new(name='G_kal')
+    vg_s = ob.vertex_groups.new(name='G_sac')
+    for i in np.nonzero(giyim)[0]:
+        vg_d.add([int(i)], 1.0, 'REPLACE')
+    for i in np.nonzero(kal > 0)[0]:
+        vg_k.add([int(i)], float(kal[i]), 'REPLACE')
+    for i in np.nonzero(bolge == 'sac')[0]:
+        vg_s.add([int(i)], 1.0, 'REPLACE')
+    ls = ob.modifiers.new('KumasDuz', 'SMOOTH')  # kas ve göğüs ayrıntısını sil
+    ls.vertex_group = 'G_duz'
+    ls.factor = 0.7
+    ls.iterations = 14
+    dp = ob.modifiers.new('KumasKal', 'DISPLACE')
+    dp.vertex_group = 'G_kal'
+    dp.strength = 0.026
+    dp.mid_level = 0.0
+    dp.direction = 'NORMAL'
     md = ob.modifiers.new('Iskelet', 'ARMATURE')
     md.object = ao
     ob.parent = ao
+    sb = ob.modifiers.new('Ince', 'SUBSURF')
+    sb.levels = 1
+    sb.render_levels = 2
     _poz(ao, poz, faz, tip)
+    _sac(ob, ao, tip, g, v, bolge, kafa)
     # boy ve konum: ayak tabanı z=0
     zmin = vb[:, 2].min()
     h = vb[:, 2].max() - zmin
