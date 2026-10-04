@@ -277,6 +277,12 @@ def main():
                 vurgu[t] = max(vurgu[t], w)
         herhangi = max(vurgu.values())
         dal = kit.smooth(kit.seg(u, 0.88, 0.97))
+        # dalış: kamera yığılı saydam katmanların içinden geçer; 12 sıçrama yetmez (siyah leke) → 32.
+        # Ev tamamen saydamlaşınca (dal ≥ 0,995) nesneler hiç çizilmesin (hem leke hem hız)
+        sc.cycles.transparent_max_bounces = 32 if dal > 0.02 else 12
+        ev_gizli = dal >= 0.995
+        for o in list(obs.values()):
+            o.hide_render = ev_gizli
         for t in turler:
             g = herhangi * (1 - vurgu[t])
             if t in ('harc', 'donati'):  # içte kalan parçalar: hayalet olmaz, vurguda lime
@@ -289,7 +295,7 @@ def main():
         ayarla(odak_m, herhangi, 0.0, 6.0 * dal)
         # Egepor: durağında levhalar dışarıdan uçarak yerine oturur, sonra kalır
         ea = kit.ease_out(kit.seg(u, 0.68, 0.74), 3)
-        ep_ob.hide_render = ea <= 0
+        ep_ob.hide_render = ea <= 0 or ev_gizli
         ep_ob.location = (0, 0, 0)
         ep_ob.scale = (1, 1, 1)
         if 0 < ea < 1:
