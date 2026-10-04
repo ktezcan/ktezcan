@@ -106,7 +106,7 @@ def gecis_malzeme(asil, ad):
 def ayarla(m, g, v, h):
     nt = m.node_tree
     nt.nodes['G'].inputs['Fac'].default_value = g
-    nt.nodes['V'].inputs['Fac'].default_value = v
+    nt.nodes['V'].inputs['Fac'].default_value = 1.0 if v > 0.995 else v  # 0,999 ≈ görünmez: ham malzeme hesaplanmasın (koyu leke + yavaşlık)
     nt.nodes['H'].inputs[1].default_value = h
 
 
@@ -164,7 +164,7 @@ def kamera_pozu(u, variant):
     N = 400
     toplam = sum(hiz(i / N) for i in range(N))
     kis = sum(hiz(i / N) for i in range(int(u * 0.86 / 1.0 * N)))  # 0.86'da tur tamam
-    az = -32 + 360 * min(1.0, kis / (toplam * 0.86 + 1e-9))
+    az = 32 + 360 * min(1.0, kis / (toplam * 0.86 + 1e-9))
     k_uz, k_el = 1.0, 18.0
     hedef = HEDEF.copy()
     for (ad, _, a, b, ku, el) in DURAK:
@@ -190,7 +190,7 @@ def main():
     kit.reset()
     v = ARGS.variant
     sc = kit.setup_render(*RES[v], samples=ARGS.samples, threshold=0.02, bounces=(6, 3, 3, 6))
-    sc.cycles.transparent_max_bounces = 32
+    sc.cycles.transparent_max_bounces = 12
     sc.render.use_persistent_data = True
     if os.environ.get('EGE_PREVIEW'):
         sc.render.resolution_percentage = int(os.environ['EGE_PREVIEW'])
@@ -281,7 +281,8 @@ def main():
             g = herhangi * (1 - vurgu[t])
             if t in ('harc', 'donati'):  # içte kalan parçalar: hayalet olmaz, vurguda lime
                 g = 0.0
-            ayarla(gm[t], g, dal, 6.0 * vurgu[t])
+            # lime yalnız Ege ürünü: donatı (çelik) çerçevelenmez
+            ayarla(gm[t], g, dal, 0.0 if t == 'donati' else 6.0 * vurgu[t])
         # harç vurgusu: bloklar hayalete döner, harç ağı görünür
         if vurgu['harc'] > 0:
             ayarla(gm['blok'], vurgu['harc'] * 0.92, dal, 0.0)

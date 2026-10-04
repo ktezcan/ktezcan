@@ -181,8 +181,10 @@ def uret(kat_sayisi=KAT, cati=True):
         i = 0
         while x < XS[-1] - WT / 2 - 0.05:
             w = min(0.6, XS[-1] - WT / 2 - x) - 0.008
-            P.append(_p((x + w / 2, 0, z0 + 0.1), (w, YS[-1] - YS[0] - WT, 0.2), 'panel', kat=kat_sayisi,
-                        zaman=tk + (0.7 + 0.25 * i / 20) * dt))
+            # iki açıklık (ara aks y=0'da): her panel ≈ 4,4 m, kartta yazan "6 m'ye kadar" ile uyumlu
+            for ya, yb in ((YS[0] + WT / 2, YS[1] - 0.01), (YS[1] + 0.01, YS[-1] - WT / 2)):
+                P.append(_p((x + w / 2, (ya + yb) / 2, z0 + 0.1), (w, yb - ya, 0.2), 'panel', kat=kat_sayisi,
+                            zaman=tk + (0.7 + 0.25 * i / 20) * dt))
             x += 0.6
             i += 1
     return P
