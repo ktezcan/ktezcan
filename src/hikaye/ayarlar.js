@@ -6,16 +6,14 @@ export const KARE_KOK = 'kareler'; // index.html'e göre göreli yol
 
 /**
  * Sahneler (sayfadaki sırayla). id = kareler/<id>/ klasörü ve [data-sahne] değeri.
- *  giris  : sahnenin ilk bölümü (0..1) — yalnız video→blok sahnesinde: video önce
- *           bant hâline gelir, sonra kareler başlar.
- *  video  : ön yüz köşeleri meta.face'ten okunur, gerçek video bu yüze oturur.
  */
 export const SAHNELER = [
-  { id: 's0', giris: 0.16, video: true, boy: 230 },
-  { id: 's1', boy: 380 },
-  { id: 's2', boy: 300 },
-  { id: 's3', boy: 400 },
-  { id: 's4', boy: 280 },
+  { id: 's0', boy: 560 }, // Hayalden yuvaya: kıvılcım → plan → eskiz → tel kafes → gazbeton → sokak → akşam
+  { id: 's1', boy: 440 }, // Ürün turu: ev etrafında, duraklarda ürün + özellik
+  { id: 's2', boy: 360 }, // Doğuş: blok hammaddeye çözülür, kabarma, kesim
+  { id: 's3', boy: 280 }, // Gözenek: kapalı hava hücresi
+  { id: 's4', boy: 260 }, // Yol: fabrikadan tır çıkar, kamera tepeye yükselir
+  { id: 's5', boy: 280 }, // Dünya: 5 kıtaya yaylar
 ];
 
 /**

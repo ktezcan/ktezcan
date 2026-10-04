@@ -166,6 +166,7 @@ def arc_object(name, a, b, rot, mat):
         sp.points[i].co = (p.x, p.y, p.z, 1.0)
     ob = bpy.data.objects.new(name, cu)
     kit.link(ob)
+    ob['pts'] = [c for i in range(n) for c in sp.points[i].co[:3]]
     ob.data.materials.append(mat)
     ob.matrix_world = rot
     cu.bevel_factor_mapping_end = 'SPLINE'
@@ -189,6 +190,15 @@ def build(variant):
     dots = dots_object(pts, rot)
     arc_mat = kit.emission_material('Yay', kit.LIME_HI, 7.0)
     arcs = [arc_object(f'Yay{i}', IZMIR, (lat, lon), rot, arc_mat) for i, (_, lat, lon, _) in enumerate(TARGETS)]
+    # yay başı: ilerleyen ışık damlası (yolculuk hissi)
+    bas_mat = kit.emission_material('YayBasi', (1.0, 1.0, 0.92, 1.0), 40.0)
+    for i, a in enumerate(arcs):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=0.011)
+        b = bpy.context.active_object
+        b.name = f'YayBasi{i}'
+        b.data.materials.append(bas_mat)
+        b.visible_shadow = False
+        a['bas'] = b.name
     # varış halkaları (kıtada yumuşak dalga)
     pulses = []
     for i, (_, lat, lon, _) in enumerate(TARGETS):
@@ -254,6 +264,17 @@ def main():
             u = kit.seg(t, ts, ts + ARC_DUR)
             arcs[i].data.bevel_factor_end = kit.ease_in_out(u)
             arcs[i].hide_render = u <= 0.0
+            bas = bpy.data.objects[arcs[i]['bas']]
+            ue = kit.ease_in_out(u)
+            bas.hide_render = not (0.0 < u < 1.0)
+            pp = list(arcs[i]['pts'])
+            m_ = len(pp) // 3
+            x = ue * (m_ - 1)
+            j = min(m_ - 2, int(x))
+            fr = x - j
+            pa = Vector(pp[3 * j:3 * j + 3])
+            pb = Vector(pp[3 * j + 3:3 * j + 6])
+            bas.location = arcs[i].matrix_world @ pa.lerp(pb, fr)
             arrive = kit.smooth(kit.seg(t, ts + ARC_DUR * 0.85, ts + ARC_DUR + 0.08))
             m = kita == kid
             glow[m] = 0.05 + 0.75 * arrive

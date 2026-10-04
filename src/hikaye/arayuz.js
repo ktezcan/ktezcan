@@ -150,7 +150,7 @@ export function arayuzKur({ sahneler, ortak, debug }) {
   const yolAd = yol ? $('[data-yol-ad]', yol) : null;
   const yolBtn = yol ? $('[data-yol-ac]', yol) : null;
   let sonAd = '';
-  const YOL_TR = { s0: 'Blok', s1: 'Üretim', s2: 'Yapı', s3: 'Sistem', s4: 'Dünya', son: 'Teklif' };
+  const YOL_TR = { s0: 'Hayal', s1: 'Ürünler', s2: 'Üretim', s3: 'Yapı', s4: 'Yol', s5: 'Dünya', son: 'Teklif' };
   function yolAdYaz() {
     if (!yolAd) return;
     const tr = YOL_TR[sonAd] || '';

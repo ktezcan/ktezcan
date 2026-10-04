@@ -307,7 +307,13 @@ def _sac(ob, ao, tip, g, v, bolge, kafa):
         ko = bpy.data.objects.new('AtKuyrugu', cu)
         kit.link(ko)
         ko.data.materials.append(_sac_kabuk('SacKabuk_' + g['sac'], g['sac']))
-        ko.parent = ao
+        ko.parent = ao  # başa bağlı: baş eğilince at kuyruğu da gelir
+        ko.parent_type = 'BONE'
+        ko.parent_bone = 'head'
+        hb = ao.data.bones['head']
+        Mh = hb.matrix_local.copy()
+        Mh.translation = hb.tail_local
+        ko.matrix_parent_inverse = Mh.inverted()
 
 
 def insan(tip='erkek', poz='yuru', faz=0.0, giysi=None, konum=(0, 0, 0), yon=0.0, boy=None, ad='Insan'):
@@ -512,3 +518,67 @@ def _poz(ao, poz, faz, tip):
             _don(ao, 'upperarm01.R', 'Y', -38)
             _don(ao, 'lowerarm01.L', X, -45)
             _don(ao, 'lowerarm01.R', X, -45)
+
+
+def _poz_sifirla(ao):
+    for pb in ao.pose.bones:
+        pb.rotation_mode = 'QUATERNION'
+        pb.rotation_quaternion = (1, 0, 0, 0)
+
+
+def yuru_kare(ao, tip, faz):
+    """Yürüyüş döngüsünü kare kare güncelle (ağ yeniden kurulmaz; yalnız kemikler)."""
+    _poz_sifirla(ao)
+    _poz(ao, 'yuru', faz, tip)
+
+
+def bisikletli(konum=(0, 0, 0), yon=0.0, bis_renk='#c24a2c', giysi=None, tip='erkek', ad='Bisikletli', pedal=0.6):
+    """Bisiklet + sürücü: eller gidon elciklerinde, ayaklar pedalda (IK), kalça selede.
+    Döner: (bisiklet ebeveyni, iskelet). İkisi birlikte taşınacaksa bisiklet ebeveyni kullanılır."""
+    import sokak as S
+    bis = S.bisiklet((0, 0, 0), 0.0, bis_renk, ad + '_Bis', pedal=pedal)
+    ao, ob = insan(tip, 'dur', 0.0, giysi, konum=(0, 0, 0), yon=math.pi / 2, ad=ad)
+    _poz_sifirla(ao)
+    # gövde öne eğik, baş ileri bakar
+    # (iskelet uzayında öne = −Y; X ekseni etrafında + açı gövdeyi öne eğer)
+    _don(ao, 'spine04', 'X', 12)
+    _don(ao, 'spine03', 'X', 18)
+    _don(ao, 'spine02', 'X', 16)
+    _don(ao, 'neck01', 'X', -22)
+    _don(ao, 'head', 'X', -14)
+    _don(ao, 'upperarm01.L', 'Y', 50)
+    _don(ao, 'upperarm01.R', 'Y', -50)
+    bpy.context.view_layer.update()
+    # kalça selenin üstüne
+    sele = Vector((-0.20, 0.0, 1.005 + 0.07))
+    kok = ao.matrix_world @ ao.pose.bones['root'].head
+    ao.location += sele - kok
+    st = Vector((0.43 + 0.08, 0, 0.88 + 0.05))
+    hedefler = {
+        'lowerarm02.L': st + Vector((0, 0.25, 0.01)), 'lowerarm02.R': st + Vector((0, -0.25, 0.01)),
+    }
+    gm = Vector((0.0, 0, 0.3))
+    for k, s_, kem in ((0, -1, 'lowerleg02.R'), (math.pi, 1, 'lowerleg02.L')):
+        a = pedal + k
+        hedefler[kem] = gm + Vector((math.cos(a) * 0.17, s_ * 0.13, math.sin(a) * 0.17 + 0.06))
+    kutup = {'lowerarm02.L': Vector((-0.3, 0.7, 0.6)), 'lowerarm02.R': Vector((-0.3, -0.7, 0.6)),
+             'lowerleg02.L': Vector((1.2, 0.2, 1.2)), 'lowerleg02.R': Vector((1.2, -0.2, 1.2))}
+    for kem, p in hedefler.items():
+        e = bpy.data.objects.new(f'{ad}_IK_{kem}', None)
+        kit.link(e)
+        e.location = p
+        e.parent = bis
+        pe = bpy.data.objects.new(f'{ad}_Kutup_{kem}', None)
+        kit.link(pe)
+        pe.location = kutup[kem]
+        pe.parent = bis
+        c = ao.pose.bones[kem].constraints.new('IK')
+        c.target = e
+        c.pole_target = pe
+        c.pole_angle = math.radians(-90)
+        c.chain_count = 4
+        c.use_stretch = False
+    ao.parent = bis
+    bis.location = konum
+    bis.rotation_euler[2] = yon
+    return bis, ao

@@ -17,7 +17,7 @@ from PIL import Image
 KOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 HEDEF = os.path.join(KOK, 'giris-hikaye', 'kareler')
 META_JS = os.path.join(KOK, 'giris-hikaye', 'assets', 'js', 'kareler-meta.js')
-SAHNELER = ['s0', 's1', 's2', 's3', 's4']
+SAHNELER = ['s0', 's1', 's2', 's3', 's4', 's5']
 
 
 def yuvarla(o, n=4):
