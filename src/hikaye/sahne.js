@@ -125,6 +125,7 @@ export class Sahne {
     this.izin = false;
     this.yaricap = PENCERE;
     this.odak = -1000;
+    this.yogunluk = 1; // var olan kare / toplam kare (setVariant)
     this.odakYon = 0; // odağın son hareket yönü (+1 ileri, -1 geri): hareket yönündeki kareler önce iner
     this.tutFn = () => false;
     this.planKirli = true;
@@ -168,6 +169,8 @@ export class Sahne {
     this.variant = pick;
     this.v = this.meta[pick] || { n: 1, res: [1600, 900], mevcut: [], hotspots: {}, pen: {} };
     this.var = Array.isArray(this.v.mevcut) ? new Set(this.v.mevcut) : null;
+    // var olan kare yoğunluğu (telefon seti her 2. kare → 0,5): pencere yarıçapı var olan kare cinsinden sayılır
+    this.yogunluk = this.var ? Math.max(0.05, this.var.size / Math.max(1, this.v.n)) : 1;
     this.hsAnahtar = siraliAnahtar(this.v.hotspots);
     this.kalemAnahtar = siraliAnahtar(this.v.pen);
     this.frames = new Array(this.v.n).fill(null);
@@ -233,7 +236,8 @@ export class Sahne {
       return;
     }
     const n = this.v.n;
-    const r = yaricap != null ? yaricap : rol === 'aktif' ? PENCERE : KOMSU_KARE;
+    // yarıçap var olan kare cinsinden verilir (±PENCERE kare çözülü); dizin birimine çevrilir
+    const r = Math.round((yaricap != null ? yaricap : rol === 'aktif' ? PENCERE : KOMSU_KARE) / this.yogunluk);
     let odak = 0;
     if (rol === 'aktif') odak = Math.round(this.hamP * (n - 1));
     else if (rol === 'geri' || rol === 'sabit') odak = n - 1;

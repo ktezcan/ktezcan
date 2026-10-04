@@ -346,8 +346,9 @@ def main():
         if ARGS.skip_existing and os.path.exists(path):
             continue
         t1 = time.time()
+        c1 = time.process_time()
         kit.render_to(path)
-        print(f'KARE {f} {time.time() - t1:.1f}s (hazırlık {t1 - t0:.1f}s) {info}', flush=True)
+        print(f'KARE {f} {time.time() - t1:.1f}s cpu {time.process_time() - c1:.0f}s (hazırlık {t1 - t0:.1f}s) {info}', flush=True)
         kit.write_json(meta_path, meta)
     kit.write_json(meta_path, meta)
 

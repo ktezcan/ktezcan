@@ -82,7 +82,7 @@ const SANIYELER = [0.5, 12, 24, 31.5, 32.5, 45, 62, 69.5, 70.5, 80, 89.5, 90.5, 
 const SANIYELER_KISA = [0.5, 31.5, 32.5, 50, 100, 112, 128, 141, 145.8];
 /** Parça dikişleri (saniye): iki yanındaki görüntü aynı kare olmalı (son kare = sonraki ilk kare), motor araya boşluk/parıltı koymamalı. */
 const DIKISLER = [32, 70, 90, 104, 120, 136];
-const DIKIS_ESIK = 8; // 32×18 küçültülmüş RGB ortalama mutlak fark (0..255)
+const DIKIS_ESIK = 12; // 32×18 küçültülmüş RGB ortalama mutlak fark (0..255); dikişsiz (farklı çekim) ≥ 30, yer tutucuda komşu kare farkı ≈ 7
 
 async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {}) {
   const az = extra.includes('az');
@@ -174,7 +174,7 @@ async function oturum(ad, viewport, { dsf = 1, extra = '', tamTur = true } = {})
     };
     for (const t of DIKISLER) {
       const ornek = [];
-      for (const d of [-0.03, 0.03]) {
+      for (const d of [-0.004, 0.004]) { // dikişe çok yakın: yoğun kare aralarındaki doğrusal erime farkı yok sayılabilir
         await page.evaluate((x) => window.__ege.ortak.saniyeyeGit(x), t + d);
         await page.waitForTimeout(150);
         await hazirBekle(8000);
