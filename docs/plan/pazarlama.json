@@ -1,0 +1,2043 @@
+{
+ "ozet": {
+  "amac": "Ege Gazbeton hikâyesinin pazarlama ve dönüşüm tasarımı: duygu → kanıt → güç → eylem hunisi, üç kitle yolu, saniye saniye CTA yerleşimi, bağlam taşıyan bağlantılar, güven işaretleri, çerezsiz dataLayer ölçümü, marka (lime) görünürlüğü, SEO/paylaşım, mobil ve ilk 10 sn testi.",
+  "cta_ritmi": "Otomatik CTA pencereleri film saniyesinde: t=0 (hero), 23, 38, 64–67 (ilk ANA), 99, 115, 131, 142 (finale). Aralar 23, 15, 26, 35, 16, 16, 11 sn; s2 (70–90) CTA'sız; her pencere bir kanıttan hemen sonra gelir.",
+  "ana_kararlar": [
+   "İlk CTA t=0'da (üst çubuk Teklif Al + hero'da tek lime ana düğme + 3 kitle çipi + atla); duygu sahnesinde (t=2–22) otomatik CTA yok; ilk ANA CTA t=64–67 (altı ürün sonrası); finalde t=142.",
+   "Hero'dan Katalog/Teknik düğmeleri çıkar (tek ana eylem); yerlerine t=64, 99, 142 bağlamı.",
+   "Bağlantılarda ?kaynak=hikaye&dil=&urun=&kitle=&nokta= ; urun yalnız ölçülmüş ilgiden (süre + kart + çip), bellekte; statik href temiz.",
+   "Slogan açılışta değil finalde (öneri; s0/son planlarından sapma, açık soru 1). Logo yalnız t=140–141.",
+   "Telefonda iki hata: üst çubukta Teklif gizli ve kaydırma ipucu gizli; ayrıca .eg-rakam small gizliyor (kaynak kuralı ihlali).",
+   "Doğrulanmayan hiçbir sayı/belge ekranda yok: CE belge no, TS EN 771-4, ISO/TSE, kuruluş yılı, limanlar, teslim süresi = teyit gerekli.",
+   "Finale t=142–145 sadeleştirildi: t=142 ana CTA + 1 ikincil + 1 bağlam çipi; t=143 tek sıra kitle çipleri; t=144 statik kanıt kartları; t=145 ince tekrar izle. Alt sabit çubuk/WhatsApp (numara teyidi) ve quiz rozeti, gömülü mini hesap, Araçlar çekmecesi finalde yok."
+  ],
+  "kaynak_dosyalar": [
+   "DEVIR.md",
+   "src/hikaye/dil.js",
+   "src/hikaye/arayuz.js",
+   "src/hikaye/main.js",
+   "src/hikaye/ayarlar.js",
+   "giris-hikaye/index.html",
+   "giris-hikaye/assets/css/hikaye.css",
+   "plan/akt-s0..son.json (ajan planları)"
+  ],
+  "zaman_notu": "Film saniyesi t; vh = t × 22 (akış başından). Perde sınırları: s0 0–32, s1 32–70, s2 70–90, s3 90–104, s4 104–120, s5 120–136, son 136–146 (toplam 146 sn = 3212 vh)."
+ },
+ "huni": [
+  {
+   "asama": "1 · DUYGU",
+   "t_bas": 0,
+   "t_son": 32,
+   "sure_sn": 32,
+   "film_payi_yuzde": 21.9,
+   "vh_bas": 0,
+   "vh_son": 704,
+   "perdeler": [
+    "s0 Hayalden yuvaya"
+   ],
+   "amac": "İlk 10 sn'de dur, markayı (Ege Gazbeton, gazbeton) tanı, kaydırmayı öğren; sonra eve bağlan: ev önce hayaldir. Hikâyenin sorusu t=28'de sorulur: \"Peki bu evi iyi yapan ne?\"",
+   "izleyici_sorusu": "Bu ne? Bana göre mi? Devam etmeye değer mi?",
+   "izleyici_hissi": "Sıcak merak → hayranlık (çizilen ev) → sahiplenme (sokak, aile) → huzur (akşam, yanan pencereler) → \"bunun cevabı ne?\" merakı.",
+   "ana_mesaj": "Her yuva bir çizgiyle başlar; o yuvayı yuva yapan malzemedir.",
+   "kanit_turu": "Duygusal kanıt + tek ürün gerçeği: 60 × 25 cm yüz, 1–3 mm ince derz (Ürün föyleri). Öneri: duygu perdesinde ekranda yazılı rakam en çok 2; 4,50 m lento ve 6 m panel rakamları yalnız nokta kartında (s0 planı t=15–16'da ekrana alıyor).",
+   "alt_araliklar": [
+    {
+     "t": [
+      0,
+      11
+     ],
+     "ad": "Kıvılcım → plan çizimi → eskiz",
+     "kazanc": "dikkat + marka adı + kaydırma alışkanlığı; lime YOK (ışık amber)"
+    },
+    {
+     "t": [
+      12,
+      17
+     ],
+     "ad": "Karkas → gazbeton duvar örülür",
+     "kazanc": "ürün sahneye girer; ilk mikro kanıt (ince derz)"
+    },
+    {
+     "t": [
+      17,
+      25
+     ],
+     "ad": "Çapraz lime silme → gündüz sokak → lime streçli tır",
+     "kazanc": "ilk lime = ilk marka anı (t=17), marka reklam karesi (t=22), \"Ürünleri gör ↓\" (t=23)"
+    },
+    {
+     "t": [
+      25,
+      32
+     ],
+     "ad": "Akşam, pencereler tek tek yanar, soru, röntgen çıkışı",
+     "kazanc": "duygusal zirve (t=27–28), merak kancası (t=28), ürün turuna köprü (t=29–31)"
+    }
+   ],
+   "gecis_koprusu": "t=28 \"Peki bu evi iyi yapan ne?\" → t=32 s1 \"Bu evi iyi yapan ne?\" (aynı soru, ekranda kesintisiz).",
+   "mikro_donusumler": [
+    "ilk kaydırma (≤10 sn)",
+    "tır etiketi/nokta kartı dokunuşu",
+    "kitle çipi",
+    "\"Ürünleri gör ↓\" (t=23)"
+   ],
+   "cta_yogunlugu": "DÜŞÜK: yalnız hero (t=0–2: 1 ana düğme + 3 çip + atla) ve t=23 yumuşak iç bağlantı; üst çubukta kalıcı Teklif Al. Duygu sahnesinde (t=2–22) hiçbir otomatik CTA yok.",
+   "olcum": [
+    "ege_hikaye_gor",
+    "ege_hikaye_basla",
+    "ege_ilerleme t=5/10/20/28",
+    "ege_nokta (sokak, tir, yuva)"
+   ],
+   "risk": "Gazbeton adı ve ürün ilk 10 sn'de okunmazsa duygu \"kimin reklamı?\" sorusuna döner: eyebrow + cümle HTML'de, ilk boyamada."
+  },
+  {
+   "asama": "2 · KANIT",
+   "t_bas": 32,
+   "t_son": 104,
+   "sure_sn": 72,
+   "film_payi_yuzde": 49.3,
+   "vh_bas": 704,
+   "vh_son": 2288,
+   "perdeler": [
+    "s1 Ürün turu (32–70)",
+    "s2 Doğuş (70–90)",
+    "s3 Gözenek (90–104)"
+   ],
+   "amac": "Soruyu cevapla: ürünler nerede kullanılır, ne kazandırır (s1); nasıl yapılır, şeffaflık (s2); neden çalışır, bilim ve üç kaynaklı rakam (s3). Satış baskısı yok; uzmanlık hissi.",
+   "izleyici_sorusu": "Neyle yapılmış? Gerçekten iyi mi? Kanıtınız ne?",
+   "izleyici_hissi": "Keşif (altı ürün) → şaşkınlık (blok hammaddeye çözülür) → kavrayış (hacmin çoğu hava) → güven (üç kaynaklı rakam mührü).",
+   "ana_mesaj": "Altı ürün, tek mineral malzeme; hammaddesinden gözeneğine kadar açık.",
+   "kanit_turu": "Kanıt merdiveni: ① nerede kullanılır ② ne kazandırır ③ kaynaklı rakam ④ süreç (5 hammadde, kabarma, tel kesim, otoklav) ⑤ bilim (kapalı hava hücresi, ısı dolanır) ⑥ mühür: λ 0,08 · A1 · 300–600 (t=100).",
+   "alt_araliklar": [
+    {
+     "t": [
+      32,
+      70
+     ],
+     "ad": "Ürün turu: 4 giriş + 6 ürün × 5 sn + 4 çıkış",
+     "kazanc": "ürün ilgisi ölçülür (ege_durak); ODTÜ −%17 (t=60); ilk ANA CTA t=64–67"
+    },
+    {
+     "t": [
+      70,
+      90
+     ],
+     "ad": "Doğuş: beş hammadde → karışım → kabarma → kesim → otoklav",
+     "kazanc": "şeffaflık; hammadde kartları (kum, kireç, çimento, alçı, alüminyum); kendi kireç tesisi (kireç kartı)"
+    },
+    {
+     "t": [
+      90,
+      104
+     ],
+     "ad": "Gözenek: ısı dolanır, λ · A1 · kg/m³ mührü",
+     "kazanc": "teknik güven; mimar CTA'sı t=99–101"
+    }
+   ],
+   "gecis_koprusu": "t=68 \"Peki bu blok nasıl doğuyor?\" → t=89 \"İçine bakalım.\" → t=101–103 palet çıkışı (lime streç ilk büyük plan) → s4.",
+   "mikro_donusumler": [
+    "nokta kartı açma",
+    "çip ile ürün durağına atlama",
+    "ürün sayfası / föy tıklaması (kart içi)",
+    "\"Duvarlarınızı hesaplayın\" (t=38)",
+    "ege_baglam çözülmesi (t=64)"
+   ],
+   "cta_yogunlugu": "ORTA: otomatik pencereler t=38–40 (hesapla), t=64–67 (teklif + katalog, ANA), t=99–101 (föy); geri kalanı kart içi (kullanıcı başlatır). s2'de (t=70–90) otomatik CTA yok: merak ve etkileşim bozulmaz.",
+   "olcum": [
+    "ege_sahne",
+    "ege_durak",
+    "ege_nokta",
+    "ege_baglam",
+    "ege_cta_gor / ege_tik"
+   ],
+   "risk": "En uzun perde (72 sn = film'in %49'u): terk riski en yüksek yer. t=36–66'daki çip çubuğu ve yolculuk çubuğundaki \"Teklif\" atlama yolu açık kalır."
+  },
+  {
+   "asama": "3 · GÜÇ",
+   "t_bas": 104,
+   "t_son": 136,
+   "sure_sn": 32,
+   "film_payi_yuzde": 21.9,
+   "vh_bas": 2288,
+   "vh_son": 2992,
+   "perdeler": [
+    "s4 Yol (104–120)",
+    "s5 Dünya (120–136)"
+   ],
+   "amac": "Ölçek ve süreklilik: kendi kireç tesisi olan iki fabrika, düzenli sevkiyat, beş kıtaya ihracat. \"Bu firma büyük, düzenli, ciddi\" hissi; bayi, ihracat alıcısı ve toplu alıcı için karar anı.",
+   "izleyici_sorusu": "Bu firma bana yetişir mi? Süreklilik ve ölçek var mı?",
+   "izleyici_hissi": "Gurur ve ölçek (saha yukarıdan) → \"ürün yola çıktı\" (tır) → sakin güç (küre, 25+ ülke · 5 kıta).",
+   "ana_mesaj": "Ege'de üretilir, beş kıtada kullanılır.",
+   "kanit_turu": "Kaynaklı rakamlar: 2 fabrika (Söke & İzmir) · 200 t/gün kireç tesisi · 1.100.000 m³ üretim kapasitesi (Ege Gazbeton ortak rakamlar) · 25+ ülke · 5 kıta (ihracat bölümü).",
+   "alt_araliklar": [
+    {
+     "t": [
+      104,
+      117
+     ],
+     "ad": "Fabrika sabahı, lime streçli paletler, forklift, kayış, tır yola çıkar, kamera yükselir",
+     "kazanc": "tır = hareketli reklam panosu (t=110 kahraman kare); ölçek rakamları t=108/114/115"
+    },
+    {
+     "t": [
+      117,
+      120
+     ],
+     "ad": "Tepeden saha → harita (çıkış)",
+     "kazanc": "\"Peki nereye gidiyor?\" merak köprüsü"
+    },
+    {
+     "t": [
+      120,
+      133
+     ],
+     "ad": "Küre, yaylar, beş kıta, 25+ ülke · 5 kıta",
+     "kazanc": "ihracat kanıtı (t=130–131); ihracat CTA t=131–134"
+    },
+    {
+     "t": [
+      133,
+      136
+     ],
+     "ad": "Işıklar sadeleşir (çıkış)",
+     "kazanc": "finale hazırlık; ekran metinsiz"
+    }
+   ],
+   "gecis_koprusu": "t=117 \"Tır yola çıktı. Peki nereye gidiyor?\" → s5; s5 t=133–135 küre sağda sadeleşir → t=136 son (aynı kare).",
+   "mikro_donusumler": [
+    "palet / tır / fabrika noktası kartı",
+    "\"Toplu alım ve bayilik\" (t=115–118)",
+    "\"İhracat bölümüne ulaşın\" (t=131–134)"
+   ],
+   "cta_yogunlugu": "DÜŞÜK-ORTA: yalnız bayi/ihracat odaklı iki yumuşak pencere; yapı sahibi için bu perde \"güven arka planı\", CTA yok.",
+   "olcum": [
+    "ege_ilerleme t=104/120/130/136",
+    "ege_nokta tir/fabrika/kirec/otoklav/kitalar",
+    "ege_tik s4_olcek_bayi / s5_ihracat"
+   ],
+   "risk": "\"1.100.000 m³\" sürenin (yıllık?) belirsizliği: \"yıllık\" ibaresi teyit gerekli, ekranda yalnız \"üretim kapasitesi\". Aliağa/Alsancak limanları kaynaksız: pazarlama metnine girmez."
+  },
+  {
+   "asama": "4 · EYLEM",
+   "t_bas": 136,
+   "t_son": 146,
+   "sure_sn": 10,
+   "film_payi_yuzde": 6.8,
+   "vh_bas": 2992,
+   "vh_son": 3212,
+   "perdeler": [
+    "son Finale (136–146)"
+   ],
+   "amac": "Güveni harekete çevir: \"Güven.\" (t=138) → logo ve slogan (t=140–141) → teklif değeri + ana düğme + 1 ikincil + bağlam çipi (t=142) → kitle çipleri (t=143) → üç kanıt kartı (t=144) → tekrar izle + ürün gruplarına yumuşak devam (t=145).",
+   "izleyici_sorusu": "Şimdi ne yapmalıyım?",
+   "izleyici_hissi": "Sakin şaşkınlık → güven (logo, slogan) → net adım (tek lime düğme).",
+   "ana_mesaj": "Güvenin adı Ege Gazbeton; sıradaki adım teklif.",
+   "kanit_turu": "Üç kanıt kartı: 2 fabrika · Söke & İzmir | CE belgeleri · A1 EN 13501-1 | 25+ ülke · 5 kıta; kaynaklar ekranda.",
+   "alt_araliklar": [
+    {
+     "t": [
+      136,
+      138
+     ],
+     "ad": "Işık Ege'de toplanır (metinsiz)",
+     "kazanc": "sakin güç"
+    },
+    {
+     "t": [
+      138,
+      141
+     ],
+     "ad": "\"Güven.\" → kıvılcım L çizer → logo + slogan \"Bugünden Yarına Güvenle\"",
+     "kazanc": "marka imzası; logo YALNIZ burada"
+    },
+    {
+     "t": [
+      141,
+      143
+     ],
+     "ad": "Projeniz için teklif alın. + ana CTA + 1 ikincil + bağlam çipi",
+     "kazanc": "ANA eylem"
+    },
+    {
+     "t": [
+      143,
+      146
+     ],
+     "ad": "Kitle çipleri (t=143) → kanıt kartları (t=144) → tekrar izle + şafak + Ürün grupları (t=145)",
+     "kazanc": "ikincil yollar, kanıt, devam"
+    }
+   ],
+   "gecis_koprusu": "Perde (açık \"Ürün grupları\") alttan yükselir; hikâyede bakılan ürünün kartı vurgulu.",
+   "mikro_donusumler": [
+    "Teklif Al",
+    "Katalog PDF",
+    "kitle çipleri (mimar çipi = Teknik Özellikler yolu)",
+    "Hikâyeyi baştan izle"
+   ],
+   "cta_yogunlugu": "ORTA-YÜKSEK, sıralı ve sadeleştirilmiş: t=142 1 ana + 1 ikincil + 1 bağlam çipi; t=143 3 kitle çipi; t=144 yeni etkileşimli öğe yok (3 statik kanıt kartı); t=145 1 ince metin bağlantı; sahne içi en çok 7 etkileşimli öğe, saniyede en çok 3 yeni; t=142'den önce finalde hiçbir düğme yok. Alt sabit çubuk, WhatsApp, quiz rozeti, gömülü mini hesap ve çekmece yok.",
+   "olcum": [
+    "ege_son_gor",
+    "ege_tik son_*",
+    "ege_kitle",
+    "ege_tekrar",
+    "site tarafı: teklif formu gönderimi kaynak=hikaye"
+   ],
+   "risk": "Hikâyeyi atlayan ziyaretçi bu kanıt zincirini görmeden finale iner: \"Hikâyeyi atla\" finali p=0,62'de CTA durumunda açar; kanıt kartları (t=144) p≥0,80'de belirdiği için atlayanlar kaydırdıkça görür; kayıp ölçülürse iniş p=0,82'ye alınabilir (açık karar)."
+  },
+  {
+   "asama": "EYLEM KATMANI (SÜREKLİ)",
+   "t_bas": 0,
+   "t_son": 146,
+   "sure_sn": 146,
+   "film_payi_yuzde": 100.0,
+   "vh_bas": 0,
+   "vh_son": 3212,
+   "perdeler": [
+    "tüm film"
+   ],
+   "amac": "Hikâyenin duygu akışını bozmadan her an ulaşılabilir eylem: kalıcı üst çubuk \"Teklif Al\", yolculuk çubuğunda \"Teklif\", kart içi ürün/föy bağlantıları, atla bağlantısı, dil seçici.",
+   "izleyici_sorusu": "Şimdi satın almak/yazmak istiyorum.",
+   "izleyici_hissi": "Kontrol bende: zorlanmıyorum ama yol açık.",
+   "ana_mesaj": "—",
+   "kanit_turu": "—",
+   "alt_araliklar": [],
+   "gecis_koprusu": "—",
+   "mikro_donusumler": [
+    "ust_teklif",
+    "yol_cubugu_teklif",
+    "kart içi bağlantılar"
+   ],
+   "cta_yogunlugu": "Sürekli ama sessiz (üst çubuk 40 px düğme; çubuk listesi kapalı).",
+   "olcum": [
+    "ege_tik hedef=ust_teklif / yol_son"
+   ],
+   "risk": "Telefonda üst çubuk Teklif Al gizli: kompakt düğme gerekli (alt çubuk ertelendi: numara teyidi gelene dek finale konmaz)."
+  }
+ ],
+ "kitle_yollari": [
+  {
+   "id": "sahip",
+   "ad": "Yapı sahibi / müteahhit (ev, bina yapan)",
+   "alt_kitleler": [
+    "bireysel yapı sahibi",
+    "küçük-orta müteahhit (şantiye hızı ve kalıp işçiliği ilgisi)"
+   ],
+   "ne_arar": [
+    "Evim sağlam, rahat ve sıcak mı olur?",
+    "Şantiyede iş kolay ve hızlı mı?",
+    "Kaç m² / ne kadar? (fiyat hikâyede yok; teklife yönlendirilir)"
+   ],
+   "hero_cipi": {
+    "tr": "Ev / bina yapıyorum",
+    "en": "I am building",
+    "baglanti": "/duvar-tasarla/?kaynak=hikaye&dil={dil}&kitle=sahip&nokta=giris_kitle",
+    "data_iz": "kitle_sahip"
+   },
+   "hikaye_ici_temas": [
+    {
+     "t": "3–5",
+     "sahne": "s0",
+     "ne_gorur": "\"güneşe, sokağa ve bahçeye göre\" plan; Sokak/Bahçe/Giriş noktaları",
+     "cta": "yok (kendi evini düşünür)"
+    },
+    {
+     "t": "12–14",
+     "sahne": "s0",
+     "ne_gorur": "duvar sıra sıra örülür; 1–3 mm derz",
+     "cta": "Blok / İnce derz nokta kartı"
+    },
+    {
+     "t": "24–28",
+     "sahne": "s0",
+     "ne_gorur": "anne ve çocuk eve girer, pencere ışığı yanar",
+     "cta": "Yuva noktası kartı (duygu)"
+    },
+    {
+     "t": "36–40",
+     "sahne": "s1",
+     "ne_gorur": "Duvar blokları: nerede kullanılır, hafif, hızlı örülür",
+     "cta": "s1_duvar_hesapla \"Duvarlarınızı hesaplayın →\" (t=38), kart: ürün sayfası"
+    },
+    {
+     "t": "44–50",
+     "sahne": "s1",
+     "ne_gorur": "Lento duvarla aynı malzeme; U blokta \"ahşap kalıp yerine\" (müteahhit için şantiye avantajı)",
+     "cta": "kart içi ürün sayfası"
+    },
+    {
+     "t": "59–60",
+     "sahne": "s1",
+     "ne_gorur": "Paneller: \"Daha hafif bina, daha düşük deprem yükü\" + ODTÜ −%17 (8 katlı örnek bina hesabı)",
+     "cta": "ODTÜ kartı (kaynak ekranda)"
+    },
+    {
+     "t": "96–99",
+     "sahne": "s3",
+     "ne_gorur": "Kapalı hava hücresi, A1 yangına tepki sınıfı (bilgi tonu), 300–600 kg/m³ hafiflik",
+     "cta": "yok (güven bilgisi)"
+    },
+    {
+     "t": "64–67 ve 142",
+     "sahne": "s1/son",
+     "ne_gorur": "\"{Ürün} için teklif alın\" ve finale ana düğme",
+     "cta": "son_teklif (ürün bağlamlı)"
+    }
+   ],
+   "dil_ve_ton": {
+    "kural": [
+     "sıcak, sade, siz hitabı; cümle başına tek fayda",
+     "jargon yok; terim çıkarsa yanında ≤4 sözcüklük açıklama (\"λ: ısı iletkenlik katsayısı; küçük sayı = ısıyı daha az geçirir\")",
+     "rakam cümlenin SONUNDA, kaynağı altında",
+     "korku dili yok (deprem, yangın) — bilgi ve sakinlik"
+    ],
+    "ornek_tr": [
+     "Duvar düz ve homojen olur.",
+     "Daha hafif bina, daha düşük deprem yükü.",
+     "Duvarlarınızı hesaplayın.",
+     "Duvar ölçünüzü iletin; çözümü biz hazırlayalım."
+    ],
+    "ornek_en": [
+     "The wall stays flat and uniform.",
+     "A lighter building means a lower seismic load.",
+     "Calculate your walls.",
+     "Send your wall dimensions; we prepare the solution."
+    ],
+    "kacin": [
+     "fiyat/indirim/\"uygun\" iddiası",
+     "\"yanmaz\", \"depreme dayanıklı\", \"garantili\"",
+     "tasarruf yüzdesi (kaynaksız)"
+    ]
+   },
+   "finale_cta_sirasi": [
+    "Teklif Al (lime, ürün çipli)",
+    "Duvarlarınızı hesaplayın (kitle çipi → /duvar-tasarla/)",
+    "Ürün Kataloğu · PDF"
+   ],
+   "olcum": "kitle=sahip: kitle_sahip tıklaması, s1_duvar_hesapla tıklaması, ege_baglam urun=duvar|lento|ublok, son_teklif; /teklif/ formunda kitle ön seçimi.",
+   "teyit_gerekli": [
+    "/duvar-tasarla/ aracının girdi/çıktısı (yalnız \"Calculate your walls\" metni doğrulu)",
+    "araçtan teklife veri aktarımı",
+    "U blok \"kalıp işçiliği/süre tasarrufu\" yalnız \"ahşap kalıp yerine\" olarak söylenir (rakamsız)"
+   ]
+  },
+  {
+   "id": "mimar",
+   "ad": "Mimar / mühendis (proje, statik, yalıtım)",
+   "alt_kitleler": [
+    "mimar",
+    "inşaat/statik mühendisi",
+    "yapı denetim ve uygulama mühendisi"
+   ],
+   "ne_arar": [
+    "Hangi sınıf, hangi λ, hangi boyut?",
+    "Belgesi ve standardı ne?",
+    "Detay/föy nerede?"
+   ],
+   "hero_cipi": {
+    "tr": "Mimar / mühendisim",
+    "en": "Architect / engineer",
+    "baglanti": "/teknik-foyler/?kaynak=hikaye&dil={dil}&kitle=mimar&nokta=giris_kitle",
+    "data_iz": "kitle_mimar"
+   },
+   "hikaye_ici_temas": [
+    {
+     "t": "13–14",
+     "sahne": "s0",
+     "ne_gorur": "60 × 25 cm yüz, 1–3 mm derz (Ürün föyleri)",
+     "cta": "kaynak satırı ekranda"
+    },
+    {
+     "t": "39–40",
+     "sahne": "s1",
+     "ne_gorur": "Duvar blokları 5–35 cm, düz ve geçmeli",
+     "cta": "kart içi \"Teknik föy\" (s1_duvar_foy)"
+    },
+    {
+     "t": "44–45",
+     "sahne": "s1",
+     "ne_gorur": "Lento: 4,50 m'ye kadar açıklık",
+     "cta": "kart içi föy"
+    },
+    {
+     "t": "49–50",
+     "sahne": "s1",
+     "ne_gorur": "U blok G4/06: 60 × 25 cm, 20–25 cm, λ 0,16 W/mK kuru (U Bloklar sayfası)",
+     "cta": "kart içi föy"
+    },
+    {
+     "t": "59–60",
+     "sahne": "s1",
+     "ne_gorur": "Panel 6 m açıklık; ODTÜ: 8 katlı örnek bina hesabı, yapı kütlesi −%17",
+     "cta": "kart: çalışma kapsamı notu"
+    },
+    {
+     "t": "64–65",
+     "sahne": "s1",
+     "ne_gorur": "EGEPOR λ 0,051–0,062 W/mK kuru, 150–200 kg/m³ (EGEPOR sayfası)",
+     "cta": "kart içi föy"
+    },
+    {
+     "t": "96–101",
+     "sahne": "s3",
+     "ne_gorur": "λ 0,08 (G2/350 duvar tasarım değeri) · A1 EN 13501-1 (CE belgeleri) · 300–600 kg/m³ (G1–G4)",
+     "cta": "s3_muhur_foy \"Teknik Özellikler →\" (t=99–101) ve λ/A1 kart içi föy/CE"
+    },
+    {
+     "t": "143",
+     "sahne": "son",
+     "ne_gorur": "finale kitle çipi 'Mimar / mühendisim' (Teknik Özellikler yolu; ayrı Teknik Özellikler düğmesi kaldırıldı)",
+     "cta": "son_kitle_mimar"
+    }
+   ],
+   "dil_ve_ton": {
+    "kural": [
+     "kuru, ölçülü; sıfat yok, rakam + birim + KAYNAK",
+     "notasyon korunur: λ, W/mK, G2/350, kg/m³, EN 13501-1",
+     "kaynak satırı her sayıda görünür (telefonda da)",
+     "\"föy\" sözcüğü, \"broşür\" değil; bağlantı metni nesneyi söyler (\"Teknik Özellikler\")"
+    ],
+    "ornek_tr": [
+     "λ 0,08 · W/mK · G2/350 duvar tasarım değeri",
+     "A1 · yangına tepki sınıfı · EN 13501-1",
+     "300–600 kg/m³ · yoğunluk aralığı (G1–G4)",
+     "ODTÜ çalışması, 8 katlı örnek bina hesabı"
+    ],
+    "ornek_en": [
+     "λ 0.08 · W/mK · design value for G2/350 walls",
+     "A1 · reaction-to-fire class · EN 13501-1",
+     "300–600 kg/m³ · density range (G1–G4)",
+     "METU study, calculation for an 8-storey sample building"
+    ],
+    "kacin": [
+     "\"yanmaz\"",
+     "ODTÜ'yü onay/sertifika gibi sunmak",
+     "ODTÜ sonucunu \"her bina\" için genellemek",
+     "rakip karşılaştırması"
+    ]
+   },
+   "finale_cta_sirasi": [
+    "Teknik Özellikler (kitle çipi → /teknik-foyler/)",
+    "Teklif Al",
+    "Ürün Kataloğu · PDF"
+   ],
+   "olcum": "kitle=mimar: kitle_mimar, s1_*_foy, s3_muhur_foy, ege_nokta u_ublok/u_egepor/u_panel/hucre; /teknik-foyler/ üzerinde urun= ile açılan föy.",
+   "teyit_gerekli": [
+    "CE belge numaraları ve standart numarası (TS EN 771-4) DEVIR.md/dil.js'te yok; ekranda gösterilmez",
+    "ODTÜ −%17: yalnız panele mi tüm sisteme mi ait, çalışma tam adı/yıl/bağlantı",
+    "taban kesme −%14 (dil.js'te yalnız anahtar var, rakamsız)",
+    "DWG/BIM/detay kütüphanesi var mı (varsa \"Detayları indir\" CTA'sı eklenir)"
+   ]
+  },
+  {
+   "id": "bayi",
+   "ad": "Bayi · ihracat alıcısı · toplu alıcı",
+   "alt_kitleler": [
+    "yurt içi bayi",
+    "ihracat alıcısı (çoğunlukla İngilizce)",
+    "büyük proje müteahhidi / toplu alım"
+   ],
+   "ne_arar": [
+    "Üretici mi, ölçeği ve sürekliliği ne?",
+    "Kapasite, sevkiyat, paletleme?",
+    "Kime, nasıl yazarım?"
+   ],
+   "hero_cipi": {
+    "tr": "İhracat alıcısı / bayiyim",
+    "en": "Export buyer / dealer",
+    "baglanti": "/ihracat/?kaynak=hikaye&dil={dil}&kitle=bayi&nokta=giris_kitle",
+    "data_iz": "kitle_bayi"
+   },
+   "hikaye_ici_temas": [
+    {
+     "t": "19–23",
+     "sahne": "s0",
+     "ne_gorur": "lime streçli paletlerle yüklü Ege Gazbeton tırı (etiket HTML)",
+     "cta": "tır noktası kartı; s0_tir_urunler"
+    },
+    {
+     "t": "106–110",
+     "sahne": "s4",
+     "ne_gorur": "\"Her palet lime streçle sarılır\"; kayış; tır yola çıkar",
+     "cta": "palet/tır kartları"
+    },
+    {
+     "t": "108",
+     "sahne": "s4",
+     "ne_gorur": "2 fabrika · Söke & İzmir",
+     "cta": "fabrika kartı"
+    },
+    {
+     "t": "114–115",
+     "sahne": "s4",
+     "ne_gorur": "200 t günlük kireç tesisi (Söke) · 1.100.000 m³ üretim kapasitesi",
+     "cta": "s4_olcek_bayi \"Toplu alım ve bayilik →\" (t=115–118)"
+    },
+    {
+     "t": "130–131",
+     "sahne": "s5",
+     "ne_gorur": "25+ ülke · 5 kıta (ihracat bölümü)",
+     "cta": "kitalar kartı; s5_ihracat \"İhracat bölümüne ulaşın →\" (t=131–134)"
+    },
+    {
+     "t": "143–144",
+     "sahne": "son",
+     "ne_gorur": "kitle çipi (t=143), hemen ardından kanıt kartları: 2 fabrika · CE · 25+ ülke · 5 kıta (t=144)",
+     "cta": "son_kitle_bayi"
+    }
+   ],
+   "dil_ve_ton": {
+    "kural": [
+     "ölçek ve süreklilik dili: \"iki fabrika, tek kalite anlayışı\"",
+     "ülke adı, müşteri sayısı, fiyat, teslim süresi YOK",
+     "İngilizce ziyaretçide EN ilk dil; çip sırası: ihracat/bayi önce",
+     "sayılar kaynak satırıyla (\"Ege Gazbeton ihracat bölümü\")"
+    ],
+    "ornek_tr": [
+     "2 fabrika · Söke & İzmir",
+     "Günlük 200 t kireç tesisi kapasitesi",
+     "5 kıtada 25'ten fazla ülkeye ihracat"
+    ],
+    "ornek_en": [
+     "Two plants. One standard of quality.",
+     "200 t/day own lime plant (Söke)",
+     "Exports to more than 25 countries on five continents"
+    ],
+    "kacin": [
+     "ülke/şehir/liman adı (Aliağa-Alsancak teyit gerekli)",
+     "\"lider/en büyük\" gibi iddialar",
+     "palet/tır kapasitesi (teyit gerekli)"
+    ]
+   },
+   "finale_cta_sirasi": [
+    "İhracat / bayilik (kitle çipi → /ihracat/)",
+    "Teklif Al (kitle=bayi)",
+    "Ürün Kataloğu · PDF (EN katalog varsa; teyit gerekli)"
+   ],
+   "olcum": "kitle=bayi: kitle_bayi, s4_olcek_bayi, s5_ihracat, ege_nokta kitalar/fabrika/tir, dil=en oranı.",
+   "teyit_gerekli": [
+    "/ihracat/ sayfasının içeriği ve formu",
+    "bayilik başvurusu / toplu alım akışı var mı",
+    "İngilizce katalog PDF",
+    "1.100.000 m³ sürenin tanımı (yıllık?)"
+   ]
+  }
+ ],
+ "cta_kurallari": [
+  "Pop-up, modal, form, kaydırma kilidi YOK. CTA'lar kaydırmayı hiçbir zaman engellemez ve p aralığına bağlıdır (.eg-vurus data-bas/data-son gibi): geri kaydırınca kapanır, ileri yeniden açılır; ege_cta_gor yalnız ilk görünüşte. Bu kural OTOMATİK pencereler içindir; kullanıcının kendi dokunuşuyla açtığı panel için son maddedeki \"kullanıcı başlatımlı panel istisnası\" geçerlidir.",
+  "Otomatik pencere = kanıttan ~1 sn sonra başlar, ≥2 sn okunur kalır; perdenin SON 3 SANİYESİ (çıkış geçişi) içinde yeni CTA başlamaz, önceden başlayan en çok 1 sn taşar (cikis_tasma_sn) ve opaklığı %60'a iner. s2 (t=70–90) tamamen CTA'sız. İSTİSNA: finale (136–146) bu kuraldan muaf: perdenin tamamı eylemdir (önce t=136–141 sessiz, sonra CTA'lar).",
+  "Aynı anda en çok 1 otomatik CTA grubu (+ kalıcı üst çubuk), ekranda en çok 1 lime dolgulu düğme (ana CTA açıkken üst çubuk düğmesi çizgili olur; telefonda kompakt üst çubuk düğmesi ve alt çubuk aynı kuralla). Anlatım kuralı (1 başlık + 1 cümle) CTA ile bozulmaz: CTA bir etiket/düğme olarak, ≤4 sözcük.",
+  "Üç düğme dili: ana (lime dolgu, koyu yazı), ikincil (çizgili), yumuşak (metin + ok). Etiket = fiil + fayda (Teklif Al, Duvarlarınızı hesaplayın, Teknik Özellikler). TR/EN çifti dil.js'e eklenir (cta.* anahtarları: cta.teklif, cta.katalog, cta.foyler, cta.hesapla mevcut).",
+  "Sürtünme sırası: keşif (kart) → araç (hesapla) → belge (föy/katalog) → teklif. Teklif ilk kez t=64'te, ana vurgu t=142'de.",
+  "Kitle bilinmez, çıkarılmaz (kişiselleştirme yok); yalnız ilgi ürün bağlamı (urun) ve dil. Çip tıklaması kitleyi bildirir.",
+  "Lime CTA = ürünün lime kenar ışıltısının devamı: durakta aynı karede ışıltı, aynı karede çip. Metin kontrastı ≥4,5:1 (lime üstüne koyu #0c161c yazı 8,76:1).",
+  "Klavye ve okuyucu: sıra = atla bağlantısı → üst çubuk → anlatım → CTA; odak halkası mevcut (lime-hi). Hareket azaltmada CTA'lar durağan sütunda hep görünür.",
+  "KULLANICI BAŞLATIMLI PANEL İSTİSNASI (moduller.json ortak_teknik.iki_kip ve kilit_ve_kaydirma ile aynı karar): yukarıdaki \"pop-up, modal, form, kaydırma kilidi YOK\" kuralı OTOMATİK pencereler için aynen sürer; kullanıcının kendi dokunuşuyla açtığı araç paneli (urun_secici çekmecesi, duvar_hesap, kesit_gezgini, agirlik, isi_yolculugu, karisim_hazirla) istisnadır ve yalnız şu koşullarla geçerlidir: (1) yalnız kullanıcı açar (çip, rakam kartı, Araçlar rafı); SON sahnede hiçbir çip/panel modül açmaz (bağlam çipi yalnız × ile silinir); hiçbir panel kendiliğinden açılmaz, otomatik pencere hep kilitsiz çip/etiket kalır. (2) Kaydırma kilidi YİNE YOK: wheel/touchmove/tuş olayı yutulmaz (preventDefault yok); kaydırma paneli kapatır ve sayfa aynı jestle kayar; film kaydırma konumuna bağlı olduğundan panel açıkken zaten sabit kalır. (3) Kapanış yolları zorunlu: Esc, belirgin Kapat (≥44 px), tarayıcı geri tuşu, dış dokunma/tıklama, kaydırma; telefonda ayrıca tutamaçtan aşağı sürükleme. (4) Modal değil: aria-modal=false, odak tuzağı yok; telefonda alt sheet en çok 70svh (tam ekran 100svh YOK), üstte film şeridi görünür. (5) Panel içindeki form yalnız ölçü alanlarıdır (ad/e-posta/telefon istenmez, form gönderimi yok); teklif düğmesi /teklif/ bağlantısıdır. (6) Panel içi teklif düğmesi yalnız kullanıcı bir sonuç ürettikten SONRA görünür ve panel açıkken ekranın tek lime dolgulu düğmesidir (üst çubuk düğmesi çizgili olur); \"Teklif ilk kez t=64'te\" kuralı otomatik pencereler içindir. (7) Panel açıkken anlatım vuruşu (başlık + cümle) gizlenir, kapanınca geri gelir: ekranda ya vuruş ya panel vardır, \"1 başlık + 1 cümle\" kuralı korunur. (8) Finalde (t=136–146) gömülü/satır içi form YOK: duvar_hesap yalnız ölçü çipi ya da \"Duvarlarınızı hesaplayın →\" bağlantısı olarak görünür ve aynı kullanıcı başlatımlı paneli açar. (9) Hareket azaltma/durağan sürümde panel gövdesi anlatım bloğunda satır içi (modal değil) görünür. s1_duvar_hesapla (t=38–40) tek giriş kapısıdır: statik href /duvar-tasarla/ (JS yoksa, orta tık, yeni sekme), düz sol tık duvar_hesap panelini açar; ayrı \"Hesapla\" çipi yoktur. Sahne-içi soru çipleri (bilgi_yarismasi) CTA değildir ve çıkış geçişi (perdenin son 3 sn'si) dışında kalır."
+ ],
+ "cta_zaman_cizelgesi": [
+  {
+   "id": "ust_teklif",
+   "t": 0,
+   "t_son": 146,
+   "vh_bas": 0,
+   "perde": "s0…son",
+   "p_bas": null,
+   "p_son": null,
+   "tur": "kalici",
+   "yer": "Üst çubuk sağ (masaüstü). Telefonda: logo hikâye boyunca gizliyse kompakt 44 px düğme (bkz. mobil).",
+   "metin_tr": "Teklif Al",
+   "metin_en": "Get a quote",
+   "baglanti": "/teklif/?kaynak=hikaye&dil={dil}[&urun={urun}]&nokta=ust  (hikâye ekranda değilken kaynak=ust)",
+   "olcum_data_iz": "ust_teklif",
+   "kitle": null,
+   "neden": "İLK CTA TEKNİK OLARAK t=0'DA VAR: ziyaretçi hikâyeyi hiç izlemese de tek tıkla teklife gider. Hero'daki ana düğmeyle aynı hedef; üst çubukta kalıcı olduğu için ürün bağlamı (urun=) t=64'ten sonra bu düğmeye de eklenir. DURUM KURALI: bir ANA CTA (hero, t=64–67, finale) ekrandayken bu düğme çizgili (ikincil) olur, aksi hâlde küçük lime dolgu: ekranda hiçbir an iki lime dolgulu düğme olmaz.",
+   "mobil": "CSS şu an ≤760 px'te bu düğmeyi gizliyor (hikaye.css satır ~396): telefonda hiç kalıcı CTA yok. Düzeltme gerekli."
+  },
+  {
+   "id": "giris_teklif",
+   "t": 0,
+   "t_son": 2,
+   "vh_bas": 0,
+   "perde": "s0",
+   "p_bas": 0.0,
+   "p_son": 0.062,
+   "tur": "ana",
+   "yer": "Hero paneli (masaüstü sol, telefon üst), başlık + cümlenin altında; t=0'da hazır, ilk kaydırmada (t≈0,5-1) soluklaşır; kaydırılmazsa süresiz kalır.",
+   "metin_tr": "Teklif Al →",
+   "metin_en": "Get a quote →",
+   "baglanti": "/teklif/?kaynak=hikaye&dil={dil}&nokta=giris",
+   "olcum_data_iz": "giris_teklif",
+   "kitle": null,
+   "neden": "Hero'da TEK ana eylem (lime dolgu). Katalog ve Teknik Özellikler düğmeleri hero'dan çıkarılır: duygu açılışında 3 düğme + 3 çip + atla bağlantısı = 7 hedef, 10 sn testinde dikkati dağıtır. Katalog PDF t=64 ve t=142'de, Teknik Özellikler t=99 ve t=142'de zaten daha anlamlı bağlamda gelir; menüde \"Teknik föyler\" her zaman var.",
+   "mobil": "Telefonda hero'nun tek lime düğmesi bu; 48 px yükseklik, tam genişlik."
+  },
+  {
+   "id": "giris_kitle_sahip",
+   "t": 0,
+   "t_son": 2,
+   "vh_bas": 0,
+   "perde": "s0",
+   "p_bas": 0.0,
+   "p_son": 0.062,
+   "tur": "kitle",
+   "yer": "Hero, düğmenin altında tek satır \"Size en uygun yol:\" çipleri (ince çizgili, küçük).",
+   "metin_tr": "Ev / bina yapıyorum",
+   "metin_en": "I am building",
+   "baglanti": "/duvar-tasarla/?kaynak=hikaye&dil={dil}&kitle=sahip&nokta=giris_kitle",
+   "olcum_data_iz": "kitle_sahip",
+   "kitle": "sahip",
+   "neden": "Hızlı şerit: hikâyeyi beklemeden aracına gitmek isteyen yapı sahibi/müteahhit. TR etiket önerisi \"Yapı sahibiyim\" yerine \"Ev / bina yapıyorum\" (müteahhidi de kapsar; EN \"I am building\" zaten böyle)."
+  },
+  {
+   "id": "giris_kitle_mimar",
+   "t": 0,
+   "t_son": 2,
+   "vh_bas": 0,
+   "perde": "s0",
+   "p_bas": 0.0,
+   "p_son": 0.062,
+   "tur": "kitle",
+   "yer": "Hero, aynı çip satırı.",
+   "metin_tr": "Mimar / mühendisim",
+   "metin_en": "Architect / engineer",
+   "baglanti": "/teknik-foyler/?kaynak=hikaye&dil={dil}&kitle=mimar&nokta=giris_kitle",
+   "olcum_data_iz": "kitle_mimar",
+   "kitle": "mimar",
+   "neden": "Föy arayan profesyonel için en kısa yol."
+  },
+  {
+   "id": "giris_kitle_bayi",
+   "t": 0,
+   "t_son": 2,
+   "vh_bas": 0,
+   "perde": "s0",
+   "p_bas": 0.0,
+   "p_son": 0.062,
+   "tur": "kitle",
+   "yer": "Hero, aynı çip satırı. Tarayıcı dili Türkçe değilse bu çip birinci sıraya alınır ve \"View in English\" mikro bağlantısı (?dil=en) çipin yanında görünür.",
+   "metin_tr": "İhracat alıcısı / bayiyim",
+   "metin_en": "Export buyer / dealer",
+   "baglanti": "/ihracat/?kaynak=hikaye&dil={dil}&kitle=bayi&nokta=giris_kitle",
+   "olcum_data_iz": "kitle_bayi",
+   "kitle": "bayi",
+   "neden": "Dil algısı otomatik geçiş değil, öneri: otomatik EN yanlış tahmin edilirse güven kaybettirir."
+  },
+  {
+   "id": "hikaye_atla",
+   "t": 0,
+   "t_son": 2,
+   "vh_bas": 0,
+   "perde": "s0",
+   "p_bas": 0.0,
+   "p_son": 0.062,
+   "tur": "gezinme",
+   "yer": "Hero alt sırası (sol). t≥2'den sonra yolculuk çubuğundaki \"Teklif\" öğesi aynı işi görür.",
+   "metin_tr": "Hikâyeyi atla",
+   "metin_en": "Skip the story",
+   "baglanti": "#teklif  (sahneyeGit('son'): akışta p=0,62 = t≈142, CTA grubunun görünür olduğu an)",
+   "olcum_data_iz": "hikaye_atla",
+   "kitle": null,
+   "neden": "Hikâyeyi izlemek istemeyen B2B ziyaretçiye saygı + atlama oranı ölçülür. Atlayan, doğrudan finalin CTA durumuna iner (sayfa sonuna değil; logo ve CTA'lar görünür)."
+  },
+  {
+   "id": "s0_tir_urunler",
+   "t": 23,
+   "t_son": 25,
+   "vh_bas": 506,
+   "perde": "s0",
+   "p_bas": 0.719,
+   "p_son": 0.781,
+   "tur": "yumusak",
+   "yer": "Tırı izleyen \"Ege Gazbeton\" etiketinin hemen altı (mikro bağlantı, 14 px, ok ile).",
+   "metin_tr": "Ürünleri gör ↓",
+   "metin_en": "See the products ↓",
+   "baglanti": "iç bağlantı: sahneyeGit('s1')  → akış t=33 (ürün turu girişi). Parametre yok.",
+   "olcum_data_iz": "s0_tir_urunler",
+   "kitle": null,
+   "neden": "Lime paletleri gören merak eden ziyaretçi için ilk \"ileri sarma\" fırsatı; s0 planındaki t=23 mikro bağlantısıyla aynı. Dış bağlantı değil: duygu perdesinde ilk kez satışa çağırmıyoruz.",
+   "mobil": "Etiket 44 px dokunma alanı; mobilde etiketle birlikte alt şeritte."
+  },
+  {
+   "id": "s1_cipler",
+   "t": 34,
+   "t_son": 66,
+   "vh_bas": 748,
+   "perde": "s1",
+   "p_bas": 0.053,
+   "p_son": 0.895,
+   "tur": "gezinme",
+   "yer": "Anlatım sütununun üstünde altı çip: Duvar · Lento · U blok · Tutkal · Panel · EGEPOR. Geçerli çip lime halkayla dolar.",
+   "metin_tr": "Duvar · Lento · U blok · Tutkal · Panel · EGEPOR",
+   "metin_en": "Walls · Lintels · U-blocks · Adhesive · Panels · EGEPOR",
+   "baglanti": "iç bağlantı: her çip kendi durağın başına kaydırır (t=36, 41, 46, 51, 56, 61). Parametre yok.",
+   "olcum_data_iz": "s1_cip_{urun}",
+   "kitle": null,
+   "neden": "En saf ilgi sinyali: kullanıcı hangi ürüne atlıyor? ege_tik (hedef=s1_cip_egepor vb.) ve ege_durak ile birleştirilir; bağlam (urun=) hesabına ek ağırlık verir."
+  },
+  {
+   "id": "s1_duvar_hesapla",
+   "t": 38,
+   "t_son": 40,
+   "vh_bas": 836,
+   "perde": "s1",
+   "p_bas": 0.158,
+   "p_son": 0.211,
+   "tur": "yumusak",
+   "yer": "Anlatım sütununun alt kenarı, \"Düz · Geçmeli\" etiketi ve rakamdan sonra; düğmesiz metin + ok.",
+   "metin_tr": "Duvarlarınızı hesaplayın →",
+   "metin_en": "Calculate your walls →",
+   "baglanti": "/duvar-tasarla/?kaynak=hikaye&dil={dil}&urun=duvar&nokta=s1_duvar_hesapla",
+   "olcum_data_iz": "s1_duvar_hesapla",
+   "kitle": "sahip",
+   "neden": "Araç, teklif formundan daha düşük sürtünmeli ilk \"iş yapan\" eylem: kanıt (60 × 25 cm, 1–3 mm derz) hemen önce gösterildi. \"cta.hesapla\" metni dil.js'te zaten doğrulu (EN: Calculate your walls). Aracın ne hesapladığı teyit gerekli: yalnız bu cümle kullanılır, \"kaç blok / kaç TL\" gibi sonuç vaadi yok. KARAR (denetim): tek giriş kapısı: statik href /duvar-tasarla/ (JS yoksa, orta tık, yeni sekme); düz sol tık moduller.json duvar_hesap panelini açar (film içi ön metraj; panelde \"Ayrıntılı tasarım →\" aynı araca ölçüleri taşır); ayrı \"Hesapla\" çipi yok; CTA metni sonuç vaadi taşımaz, panel sonucu \"ön hesap\" etiketlidir."
+  },
+  {
+   "id": "s1_duvar_kart",
+   "t": 39,
+   "t_son": 41,
+   "vh_bas": 858,
+   "perde": "s1",
+   "p_bas": 0.184,
+   "p_son": 0.237,
+   "tur": "kart",
+   "yer": "Tıklanır nokta kartı (u_duvar) içi; yalnız kullanıcı noktaya dokununca görünür (otomatik değil). Kartta iki satır: ürün sayfası + teknik föy.",
+   "metin_tr": "Ürün sayfası → · Teknik föy",
+   "metin_en": "Product page → · Technical sheet",
+   "baglanti": "/urunler/duvar-bloklari/?kaynak=hikaye&dil={dil}&urun=duvar&nokta=s1_duvar_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&urun=duvar&nokta=s1_duvar_foy",
+   "olcum_data_iz": "s1_duvar_kart / s1_duvar_foy",
+   "kitle": "sahip|mimar",
+   "neden": "Duvar blokları durağının rakam saniyesinden sonra (s1 planındaki rakam kartı). Yapı sahibi ürün sayfasını, mimar föyü seçer: ikisi yan yana, rekabet etmez.",
+   "mobil": "Kart telefonda alt sayfa (bottom sheet); iki bağlantı yan yana, her biri ≥44 px."
+  },
+  {
+   "id": "s1_lento_kart",
+   "t": 44,
+   "t_son": 46,
+   "vh_bas": 968,
+   "perde": "s1",
+   "p_bas": 0.316,
+   "p_son": 0.368,
+   "tur": "kart",
+   "yer": "Tıklanır nokta kartı (u_lento) içi; yalnız kullanıcı noktaya dokununca görünür (otomatik değil). Kartta iki satır: ürün sayfası + teknik föy.",
+   "metin_tr": "Ürün sayfası → · Teknik föy",
+   "metin_en": "Product page → · Technical sheet",
+   "baglanti": "/urunler/lentolar/?kaynak=hikaye&dil={dil}&urun=lento&nokta=s1_lento_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&urun=lento&nokta=s1_lento_foy",
+   "olcum_data_iz": "s1_lento_kart / s1_lento_foy",
+   "kitle": "sahip|mimar",
+   "neden": "Lentolar durağının rakam saniyesinden sonra (s1 planındaki rakam kartı). Yapı sahibi ürün sayfasını, mimar föyü seçer: ikisi yan yana, rekabet etmez.",
+   "mobil": "Kart telefonda alt sayfa (bottom sheet); iki bağlantı yan yana, her biri ≥44 px."
+  },
+  {
+   "id": "s1_ublok_kart",
+   "t": 49,
+   "t_son": 51,
+   "vh_bas": 1078,
+   "perde": "s1",
+   "p_bas": 0.447,
+   "p_son": 0.5,
+   "tur": "kart",
+   "yer": "Tıklanır nokta kartı (u_ublok) içi; yalnız kullanıcı noktaya dokununca görünür (otomatik değil). Kartta iki satır: ürün sayfası + teknik föy.",
+   "metin_tr": "Ürün sayfası → · Teknik föy",
+   "metin_en": "Product page → · Technical sheet",
+   "baglanti": "/urunler/u-blok-kose/?kaynak=hikaye&dil={dil}&urun=ublok&nokta=s1_ublok_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&urun=ublok&nokta=s1_ublok_foy",
+   "olcum_data_iz": "s1_ublok_kart / s1_ublok_foy",
+   "kitle": "sahip|mimar",
+   "neden": "U bloklar durağının rakam saniyesinden sonra (s1 planındaki rakam kartı). Yapı sahibi ürün sayfasını, mimar föyü seçer: ikisi yan yana, rekabet etmez.",
+   "mobil": "Kart telefonda alt sayfa (bottom sheet); iki bağlantı yan yana, her biri ≥44 px."
+  },
+  {
+   "id": "s1_tutkal_kart",
+   "t": 54,
+   "t_son": 56,
+   "vh_bas": 1188,
+   "perde": "s1",
+   "p_bas": 0.579,
+   "p_son": 0.632,
+   "tur": "kart",
+   "yer": "Tıklanır nokta kartı (u_tutkal) içi; yalnız kullanıcı noktaya dokununca görünür (otomatik değil). Kartta iki satır: ürün sayfası + teknik föy.",
+   "metin_tr": "Ürün sayfası → · Teknik föy",
+   "metin_en": "Product page → · Technical sheet",
+   "baglanti": "/urunler/tutkal/?kaynak=hikaye&dil={dil}&urun=tutkal&nokta=s1_tutkal_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&urun=tutkal&nokta=s1_tutkal_foy",
+   "olcum_data_iz": "s1_tutkal_kart / s1_tutkal_foy",
+   "kitle": "sahip|mimar",
+   "neden": "Gazbeton tutkalı durağının rakam saniyesinden sonra (s1 planındaki rakam kartı). Yapı sahibi ürün sayfasını, mimar föyü seçer: ikisi yan yana, rekabet etmez.",
+   "mobil": "Kart telefonda alt sayfa (bottom sheet); iki bağlantı yan yana, her biri ≥44 px."
+  },
+  {
+   "id": "s1_panel_kart",
+   "t": 59,
+   "t_son": 61,
+   "vh_bas": 1298,
+   "perde": "s1",
+   "p_bas": 0.711,
+   "p_son": 0.763,
+   "tur": "kart",
+   "yer": "Tıklanır nokta kartı (u_panel) içi; yalnız kullanıcı noktaya dokununca görünür (otomatik değil). Kartta iki satır: ürün sayfası + teknik föy.",
+   "metin_tr": "Ürün sayfası → · Teknik föy",
+   "metin_en": "Product page → · Technical sheet",
+   "baglanti": "/urunler/paneller/?kaynak=hikaye&dil={dil}&urun=panel&nokta=s1_panel_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&urun=panel&nokta=s1_panel_foy",
+   "olcum_data_iz": "s1_panel_kart / s1_panel_foy",
+   "kitle": "sahip|mimar",
+   "neden": "Paneller durağının rakam saniyesinden sonra (s1 planındaki rakam kartı). Yapı sahibi ürün sayfasını, mimar föyü seçer: ikisi yan yana, rekabet etmez. ODTÜ kartı (−%17, 8 katlı örnek bina hesabı) bu kartta; çalışma bağlantısı/PDF yoksa kartta bağlantı olmaz (teyit gerekli).",
+   "mobil": "Kart telefonda alt sayfa (bottom sheet); iki bağlantı yan yana, her biri ≥44 px."
+  },
+  {
+   "id": "s1_egepor_kart",
+   "t": 64,
+   "t_son": 67,
+   "vh_bas": 1408,
+   "perde": "s1",
+   "p_bas": 0.842,
+   "p_son": 0.921,
+   "tur": "kart",
+   "yer": "Tıklanır nokta kartı (u_egepor) içi; yalnız kullanıcı noktaya dokununca görünür (otomatik değil). Kartta iki satır: ürün sayfası + teknik föy.",
+   "metin_tr": "Ürün sayfası → · Teknik föy",
+   "metin_en": "Product page → · Technical sheet",
+   "baglanti": "/urunler/egepor/?kaynak=hikaye&dil={dil}&urun=egepor&nokta=s1_egepor_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&urun=egepor&nokta=s1_egepor_foy",
+   "olcum_data_iz": "s1_egepor_kart / s1_egepor_foy",
+   "kitle": "sahip|mimar",
+   "neden": "EGEPOR durağının rakam saniyesinden sonra (s1 planındaki rakam kartı). Yapı sahibi ürün sayfasını, mimar föyü seçer: ikisi yan yana, rekabet etmez.",
+   "mobil": "Kart telefonda alt sayfa (bottom sheet); iki bağlantı yan yana, her biri ≥44 px."
+  },
+  {
+   "id": "s1_sistem_teklif",
+   "t": 64,
+   "t_son": 67,
+   "vh_bas": 1408,
+   "perde": "s1",
+   "p_bas": 0.842,
+   "p_son": 0.921,
+   "tur": "ana",
+   "yer": "Anlatım sütununun alt kenarı; \"Duvardan çatıya tek mineral malzeme.\" cümlesinin hemen önünde başlar, çıkış dalışına (t=67) girmeden kapanır.",
+   "metin_tr": "{Ürün} için teklif alın  ·  Ürün Kataloğu (PDF)",
+   "metin_en": "Get a quote for {product}  ·  Product catalogue (PDF)",
+   "baglanti": "/teklif/?kaynak=hikaye&dil={dil}&urun={urun}&nokta=s1_sistem_teklif  |  /katalog/ (PDF doğrudan ise parametre eklenmez)",
+   "olcum_data_iz": "s1_sistem_teklif / s1_sistem_katalog",
+   "kitle": null,
+   "neden": "İLK \"ANA\" CTA (lime dolgu). Altı ürün tamamlandı, kanıt biriktirildi: satış cümlesi tam burada. Bağlam: ege_baglam hesabıyla seçilen ürün adı düğmede görünür; hesaplanamazsa jenerik \"Altı ürün, tek teklif\" / \"Six products, one quote\". Ürün çipi \"×\" ile silinebilir.",
+   "mobil": "Telefonda çip tek satır, alt kenar (başparmak bölgesi), yalnız bu pencerede."
+  },
+  {
+   "id": "s3_lambda_a1_kart",
+   "t": 96,
+   "t_son": 98,
+   "vh_bas": 2112,
+   "perde": "s3",
+   "p_bas": 0.429,
+   "p_son": 0.571,
+   "tur": "kart",
+   "yer": "λ rakam kartı ve A1 rakam kartı açıldığında kart içinde (yalnız kullanıcı dokununca).",
+   "metin_tr": "Teknik föyler · CE belgeleri",
+   "metin_en": "Technical sheets · CE certificates",
+   "baglanti": "/teknik-foyler/?kaynak=hikaye&dil={dil}&urun=duvar&nokta=s3_lambda_kart  |  /teknik-foyler/?kaynak=hikaye&dil={dil}&belge=ce&nokta=s3_a1_kart",
+   "olcum_data_iz": "s3_lambda_kart / s3_a1_kart",
+   "kitle": "mimar",
+   "neden": "A1 kartının amacı bilgi tonu: sınıf adı + belge. CE belgelerinin /teknik-foyler/ altında olup olmadığı teyit gerekli (belge=ce parametresi site tarafında karşılanmazsa düz /teknik-foyler/ kullanılır).",
+   "teyit_gerekli": true
+  },
+  {
+   "id": "s3_muhur_foy",
+   "t": 99,
+   "t_son": 101,
+   "vh_bas": 2178,
+   "perde": "s3",
+   "p_bas": 0.643,
+   "p_son": 0.786,
+   "tur": "yumusak",
+   "yer": "Üç rakam mührünün (λ 0,08 · A1 · 300–600) altında tek satır.",
+   "metin_tr": "Teknik Özellikler →",
+   "metin_en": "Technical specifications →",
+   "baglanti": "/teknik-foyler/?kaynak=hikaye&dil={dil}&urun={urun|duvar}&nokta=s3_muhur",
+   "olcum_data_iz": "s3_muhur_foy",
+   "kitle": "mimar",
+   "neden": "Üç kaynaklı rakam yan yana = mühür anı; mimar-mühendis için tam doğru bağlam. Rakamlar ekranda iken föy bağlantısı en tutarlı eylem."
+  },
+  {
+   "id": "s4_olcek_bayi",
+   "t": 115,
+   "t_son": 118,
+   "vh_bas": 2530,
+   "perde": "s4",
+   "p_bas": 0.688,
+   "p_son": 0.875,
+   "tur": "yumusak",
+   "yer": "Anlatım sütunu, \"200 t\" ve \"1.100.000 m³\" sayaçlarının hemen altında.",
+   "metin_tr": "Toplu alım ve bayilik →",
+   "metin_en": "Bulk orders and dealerships →",
+   "baglanti": "/teklif/?kaynak=hikaye&dil={dil}&kitle=bayi&nokta=s4_olcek",
+   "olcum_data_iz": "s4_olcek_bayi",
+   "kitle": "bayi",
+   "neden": "Ölçek rakamları (2 fabrika, 200 t/gün, 1.100.000 m³) bayi ve toplu alıcı için en güçlü anda. Bayilik başvurusunun var olup olmadığı ve /teklif/ formunda \"bayi\" türü teyit gerekli; yoksa metin \"Toplu alım için yazın\" olur.",
+   "teyit_gerekli": true,
+   "cikis_tasma_sn": 1
+  },
+  {
+   "id": "s5_ihracat",
+   "t": 131,
+   "t_son": 134,
+   "vh_bas": 2882,
+   "perde": "s5",
+   "p_bas": 0.688,
+   "p_son": 0.875,
+   "tur": "yumusak",
+   "yer": "Küre sahnesinde alt orta, \"25+ ülke · 5 kıta\" rakam kartlarının altı; küre ve yaylar bozulmaz.",
+   "metin_tr": "İhracat bölümüne ulaşın →",
+   "metin_en": "Contact our export team →",
+   "baglanti": "/ihracat/?kaynak=hikaye&dil={dil}&kitle=bayi&nokta=s5_ihracat",
+   "olcum_data_iz": "s5_ihracat",
+   "kitle": "bayi",
+   "neden": "İhracat alıcısı için dönüşüm anı: \"25+ ülke · 5 kıta\" (ihracat bölümü kaynaklı) ekranda ve sahne sessiz. Ülke adı, müşteri sayısı, fiyat yok. EN ziyaretçide varsayılan dil EN kalır.",
+   "cikis_tasma_sn": 1
+  },
+  {
+   "id": "son_teklif",
+   "t": 142,
+   "t_son": 146,
+   "vh_bas": 3124,
+   "perde": "son",
+   "p_bas": 0.6,
+   "p_son": 1.0,
+   "tur": "ana",
+   "yer": "Finale: logo ve slogan kilitlendikten sonra (t=141), \"Projeniz için teklif alın.\" başlığı + \"Duvar ölçünüzü iletin; çözümü biz hazırlayalım.\" cümlesi altında lime ana düğme + yanında bağlam çipi \"EGEPOR ×\".",
+   "metin_tr": "Teklif Al →",
+   "metin_en": "Get a quote →",
+   "baglanti": "/teklif/?kaynak=hikaye&dil={dil}&urun={urun}&nokta=son_teklif",
+   "olcum_data_iz": "son_teklif",
+   "kitle": null,
+   "neden": "Hikâyenin amacı. Duygu → kanıt → güç yolculuğunun sonunda tek, net, ürün bağlamlı eylem. Yalnız bu ekranda lime dolgulu ana düğme + 2.5 sn'de bir nabız (transform/opacity). t=142–145'te ekranda önce yalnız ana CTA + 1 ikincil + bağlam çipi; kitle çipleri t=143'te, kanıt kartları t=144'te (akt-son sadeleştirmesi).",
+   "mobil": "Telefonda tam genişlik; üst çubuk düğmesi gizliyse bu ana CTA. Alt sabit çubuk (son_bar_mobil) numara teyidi gelene dek konmaz: bu düğme telefonun tek finale CTA'sıdır."
+  },
+  {
+   "id": "son_katalog",
+   "t": 142,
+   "t_son": 146,
+   "vh_bas": 3124,
+   "perde": "son",
+   "p_bas": 0.6,
+   "p_son": 1.0,
+   "tur": "ikincil",
+   "yer": "Finale, ana düğmenin yanında; finalin TEK ikincil düğmesi (telefonda altında, tam genişlik, çizgili).",
+   "metin_tr": "Ürün Kataloğu · PDF",
+   "metin_en": "Product catalogue · PDF",
+   "baglanti": "/katalog/  (sunucuda doğrudan PDF ise parametresiz; sayfaysa ?kaynak=hikaye&dil={dil}&nokta=son_katalog)",
+   "olcum_data_iz": "son_katalog",
+   "kitle": null,
+   "neden": "Teklif vermeye hazır olmayan ama saklayacak şey isteyen ziyaretçiye ikinci yol. İndirme ölçümü GA4 file_download (site) + ege_tik ile çift doğrulanır. Katalog tarihli (\"22.09.25\") dosyadır: güncelliği teyit gerekli. Teknik Özellikler düğmesi finalden çıkarıldı (sadeleştirme): mimar için aynı hedef t=143'te 'Mimar / mühendisim' çipinde.",
+   "teyit_gerekli": true
+  },
+  {
+   "id": "son_kitle_sahip",
+   "t": 143,
+   "t_son": 146,
+   "vh_bas": 3146,
+   "perde": "son",
+   "p_bas": 0.7,
+   "p_son": 1.0,
+   "tur": "kitle",
+   "yer": "Finale, düğmelerin altı, t=143'te tek sırada: \"Size en uygun yol:\" çipleri (hero ile aynı üç çip; EN'de ihracat çipi önce).",
+   "metin_tr": "Ev / bina yapıyorum",
+   "metin_en": "I am building",
+   "baglanti": "/duvar-tasarla/?kaynak=hikaye&dil={dil}&kitle=sahip&nokta=son_kitle",
+   "olcum_data_iz": "son_kitle_sahip",
+   "kitle": "sahip",
+   "neden": "Hero ile aynı üç çip, finalde de: hikâyeyi atlayan ve hikâyeyi bitiren aynı hedeflere gider; iki yoldan gelen dönüşüm karşılaştırılabilir."
+  },
+  {
+   "id": "son_kitle_mimar",
+   "t": 143,
+   "t_son": 146,
+   "vh_bas": 3146,
+   "perde": "son",
+   "p_bas": 0.7,
+   "p_son": 1.0,
+   "tur": "kitle",
+   "yer": "Finale, aynı çip satırı.",
+   "metin_tr": "Mimar / mühendisim",
+   "metin_en": "Architect / engineer",
+   "baglanti": "/teknik-foyler/?kaynak=hikaye&dil={dil}&kitle=mimar&nokta=son_kitle",
+   "olcum_data_iz": "son_kitle_mimar",
+   "kitle": "mimar",
+   "neden": "Teknik Özellikler yolu: finaldeki ayrı 'Teknik Özellikler' düğmesi (son_foyler) kaldırıldı; bu çip aynı hedefe (/teknik-foyler/) gider."
+  },
+  {
+   "id": "son_kitle_bayi",
+   "t": 143,
+   "t_son": 146,
+   "vh_bas": 3146,
+   "perde": "son",
+   "p_bas": 0.7,
+   "p_son": 1.0,
+   "tur": "kitle",
+   "yer": "Finale, aynı çip satırı.",
+   "metin_tr": "İhracat alıcısı / bayiyim",
+   "metin_en": "Export buyer / dealer",
+   "baglanti": "/ihracat/?kaynak=hikaye&dil={dil}&kitle=bayi&nokta=son_kitle",
+   "olcum_data_iz": "son_kitle_bayi",
+   "kitle": "bayi",
+   "neden": ""
+  },
+  {
+   "id": "son_tekrar",
+   "t": 145,
+   "t_son": 146,
+   "vh_bas": 3190,
+   "perde": "son",
+   "p_bas": 0.9,
+   "p_son": 1.0,
+   "tur": "gezinme",
+   "yer": "Finale, CTA grubunun altında, perde bandının hemen üstünde ince metin bağlantı (dikkat çekmez; perdeyle örtüşmez).",
+   "metin_tr": "Hikâyeyi baştan izle",
+   "metin_en": "Watch the story again",
+   "baglanti": "iç bağlantı: window.scrollTo(akış başı); parametre yok",
+   "olcum_data_iz": "son_tekrar",
+   "kitle": null,
+   "neden": "Paylaşmak/göstermek isteyen (ör. ekibine, ortağına) için. ege_tekrar olayı \"hikâye izlenmeye değer\" sinyalidir."
+  },
+  {
+   "id": "sonra_urun_kartlari",
+   "t": 145,
+   "t_son": 146,
+   "vh_bas": 3190,
+   "perde": "son",
+   "p_bas": 0.9,
+   "p_son": 1.0,
+   "tur": "devam",
+   "yer": "Yalnız sticky bırakıldıktan sonra (finale ekranında değil): perde altı \"Ürün grupları\" kartları (.eg-urun). Hikâyede en çok bakılan ürünün kartı lime kenar + \"Hikâyede baktığınız\" etiketi ile ilk sırada.",
+   "metin_tr": "Duvar blokları · Lentolar · U blok ve köşe bloğu · Paneller · Gazbeton tutkalı · EGEPOR",
+   "metin_en": "Wall blocks · Lintels · U-blocks and corner blocks · Panels · AAC adhesive · EGEPOR",
+   "baglanti": "/urunler/{slug}/?kaynak=hikaye&dil={dil}&nokta=sonra_{urun}  (6 kart)",
+   "olcum_data_iz": "sonra_urun_{urun}",
+   "kitle": null,
+   "neden": "Akış kesilmeden hikâyeden ürün katalog içeriğine yumuşak devam. Kişiselleştirme yalnız bellek içi ölçülmüş ilgiye dayanır; hikâye atlandıysa vurgu yok."
+  },
+  {
+   "id": "yol_cubugu_teklif",
+   "t": 2,
+   "t_son": 146,
+   "vh_bas": 44,
+   "perde": "s0…son",
+   "p_bas": null,
+   "p_son": null,
+   "tur": "gezinme",
+   "yer": "Yolculuk çubuğu (sağ üst, açılır liste): son öğe \"Teklif\".",
+   "metin_tr": "Teklif",
+   "metin_en": "Quote",
+   "baglanti": "iç bağlantı: sahneyeGit('son') → akış p=0,62 (t≈142)",
+   "olcum_data_iz": "yol_son",
+   "kitle": null,
+   "neden": "Hero atla bağlantısı kaybolduktan sonra da hikâyenin içinden finale atlama yolu: t=2'den itibaren açık."
+  }
+ ],
+ "finale_cikarilan_ertelenen": [
+  {
+   "id": "son_foyler",
+   "t": 142,
+   "t_son": 146,
+   "vh_bas": 3124,
+   "perde": "son",
+   "p_bas": 0.6,
+   "p_son": 1.0,
+   "tur": "ikincil",
+   "yer": "Finale, ikinci çizgili düğme.",
+   "metin_tr": "Teknik Özellikler",
+   "metin_en": "Technical specifications",
+   "baglanti": "/teknik-foyler/?kaynak=hikaye&dil={dil}&urun={urun}&nokta=son_foyler",
+   "olcum_data_iz": "son_foyler",
+   "kitle": "mimar",
+   "neden": "Mimar-mühendis için finalde de yol açık.",
+   "durum": "kaldirildi",
+   "durum_notu": "Finale t=142-145 sadeleştirmesi: tek ikincil düğme Ürün Kataloğu · PDF; mimar için aynı hedef t=143'te 'Mimar / mühendisim' çipinde (son_kitle_mimar → /teknik-foyler/)."
+  },
+  {
+   "id": "son_bar_mobil",
+   "t": 142,
+   "t_son": 146,
+   "vh_bas": 3124,
+   "perde": "son",
+   "p_bas": 0.6,
+   "p_son": 1.0,
+   "tur": "ana",
+   "yer": "YALNIZ TELEFON: ekran altı sabit çubuk (safe-area-inset-bottom + 12 px), iki hedef: [Teklif Al] geniş, [PDF] kare.",
+   "metin_tr": "Teklif Al  ·  PDF",
+   "metin_en": "Get a quote  ·  PDF",
+   "baglanti": "Teklif: /teklif/?kaynak=hikaye&dil={dil}&urun={urun}&nokta=son_bar  |  PDF: /katalog/",
+   "olcum_data_iz": "son_bar_teklif / son_bar_pdf",
+   "kitle": null,
+   "neden": "Başparmak bölgesi: telefonda anlatım üstte, 3B konu altta olduğundan finalde (3B yok) alt kenar boş; çubuk \"sonrası\" bölümünde de kalır (ilk ürün kartından sonra gizlenir).",
+   "mobil": "Yükseklik 56 px, tek satır, 3B konuyu örtmez (finalde kare dizisi yok).",
+   "durum": "ertelendi",
+   "durum_notu": "Görev kararı: numara teyidi gelene dek finale konmaz (WhatsApp düğmesiyle birlikte tasarlandı). Teyit gelirse sahne içi ≤7 etkileşimli öğe sınırı korunarak yeniden yerleştirilir; o zamana dek telefonda ana CTA akış içi Teklif Al düğmesidir."
+  },
+  {
+   "id": "son_whatsapp_mobil",
+   "t": 143,
+   "t_son": 146,
+   "vh_bas": 3146,
+   "perde": "son",
+   "p_bas": 0.7,
+   "p_son": 1.0,
+   "tur": "ikincil",
+   "yer": "YALNIZ TELEFON: alt çubuğun yanında ikonlu üçüncü düğme.",
+   "metin_tr": "WhatsApp ile yazın",
+   "metin_en": "Write on WhatsApp",
+   "baglanti": "wa.me/<numara — teyit gerekli>?text=<önceden doldurulmuş: \"Hikâyeden geliyorum: {ürün}\">  veya tel:<numara — teyit gerekli>",
+   "olcum_data_iz": "son_wa",
+   "kitle": null,
+   "neden": "Türkiye B2B/B2C'de telefondan en kısa dönüşüm yolu. Numara, çalışma saati ve sorumlu kişi bilinmiyor: eklenmeden önce müşteriden alınmalı; uydurma numara konmaz.",
+   "teyit_gerekli": true,
+   "durum": "ertelendi",
+   "durum_notu": "Görev kararı: telefon/WhatsApp numarası teyidi gelene dek konmaz; uydurma numara yok."
+  }
+ ],
+ "baglanti_semasi": "ŞABLON\n  {yol}?kaynak=hikaye&dil={tr|en}[&urun={kod}][&kitle={sahip|mimar|bayi}][&nokta={cta_id}]\n\nPARAMETRELER (hepsi isteğe bağlı olan köşeli; küçük harf ASCII; kişisel veri YOK)\n  kaynak  sabit \"hikaye\" (hikâye bloğundan çıkan her bağlantı: hero, perdeler, finale). Üst çubuk \"Teklif Al\" düğmesi hikâye ekranda iken kaynak=hikaye, hikâye dışındaki sayfa bölümlerinde kaynak=ust.\n  dil     dilUygula() durumu: tr | en (dil.js dil()).\n  urun    duvar | lento | ublok | tutkal | panel | egepor  (finale ajanındaki kodlarla aynı). Yalnız ÖLÇÜLMÜŞ ilgiden gelir; hikâye atlandıysa ya da ilgi yoksa HİÇ eklenmez.\n  kitle   sahip | mimar | bayi  YALNIZ tıklanan öğe kitleyi adıyla söylüyorsa (hero/finale çipleri, \"Toplu alım ve bayilik\", \"İhracat bölümüne ulaşın\"). Genel \"Teklif Al\" kitle taşımaz.\n  nokta   CTA kimliği (cta_zaman_cizelgesi.id; ≤24 karakter; [a-z0-9_]). Teklif formu bunu gizli alana yazar → \"hangi saniyede/hangi cümleden geldi\" bilinir. Film saniyesi (t) URL'ye yazılmaz: nokta zaten sahneyi belirler.\n  utm_*   sayfaya utm_* ile gelinmişse AYNEN iletilir (kampanya ilişkisi kopmasın). gclid/fbclid iletilmez (site etiketi kendisi okur).\n\nURUN → SAYFA EŞLEMESİ (index.html'deki ürün grubu bağlantılarıyla aynı)\n  duvar  /urunler/duvar-bloklari/   lento /urunler/lentolar/   ublok /urunler/u-blok-kose/\n  tutkal /urunler/tutkal/            panel /urunler/paneller/   egepor /urunler/egepor/\n  Föy: /teknik-foyler/?urun={kod}\n\nBAĞLAM ÇIKARIMI (src/hikaye/baglam.js; yalnız bellek, depolama/çerez YOK)\n  skor(urun) = duraktaki görünür süre (sn, durak başına en çok 20) + 8 × açılan nokta kartı + 15 × ürün çipi veya ürün bağlantısı tıklaması.\n  En yüksek skor kazanır; eşitlikte en son bakılan. Eşik: skor ≥ 5 (1 sn gezinme urun ayarlamaz). ege_baglam olayı t≥64'te ya da finalde bir kez atılır; urun değişirse yeniden hesaplanır.\n  Hikâye atlandıysa urun yok; finale bağlam çipi gizli, düğmeler jenerik.\n\nHREF DÜZENİ\n  Statik HTML'de href'ler TEMİZ kalır (/teklif/, /katalog/ ...): arama motoru ve JS'siz görünüm parametre görmez, kanonik sorunu çıkmaz.\n  JS (baglam.js) bağlam değiştiğinde ilgili href'leri ve data-iz'i günceller (tıklama anına bırakılmaz: sağ tık/uzun basış/bağlantıyı kopyala da doğru çalışsın).\n  /katalog/ doğrudan PDF dosyasıysa parametre eklenmez (önbellek ve dosya adı bozulmasın); izleme data-iz + GA4 file_download ile yapılır. /katalog/ sayfaysa kaynak/dil/nokta eklenir.\n  İç bağlantılar (sahneyeGit, #teklif, tekrar izle) parametresizdir.\n\nOKUMA TARAFI (site işi; açık soru 4): /teklif/ formu parametreleri beyaz listeyle okur (bilinmeyen değer yok sayılır, HTML olarak basılmaz), şunları yapar: urun ön seçimi + \"Hikâyede baktığınız: EGEPOR ×\" çipi (× ile silinir), kitle'ye göre alan seti/başlık, gizli alanlar kaynak ve nokta (CRM/teklif e-postasında görünür).\n\nÖRNEKLER\n  Finale ana düğme      /teklif/?kaynak=hikaye&dil=tr&urun=egepor&nokta=son_teklif\n  Mimar çipi (EN)       /teknik-foyler/?kaynak=hikaye&dil=en&kitle=mimar&nokta=giris_kitle\n  İhracat CTA           /ihracat/?kaynak=hikaye&dil=en&kitle=bayi&nokta=s5_ihracat\n  Lento kartı           /urunler/lentolar/?kaynak=hikaye&dil=tr&urun=lento&nokta=s1_lento_kart\n  Lento föyü            /teknik-foyler/?kaynak=hikaye&dil=tr&urun=lento&nokta=s1_lento_foy\n  Üst çubuk (hikâye dışı) /teklif/?kaynak=ust&dil=tr&nokta=ust\n  Hikâye atlandı        /teklif/?kaynak=hikaye&dil=tr&nokta=son_teklif   (urun yok)\n",
+ "guven_isaretleri": [
+  {
+   "id": "g_fabrika",
+   "isaret": "2 fabrika · Söke & İzmir",
+   "kaynak": "Ege Gazbeton ortak rakamlar (dil.js h4.k1; DEVIR.md)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=20 (tır kartı), 108, 144 kanıt kartı"
+  },
+  {
+   "id": "g_kapasite",
+   "isaret": "1.100.000 m³ üretim kapasitesi",
+   "kaynak": "Ege Gazbeton ortak rakamlar (index.html h4.k2)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=115",
+   "not": "Süre ibaresi (yıllık?) kaynakta yok: ekranda yalnız \"üretim kapasitesi\"."
+  },
+  {
+   "id": "g_kireç",
+   "isaret": "Söke'de günde 200 ton kapasiteli kendi kireç tesisi",
+   "kaynak": "Ege Gazbeton ortak rakamlar (dil.js NOKTALAR.kirec, h4.k3)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=74 (kart), 114",
+   "not": "Sahiplik vurgusu: \"kendi\" sözcüğü kalır."
+  },
+  {
+   "id": "g_lambda",
+   "isaret": "λ 0,08 W/mK · G2/350 duvar tasarım değeri",
+   "kaynak": "Ege Gazbeton ortak rakamlar (index.html s3)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=96"
+  },
+  {
+   "id": "g_a1",
+   "isaret": "A1 · yangına tepki sınıfı · EN 13501-1",
+   "kaynak": "CE belgeleri (index.html s3)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=97, 144 kanıt kartı",
+   "not": "Hiçbir yerde \"yanmaz\". Üretici ürün sayfası \"A1 Hiç Yanmaz\" yazıyor (DEVIR.md): bağlantılı sayfalarla tutarlılık teyit gerekli."
+  },
+  {
+   "id": "g_yogunluk",
+   "isaret": "300–600 kg/m³ (G1–G4)",
+   "kaynak": "Ürün sınıfları G1/300 – G4/600 (index.html s3)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=99"
+  },
+  {
+   "id": "g_blok",
+   "isaret": "60 × 25 cm yüz · 1–3 mm ince derz · 5–35 cm kalınlık · lento 4,50 m'ye kadar · panel 6 m açıklık",
+   "kaynak": "Ürün föyleri (index.html, dil.js)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=13–16, 36–60"
+  },
+  {
+   "id": "g_ublok",
+   "isaret": "U blok G4/06: 60 × 25 cm, 20–25 cm, λ 0,16 W/mK kuru; \"hatılda ahşap kalıp yerine\"",
+   "kaynak": "Ürün föyleri · U Bloklar sayfası (DEVIR.md: egegazbeton.com.tr/urunlerimiz/u-bloklar/)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=49–50",
+   "not": "50 kgf/cm² ve 600 kg/m³ ekranda yok; gerekirse kartta kaynakla."
+  },
+  {
+   "id": "g_egepor",
+   "isaret": "EGEPOR λ 0,051–0,062 W/mK kuru · 150–200 kg/m³; kolon ve kiriş kaplaması",
+   "kaynak": "Ürün föyleri · EGEPOR sayfası (DEVIR.md: egegazbeton.com.tr/urunlerimiz/egepor/)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=64–65"
+  },
+  {
+   "id": "g_odtu",
+   "isaret": "ODTÜ çalışması: 8 katlı örnek bina hesabı, yapı kütlesi −%17",
+   "kaynak": "ODTÜ çalışması (index.html h1e.k2; dil.js i3.kaynak)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=59–60",
+   "not": "Etiket \"ODTÜ çalışması, 8 katlı örnek bina hesabı\" olarak kalır; onay/sertifika dili ve genelleme yok. Kapsam (yalnız panel mi, tüm sistem mi) ve çalışmanın bağlantısı teyit gerekli."
+  },
+  {
+   "id": "g_ihracat",
+   "isaret": "25+ ülke · 5 kıta",
+   "kaynak": "Ege Gazbeton ihracat bölümü (DEVIR.md, dil.js)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=130–131, 144 kanıt kartı",
+   "not": "Ülke adı, ülke sınırı, müşteri sayısı, fiyat yok."
+  },
+  {
+   "id": "g_surec",
+   "isaret": "Şeffaf üretim: kum, kireç, çimento, alçı, alüminyum tozu; kabarma, tel kesim, otoklav",
+   "kaynak": "Müşteri onaylı i1 metinleri ve NOKTALAR (dil.js)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "t=72–87",
+   "not": "Güven işareti olarak \"açık üretim\": rakam yok (otoklav °C/bar ve hava hacim oranı teyit gerekli)."
+  },
+  {
+   "id": "g_kunye",
+   "isaret": "Kurumsal künye: © Ege Gazbeton — Akkuş Mimarlık İnşaat Turizm San. ve Tic. A.Ş.",
+   "kaynak": "index.html alt bilgi (müşteri sayfası)",
+   "durum": "doğrulandı",
+   "nerede_gorunur": "alt bilgi; JSON-LD legalName",
+   "not": "DEVIR.md'de değil; sayfada mevcut olduğu için kullanılabilir, yine de kuruluşa teyit."
+  },
+  {
+   "id": "g_ce_no",
+   "isaret": "CE belge numaraları (CE 2179-CPR-0043 / 0052) ve TS EN 771-4",
+   "kaynak": "Yalnız README.md/OKU-BENI.txt'te; DEVIR.md ve dil.js'te YOK",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "ekranda GÖSTERİLMEZ",
+   "not": "Belge dosyası/PDF ile doğrulanana kadar yalnız \"CE belgeleri\" kaynak adı kullanılır."
+  },
+  {
+   "id": "g_taban_kesme",
+   "isaret": "Taban kesme kuvveti −%14 (ODTÜ)",
+   "kaynak": "OKU-BENI.txt; dil.js'te yalnız i3.k2 anahtarı, rakamsız",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "kullanılmaz"
+  },
+  {
+   "id": "g_iso",
+   "isaret": "ISO 9001 / TSE / EPD / yeşil bina katkısı",
+   "kaynak": "kayıtta yok",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "kullanılmaz"
+  },
+  {
+   "id": "g_yangin_direnci",
+   "isaret": "Yangın direnci (EN 13501-2) belgesi",
+   "kaynak": "kayıtta yok (s3 ajanı da işaretledi)",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "serin yüz/süre/°C ima edilmez"
+  },
+  {
+   "id": "g_kurulus",
+   "isaret": "Kuruluş yılı, tecrübe yılı, referans proje sayısı",
+   "kaynak": "kayıtta yok; müşteri sayısı zaten yasak",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "kullanılmaz"
+  },
+  {
+   "id": "g_teslimat",
+   "isaret": "Teslim süresi, stok, garanti, \"X saatte dönüş\" vaadi",
+   "kaynak": "kayıtta yok",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "kullanılmaz",
+   "not": "Teklif sayfasında vaat verilecekse müşteri tarafından yazılı onay gerekir."
+  },
+  {
+   "id": "g_liman",
+   "isaret": "Aliağa ve Alsancak limanlarına yakınlık",
+   "kaynak": "dil.js'te var (i4.metin, NOKTALAR.kaynak) ama kaynaksız; s5 ajanı da işaretledi",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "pazarlama kopyasına ALINMAZ"
+  },
+  {
+   "id": "g_palet",
+   "isaret": "Palet/tır kapasitesi, sevkiyat süresi",
+   "kaynak": "kayıtta yok",
+   "durum": "teyit gerekli",
+   "nerede_gorunur": "kullanılmaz"
+  },
+  {
+   "id": "g_sunum_kurallari",
+   "isaret": "SUNUM KURALLARI (hepsi için)",
+   "kaynak": "DEĞİŞMEZ KURALLAR",
+   "durum": "kural",
+   "nerede_gorunur": "tüm film",
+   "kurallar": [
+    "Her sayının kaynağı kartta yazılı; telefonda da (hikaye.css ≤760 px'te .eg-rakam small{display:none} yapıyor: bu kural ile ÇELİŞİR → tek satır dipnot).",
+    "Üst düzey iddia sözcükleri yok: \"en iyi\", \"lider\", \"garantili\", \"yanmaz\", \"depreme dayanıklı\", \"%… tasarruf\".",
+    "Kanıt şeridi (t=144; statik bilgi kartları) üç kart: \"2 fabrika · Söke & İzmir\" | \"CE belgeleri · A1 EN 13501-1\" | \"25+ ülke · 5 kıta\" — her birinin altında kaynak adı.",
+    "Güven = iddia değil kaynaklı rakam + açık üretim (s2) + üçüncü taraf (ODTÜ) + belge (CE).",
+    "Yeni bir güven işareti ancak doğrulanınca bu tabloya \"doğrulandı\" olarak eklenir."
+   ]
+  }
+ ],
+ "olcum": [
+  {
+   "tur": "kural",
+   "ad": "Gizlilik ve çerez",
+   "kurallar": [
+    "Hikâye kodu YENİ çerez, localStorage, sessionStorage, parmak izi, harici istek eklemez. Mevcut tek depolama: tercih edilen dil (localStorage \"ege-dil\", işlevsel).",
+    "Olaylar yalnız window.dataLayer bir dizi ise push edilir (mevcut arayuz.js davranışı); yoksa hiçbir şey olmaz. Ağ çağrısı/sendBeacon YOK.",
+    "Olayları GA4/GTM'ye iletip iletmeyeceğine sitenin onay (consent) yapısı karar verir; hikâye bundan bağımsız. Onay aracı ve GTM kurulumu teyit gerekli (açık soru 9).",
+    "Parametreler sayı veya sabit sözlükten kod; serbest metin, URL sorgusu, IP, kimlik YOK.",
+    "Bağlam (urun) yalnız bellekte; sayfa yenilenince sıfırlanır."
+   ]
+  },
+  {
+   "tur": "kural",
+   "ad": "Film saniyesi ve hız sınıfı",
+   "kurallar": [
+    "t_film = akış içinde kaydırılan vh / 22 (referans hız 22 vh/sn; dagit() içindeki yVh). 1 ondalık yuvarlanır, olaylarda tam sayı.",
+    "hiz sınıfı (son 3 sn ortalama kaydırma): yavas < 0,5×, normal 0,5–2×, hizli > 2× (1× = 22 vh/sn). Hızlı kaydıranın \"izledi\" sayılmaması için ege_ilerleme olayında taşınır.",
+    "Eşik olayları oturumda bir kez ve yalnız ilk ulaşılışta (ileri yön); geri kaydırma yeniden saymaz.",
+    "Kare başı iş yok: olaylar frame() içinde kuyruğa alınır, requestIdleCallback ile boşaltılır; oturumda en çok ~80 olay."
+   ]
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_hikaye_gor",
+   "ne_zaman": "Poster (kareler/s0/poster.webp) çözüldü ve ilk boyama olduktan sonra, bir kez",
+   "t_film": 0,
+   "sahne": "s0",
+   "parametreler": [
+    "dil",
+    "varyant d|m",
+    "hareket normal|az",
+    "tasarruf 0|1",
+    "ekran kova (<480, 480–760, 761–1280, >1280)"
+   ],
+   "amac": "ziyaretçi hacmi, LCP ile birlikte okunur; huninin tabanı"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_hikaye_basla",
+   "ne_zaman": "İlk kaydırma (>0), ilk dokunuş/tık veya klavye ile ilk eylem",
+   "t_film": "0–2",
+   "sahne": "s0",
+   "parametreler": [
+    "bekleme_ms (250 ms kovalı)",
+    "eylem kaydir|dokun|klavye|tik"
+   ],
+   "amac": "10 sn testinin canlı karşılığı: ziyaretçi ne kadar sürede harekete geçti?"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_ilerleme",
+   "ne_zaman": "Film saniyesi eşiklerinde (ilk ulaşılışta)",
+   "t_film": "5, 10, 20, 28, 32, 45, 60, 70, 90, 104, 120, 130, 136, 140, 142, 146",
+   "sahne": "her sahne",
+   "parametreler": [
+    "t",
+    "sahne",
+    "gecen_sn (hikaye_basla'dan, kovalı)",
+    "hiz",
+    "dil"
+   ],
+   "amac": "huni raporu; kritik eşikler 10 (duygu tutma), 32 (kanıt başlar), 104 (güç başlar), 136 (eylem başlar), 142 (CTA görünür)"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_sahne",
+   "ne_zaman": "Sahne görünür olduğunda (giriş) ve çıktığında (süre)",
+   "t_film": "32, 70, 90, 104, 120, 136 (girişler)",
+   "sahne": "s0–son",
+   "parametreler": [
+    "sahne",
+    "sure_sn (görünür süre)",
+    "yon ileri|geri"
+   ],
+   "amac": "hangi perdede ne kadar duruldu; geri dönüşler (zorlandığı/ilgilendiği yer)"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_durak",
+   "ne_zaman": "Ürün durağı bırakıldığında",
+   "t_film": "40, 45, 50, 55, 60, 65 (çıkışlar)",
+   "sahne": "s1",
+   "parametreler": [
+    "urun duvar|lento|ublok|tutkal|panel|egepor",
+    "sure_sn",
+    "nokta_acti 0|1",
+    "cip_ile 0|1"
+   ],
+   "amac": "ürün ilgisi: hangi ürünün durağında kaç sn kalındı; ege_baglam'ın girdisi"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_nokta",
+   "ne_zaman": "Tıklanır nokta kartı açıldığında (arayuz.js kartAc)",
+   "t_film": "her",
+   "sahne": "her",
+   "parametreler": [
+    "nokta (NOKTALAR kimliği: tir, fabrika, u_egepor, kirec, hucre, kitalar ...)",
+    "sahne",
+    "t",
+    "kaynak dokun|klavye"
+   ],
+   "amac": "hangi kanıt/kart ilgi çekiyor: ODTÜ (u_panel, t=60), CE/A1 (t=97), kireç tesisi (t=74, 114), tır (t=20–22, 110), kitalar (t=130)"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_cta_gor",
+   "ne_zaman": "Bir CTA penceresi ilk kez görünür olduğunda (p aralığına girince; IntersectionObserver gerekmez)",
+   "t_film": "0, 23, 38, 64, 99, 115, 131, 142, 143",
+   "sahne": "ilgili perde",
+   "parametreler": [
+    "cta (cta_zaman_cizelgesi.id)",
+    "t",
+    "tur"
+   ],
+   "amac": "pencere başına tıklanma oranı = ege_tik / ege_cta_gor"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_tik",
+   "ne_zaman": "[data-iz] tıklaması (MEVCUT olay, arayuz.js; geriye dönük uyumlu genişletme)",
+   "t_film": "her",
+   "sahne": "her",
+   "parametreler": [
+    "hedef (data-iz)",
+    "dil",
+    "+ t",
+    "+ sahne",
+    "+ urun (varsa)",
+    "+ kitle (varsa)",
+    "+ hiz"
+   ],
+   "amac": "tüm CTA tıklamaları; mevcut ust_teklif, giris_teklif, giris_katalog, giris_foyler, kitle_*, hikaye_atla, son_teklif, son_katalog adları korunur (son_foyler: finaldeki ayrı düğme kaldırıldı, mimar çipi son_kitle_mimar); yeni adlar cta tablosundaki olcum_data_iz"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_kitle",
+   "ne_zaman": "Hero/finale kitle çipi tıklandığında",
+   "t_film": "0–2 ve 143–146",
+   "sahne": "s0/son",
+   "parametreler": [
+    "kitle sahip|mimar|bayi",
+    "yer giris|son",
+    "t"
+   ],
+   "amac": "kitle dağılımı; hero ile finale çipi tercihi farkı"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_atla",
+   "ne_zaman": "\"Hikâyeyi atla\" / yolculuk çubuğunda \"Teklif\"",
+   "t_film": "0–146",
+   "sahne": "her",
+   "parametreler": [
+    "nokta giris|yol",
+    "t_atlanan (atlanılan en yüksek ulaşılmış t)",
+    "gecen_sn"
+   ],
+   "amac": "atlayanların dönüşümü ile izleyenlerin dönüşümü kıyası (hikâyenin değeri)"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_dil",
+   "ne_zaman": "TR/EN düğmesi",
+   "t_film": "her",
+   "sahne": "her",
+   "parametreler": [
+    "dil",
+    "t"
+   ],
+   "amac": "ihracat ilgisi göstergesi"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_baglam",
+   "ne_zaman": "urun çözüldüğünde ve değiştiğinde (ilk kez t≥64 ya da finalde)",
+   "t_film": "64–146",
+   "sahne": "s1/son",
+   "parametreler": [
+    "urun",
+    "kaynak sure|nokta|tik"
+   ],
+   "amac": "bağlam doğruluğu kontrolü; teklif formundaki urun ile karşılaştırılır"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_son_gor",
+   "ne_zaman": "Finale CTA grubu görünür (akış p ≥ 0,60)",
+   "t_film": 142,
+   "sahne": "son",
+   "parametreler": [
+    "urun (varsa)",
+    "gecen_sn",
+    "atladi 0|1"
+   ],
+   "amac": "EYLEM aşamasının tabanı: kaç kişi düğmeyi gördü?"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_tekrar",
+   "ne_zaman": "\"Hikâyeyi baştan izle\"",
+   "t_film": "145–146",
+   "sahne": "son",
+   "parametreler": [
+    "gecen_sn"
+   ],
+   "amac": "paylaşılabilirlik/değer sinyali"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_kare_hiz",
+   "ne_zaman": "Sahneden çıkışta, oturum başına en çok 4 örnek (s0, s1, s4, s5)",
+   "t_film": "32, 70, 120, 136",
+   "sahne": "s0, s1, s4, s5",
+   "parametreler": [
+    "sahne",
+    "fps_p50",
+    "fps_p5",
+    "yavas_oran (>25 ms kare oranı, %)",
+    "varyant",
+    "dpr (≤1,25)"
+   ],
+   "amac": "≥50 fps kuralının sahadaki doğrulaması; yalnız kaydırma sırasındaki karelerden (rAF boştayken ölçülmez)"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_kare_hata",
+   "ne_zaman": "Kare indirme hatası (kuyruk)",
+   "t_film": "her",
+   "sahne": "her",
+   "parametreler": [
+    "sahne",
+    "kare_kova (10'lu)"
+   ],
+   "amac": "bozuk/eksik kare ve CDN sorunu; çevrimdışı file:// sınamasında da çalışır"
+  },
+  {
+   "tur": "olay",
+   "olay": "ege_cikis",
+   "ne_zaman": "visibilitychange→hidden / pagehide (dataLayer'a push; iletim garanti değil)",
+   "t_film": "her",
+   "sahne": "her",
+   "parametreler": [
+    "t_maks (ulaşılan en yüksek)",
+    "sahne",
+    "sure_sn (kovalı)",
+    "cta_gordu 0|1"
+   ],
+   "amac": "terk noktası haritası (hangi saniyede çıkıldı)"
+  },
+  {
+   "tur": "zaman_cizelgesi",
+   "ad": "Hangi film saniyesinde / sahnede ne ölçülür",
+   "noktalar": [
+    {
+     "t": 0,
+     "sahne": "s0",
+     "olay": "ege_hikaye_gor + ege_cta_gor(giris_teklif, ust_teklif)"
+    },
+    {
+     "t": "0–2",
+     "sahne": "s0",
+     "olay": "ege_hikaye_basla (bekleme_ms); ege_tik giris_* / kitle_* / hikaye_atla"
+    },
+    {
+     "t": 5,
+     "sahne": "s0",
+     "olay": "ege_ilerleme (plan çizimi başladı)"
+    },
+    {
+     "t": 10,
+     "sahne": "s0",
+     "olay": "ege_ilerleme — DUYGU TUTMA eşiği: eskiz tamam"
+    },
+    {
+     "t": "20–22",
+     "sahne": "s0",
+     "olay": "ege_ilerleme t=20; ege_nokta tir/palet"
+    },
+    {
+     "t": 23,
+     "sahne": "s0",
+     "olay": "ege_cta_gor s0_tir_urunler"
+    },
+    {
+     "t": 28,
+     "sahne": "s0",
+     "olay": "ege_ilerleme (soru anı); ege_nokta yuva"
+    },
+    {
+     "t": 32,
+     "sahne": "s1",
+     "olay": "ege_sahne s1, ege_ilerleme — KANIT başlar"
+    },
+    {
+     "t": "36–65",
+     "sahne": "s1",
+     "olay": "ege_durak (6 çıkış: t=40,45,50,55,60,65), ege_nokta u_*; t=38 ege_cta_gor s1_duvar_hesapla; t=60 ODTÜ kartı"
+    },
+    {
+     "t": 64,
+     "sahne": "s1",
+     "olay": "ege_baglam + ege_cta_gor s1_sistem_teklif (ilk ANA CTA)"
+    },
+    {
+     "t": 70,
+     "sahne": "s2",
+     "olay": "ege_sahne s2; t=72–77 hammadde kartları, 80 kabarma, 83 kesim, 85 otoklav (ege_nokta)"
+    },
+    {
+     "t": 90,
+     "sahne": "s3",
+     "olay": "ege_sahne s3; t=91 hucre; t=96 λ kartı; t=97 A1/CE kartı; t=99 ege_cta_gor s3_muhur_foy"
+    },
+    {
+     "t": 104,
+     "sahne": "s4",
+     "olay": "ege_ilerleme + ege_sahne s4 — GÜÇ başlar; ege_kare_hiz (s3 çıkışı)"
+    },
+    {
+     "t": "106–113",
+     "sahne": "s4",
+     "olay": "ege_nokta palet / fabrika / tir (t=110 kahraman kare)"
+    },
+    {
+     "t": "114–115",
+     "sahne": "s4",
+     "olay": "ege_nokta kirec/otoklav; ege_cta_gor s4_olcek_bayi"
+    },
+    {
+     "t": 120,
+     "sahne": "s5",
+     "olay": "ege_sahne s5; ege_kare_hiz (s4 çıkışı)"
+    },
+    {
+     "t": "130–131",
+     "sahne": "s5",
+     "olay": "ege_ilerleme t=130; ege_nokta kitalar; ege_cta_gor s5_ihracat"
+    },
+    {
+     "t": 136,
+     "sahne": "son",
+     "olay": "ege_sahne son — EYLEM başlar"
+    },
+    {
+     "t": 140,
+     "sahne": "son",
+     "olay": "ege_ilerleme (logo + slogan göründü)"
+    },
+    {
+     "t": 142,
+     "sahne": "son",
+     "olay": "ege_son_gor + ege_cta_gor son_teklif/son_katalog"
+    },
+    {
+     "t": 143,
+     "sahne": "son",
+     "olay": "ege_cta_gor son_kitle_* (tek sıra kitle çipleri)"
+    },
+    {
+     "t": "144–146",
+     "sahne": "son",
+     "olay": "kanıt kartları t=144 (statik, olay yok); ege_tekrar (t=145: ince bağlantı); ege_cta_gor sonra_urun_kartlari (bırakma sonrası); ege_ilerleme t=146"
+    },
+    {
+     "t": "sürekli",
+     "sahne": "—",
+     "olay": "ege_kare_hiz, ege_kare_hata, ege_cikis, ege_dil"
+    }
+   ]
+  },
+  {
+   "tur": "rapor",
+   "ad": "Huni raporu (GA4/GTM keşif: olay → yüzde)",
+   "tanimlar": [
+    "Duygu tutma = ege_ilerleme(t=10) / ege_hikaye_gor",
+    "Kanıta geçiş = ege_ilerleme(t=32) / ege_ilerleme(t=10)",
+    "Kanıtı bitirme = ege_ilerleme(t=104) / ege_ilerleme(t=32)",
+    "Güce ulaşma = ege_ilerleme(t=136) / ege_ilerleme(t=104)",
+    "Eylem görme = ege_son_gor / ege_ilerleme(t=136)  (atlayanlar ayrı kesit: atladi=1)",
+    "Eylem = ege_tik(hedef ∈ son_teklif, son_katalog, son_kitle_*) / ege_son_gor  (son_foyler kaldırıldı; son_bar_* alt çubuk ertelendi: numara teyidi gelene dek yok)",
+    "Gerçek dönüşüm (site): /teklif/ formu gönderimi, kaynak=hikaye; nokta kırılımı = hangi CTA (site tarafı GA4 generate_lead + gizli alanlar)",
+    "Atlayan vs izleyen dönüşüm farkı = hikâyenin net katkısı"
+   ]
+  },
+  {
+   "tur": "rapor",
+   "ad": "İçgörü soruları",
+   "tanimlar": [
+    "Hangi ürün durağında en çok kalınıyor / hangi ürün teklifle sonuçlanıyor? (ege_durak.sure_sn × urun × teklifte urun)",
+    "ODTÜ (u_panel) ve CE/A1 (hucre/A1) kartını açan, teklife daha mı çok gidiyor?",
+    "Tır noktasına/etiketine dokunan oranı = marka ilgisi (ege_nokta nokta=tir)",
+    "Terk haritası: ege_cikis.t_maks dağılımı; ≥3 saniyelik tepe = sorunlu an",
+    "Telefon/masaüstü kırılımı; dil=en oranı; hız sınıfı (hizli ziyaretçi teklif veriyor mu)",
+    "Hangi CTA penceresi en çok tıklanıyor, hangisi hiç (ege_tik/ege_cta_gor)? Tıklanmayan pencere kaldırılır."
+   ]
+  },
+  {
+   "tur": "rapor",
+   "ad": "Hedefler",
+   "tanimlar": [
+    "Sayısal hedef YOK (kaynaksız rakam konmaz). İlk 4 hafta taban çizgisi ölçülür; hedef sonra belirlenir.",
+    "Teknik hedef (kuraldan): ege_kare_hiz.fps_p50 ≥ 50; hareket azaltma/veri tasarrufu kullanıcılarında CTA'lar hemen görünür.",
+    "İsteğe bağlı kontrol grubu: hikâyesiz (durağan sütun, ?az benzeri) sürüm trafiğin küçük bir bölümüne; atamanın çerezsiz yapılabilmesi KVKK açısından teyit gerekli."
+   ]
+  },
+  {
+   "tur": "uygulama",
+   "ad": "Kod yerleri",
+   "tanimlar": [
+    "src/hikaye/arayuz.js: \"Analitik\" bloğundaki ege_tik push'u izle.js'e taşınır (iz(olay, veri): Array.isArray(window.dataLayer) kontrolü, ortak alanlar dil/t/sahne/urun/kitle/hiz).",
+    "src/hikaye/main.js frame(): yVh zaten hesaplanıyor → tFilm = yVh/22; eşik ve hız sınıfı burada; push kuyruğa.",
+    "src/hikaye/baglam.js (yeni, finale ajanıyla ortak): skor, href güncelleme, ege_baglam.",
+    "index.html: yeni data-iz adları (cta tablosu olcum_data_iz); CTA pencereleri .eg-vurus gibi data-bas/data-son (sahne p aralığı: cta tablosu p_bas/p_son).",
+    "tools/sinama.mjs: kaydırma kontrol noktalarında (t=0,10,32,64,104,142) beklenen olay dizisini ve konsol hatası olmadığını doğrular; ?debug HUD son 5 olayı gösterir.",
+    "GTM/GA4: olay adları tek sözlükte (bu dosya); sitedeki mevcut dataLayer adı \"dataLayer\" varsayıldı (teyit gerekli)."
+   ]
+  }
+ ],
+ "marka_gorunurlugu": [
+  {
+   "konu": "LİME KURALI (özet)",
+   "kural": "Lime = BİZİM: yalnız Ege Gazbeton ürünü, ambalajı, şeridi ve tıklanır \"bizim\" noktaları. UI'da lime yalnız: ana düğme (lime dolgu, koyu #0c161c yazı = kontrast 8,76:1; beyaz yazı 2,09:1 ile YETERSİZ), Ege ögelerinin tıklanır halkası, ilerleme dolgusu, logo köşe işaretleri.",
+   "uygula": "3B: palet streç filmi, tır kabin şeridi, fabrika/baca bandı, saha halkası, s1 ürün kenar ışıltısı, İzmir/Söke iğneleri, Türkiye poligonu. Lime OLAMAZ: donatı, çelik, kayış (amber), tuğla, bitki (doğal, koyu/mavimsi yeşil), tüm üçüncü taraf araçlar ve nesneler. Nötr bilgi noktaları (bahçe, sokak, giriş) beyaz halka; yalnız Ege ögelerinin noktaları lime halka.",
+   "olcut": "Ölçüm (önizlemeden): marka lime #a2bf37 H≈73°; tır önizlemesinde palet filmi H≈76–77°, S≈0,7 ama V≈0,47 (gölgede zeytin yeşiline düşüyor). t=22 hero karesinde film güneşle V≥0,65 okunmalı; yoksa marka tanınırlığı zayıflar. Bitki ve çimen lime'dan ≥25° uzak ton, düşük doygunluk."
+  },
+  {
+   "konu": "TIR = HAREKETLİ REKLAM PANOSU",
+   "t": "19–25, 105–113, 117",
+   "kural": "Tır hikâyenin tek \"markalı araç\"ı. Kullanıcı şikâyeti (ayrıntı az) pazarlama açısından da kritik: marka tırdan okunuyor. Önce 0,5 sn'de okunan şeyler doğru olmalı: ① iki sıra lime streçli palet düzeni (kütle) ② kabin lime şeridi ③ amber kayışlar ④ HTML etiket.",
+   "uygula": "Kabin: ızgara, aynalar, spoyler, güneşlik, projektörler, jant somunları, cam yansıması. Dorse: yan koruma, reflektör bantları, çamurluk, ikiz lastik, stop lambaları. Palet: streç kırışığı + güneş çizgileri, kayış, köşe koruyucu, alt taban. Tüm bunlar zaten s0/s4 planlarında; pazarlama önceliği: yan boydan görünüm (t=21–22) ve t=110 kahraman kare karelerinin ayrıntısı diğer karelerden yüksek olsun.",
+   "olcut": "Siluet testi: t=22 karesi 320 px genişlikte, gri tonda dahi iki sıra palet + kabin şeridi seçilmeli. Renk testi: lime ekranın en büyük keskin renk lekesi olmalı."
+  },
+  {
+   "konu": "TIR ETİKETİ",
+   "t": "20–22, 110–113",
+   "kural": "HTML etiket \"Ege Gazbeton\" (≤2 sözcük), tırı kare başına çapayla izler (±8 px), koyu zemin + beyaz yazı + lime nokta (lime yalnız nokta). Dokununca kart: \"Lime streçli paletler: Söke ve İzmir'den sahaya.\" Kabinde logo çıkartması YOK: 3B içinde yazı yok kuralı + logo en sonda kuralı. SVG üst katmanla kabine logo basmak teknik olarak mümkün ama \"logo en sonda\" ile çelişir: açık soru 10.",
+   "olcut": "ege_nokta(nokta=tir) sayısı"
+  },
+  {
+   "konu": "LİME RİTMİ (marka tekrarı)",
+   "kural": "Lime vuruşları: t=17–18 ilk lime (silme çizgisi) · 19–25 tır · 36/41/46/51/56/61 ürün durağı kenar ışıltıları · 101–103 palet · 104–117 saha, palet ızgarası, tır, saha halkası · 120–135 İzmir/Söke iğneleri, Türkiye, damla · 138–141 L köşeleri, logo. ÖNERİ: s2/s3 (t=70–100) lime'sız 30 sn'lik boşluk; bloğa ince lime kenar ışıltısı t=70 ve t=87'de (blok = bizim ürün), s3 mühür şeridinde lime alt çizgi.",
+   "olcut": "Hiçbir 25 sn'lik pencerede lime yok olmasın (t=0–17 ve 25–36 hariç: duygu ve soru ayrıcalığı)."
+  },
+  {
+   "konu": "İLK LİME ANI = ÖDÜL",
+   "t": "17–18",
+   "kural": "t=0–17 lime YOK: ışık amber, kâğıt bej; bu yüzden t=17'deki lime tarama çizgisi ilk marka vuruşu olarak güçlü okunur ve tırdaki lime (t=19) ile bağlanır.",
+   "olcut": "ege_ilerleme t=20 / t=10 oranı (marka anına ulaşan)"
+  },
+  {
+   "konu": "ARAÇLAR (otomobil, bisiklet, forklift)",
+   "kural": "Kırmızı otomobil, mavi araç, bisiklet: nötr, markasız, lime'sız (kırmızı arabanın ön yüzü düzeltmesi kalite işi). Şirket araçları (forklift, saha aracı) lime şeritli; üçüncü taraf hiçbir araçta lime yok.",
+   "olcut": "—"
+  },
+  {
+   "konu": "LOGO",
+   "t": "140–146",
+   "kural": "Logo YALNIZ t=140–141'de doğar (kıvılcım → L köşeleri → EGE / GAZBETON), t=141'de üst çubuğa iner; sonrasında (Ürün grupları, alt bilgi) kalıcı. Hikâye boyunca üst çubuk sol yuvasında logo SVG YOK: yerinde düz metin \"Ege Gazbeton\" bağlantısı (ana sayfa, erişilebilirlik, yön bulma) — bu bir logo değil. Mevcut index.html yer tutucu logosu hikâyede gizlenir (açık soru 2).",
+   "olcut": "—"
+  },
+  {
+   "konu": "SLOGAN",
+   "t": "138–141 ve <title>",
+   "kural": "\"Bugünden Yarına Güvenle\" yalnız finalde (t=140) ve <title>/OG'de. ÖNERİ: açılış H1 slogan olmasın (\"Her yuva bir çizgiyle başlar.\"); slogan finalde \"Güven.\" sözcüğünü devralınca ödül olur. s0 ve son ajanlarının planlarından sapma: hero H1 ile t=2 vuruşu tek öğe olur (açık soru 1).",
+   "olcut": "—"
+  },
+  {
+   "konu": "MARKA ADI İLK EKRANDA",
+   "t": "0",
+   "kural": "Eyebrow \"EGE GAZBETON · Söke & İzmir\" (düz metin, hero paneli) + tarayıcı sekmesi başlığı + üst çubuk metin bağlantısı: logo olmadan marka adı ilk saniyede okunur.",
+   "olcut": "10 sn testi soru 1: \"Hangi firma?\""
+  },
+  {
+   "konu": "REKLAM / PAYLAŞIM KARELERİ",
+   "t": "22, 110, 28, 131",
+   "kural": "Dört \"marka karesi\" kodla Blender'dan hazır olacak şekilde seçilir: t=22 tır yan görünüm (OG varsayılanı), t=110 yüklü tır kahraman karesi (kayış + streç çipleri çizilmeden temiz sürüm), t=28 akşam pencereleri (duygu), t=131 küre 25+ ülke (ihracat sayfası). Hepsi 3B yazısız; metin gerekiyorsa PIL/HTML ile sonradan.",
+   "olcut": "og_uret.py çıktısı; paylaşım tıklaması (UTM değil, site paylaşım kaynağı)"
+  },
+  {
+   "konu": "AMBALAJ MESAJI",
+   "t": "106–110",
+   "kural": "\"Her palet lime streçle sarılır.\" ambalajı marka yapar: lime streç, kayış, köşe koruyucu. Kopya: ambalaj özenini söyler, kapasite/dayanım rakamı vermez.",
+   "olcut": "ege_nokta(nokta=palet)"
+  },
+  {
+   "konu": "MARKA SESİ",
+   "kural": "\"Biz\" dili ve sahiplik: \"kendi kireç tesisimiz\", \"iki fabrikamız\". Süs sözcük yok. Etiketler ≤2 sözcük.",
+   "olcut": "—"
+  },
+  {
+   "konu": "EN KOPYADA \"LIME\" ÇİFT ANLAMI",
+   "kural": "dil.js EN: \"Pallets in lime stretch film\" ve \"Lime — the binder\": İngilizcede \"lime\" hem kireç hem renk. İlk geçişte \"lime-green stretch film\" yazılmalı; kireç için \"lime (quicklime)\" teyit gerekli.",
+   "olcut": "—"
+  },
+  {
+   "konu": "SONRASI KARTLARDA MARKA",
+   "t": "145–146",
+   "kural": "Yalnız sticky bırakıldıktan sonra (finale ekranında değil): hikâyede en çok bakılan ürün kartı lime kenar + \"Hikâyede baktığınız\" etiketi: lime yine ürünle birlikte.",
+   "olcut": "sonra_urun_* tıklaması"
+  }
+ ],
+ "seo_paylasim": [
+  {
+   "konu": "<title> TR",
+   "oneri": "Ege Gazbeton | Gazbeton Blok, Lento ve Panel · Söke & İzmir",
+   "uzunluk": 59,
+   "not": "Mevcut: \"Ege Gazbeton | Hammaddeden Binaya Gazbeton\" (42). Yeni sürüm ürün anahtar sözcüklerini (blok, lento, panel) ve yeri taşır; hikâye adı (hammaddeden binaya) description'a."
+  },
+  {
+   "konu": "<title> EN",
+   "oneri": "Ege Gazbeton | AAC Blocks, Lintels and Panels · Söke & İzmir",
+   "uzunluk": 60,
+   "not": "dil.js sayfa.baslik şu an \"AAC from raw material to building\": değiştir."
+  },
+  {
+   "konu": "meta description TR",
+   "oneri": "Gazbeton blok, lento, panel ve tutkal Söke ve İzmir'deki iki fabrikada üretilir. Hayalden yuvaya hikâyeyi izleyin, projeniz için teklif alın.",
+   "uzunluk": 141
+  },
+  {
+   "konu": "meta description EN",
+   "oneri": "AAC blocks, lintels, panels and adhesive made in two plants in Söke and İzmir. Follow the story from idea to home and get a quote for your project.",
+   "uzunluk": 147
+  },
+  {
+   "konu": "H1 ve başlık yapısı",
+   "oneri": "Tek H1: hero \"Her yuva bir çizgiyle başlar.\" (HTML'de, JS beklemeden). Marka adı eyebrow + title + ilk cümlede (\"Gazbeton blok, lento, panel ve tutkal; Söke ve İzmir'deki iki fabrikada…\"). Perde başlıkları H2 (mevcut). Slogan H1'de değil.",
+   "not": "H1 anahtar sözcük içermiyor ama title ve ilk paragraf taşıyor. Bu kararın SEO etkisini site ekibi onaylamalı (açık soru 1)."
+  },
+  {
+   "konu": "JS'siz / hareket azaltma içeriği",
+   "oneri": "Tüm TR metin HTML'de (zaten); durağan sütun her sahnenin son karesi + başlığı + rakamı + kaynağı gösterir. Botlar ve yardımcı teknolojiler hikâyenin tamamını metin olarak okur. EN metin dil.js'te: arama motoru için EN ayrı URL gerekir (açık soru 12)."
+  },
+  {
+   "konu": "Canonical ve parametreler",
+   "oneri": "<link rel=\"canonical\" href=\"https://www.egegazbeton.com.tr/\"> (ana sayfa kök adresi — adres teyit gerekli). ?kaynak=hikaye&dil=…&urun=… gibi parametreli adresler kanonik ile birleşir; bağlantılar JS ile parametrelendiği için taranan HTML temiz kalır."
+  },
+  {
+   "konu": "OG görseli (varsayılan)",
+   "kare": "t=22 tır yan görünüm (s0d)",
+   "oneri": "og:image 1200×630 JPEG ≤300 KB (WhatsApp önizlemesi için pratik sınır, test et). Kaynak 1600×900 kare, 16:9 → 1,91:1 kırpma (üst/alttan ~30 px); sağ alt köşeye lime şeritli \"EGE GAZBETON\" alt bandı PIL ile (tools/og_uret.py, yeni). Gerekçe: besleme akışında lime tek keskin renk leke; \"gazbeton + lime ambalaj\" bir bakışta; insan yüzü yok.",
+   "not": "OG kartında logo/slogan metni \"logo en sonda\" kuralıyla çelişmez (hikâye dışı), ama müşteri onayı gerekir (açık soru 13). Görsel Blender karesi; yapay zekâ yok."
+  },
+  {
+   "konu": "OG görseli (alternatifler)",
+   "kareler": [
+    {
+     "t": 28,
+     "kare": "akşam, pencereler yanık",
+     "kullan": "duygu odaklı sosyal paylaşım (Instagram/Facebook gönderisi); /duvar-tasarla/ yapı sahibi kampanyası"
+    },
+    {
+     "t": 131,
+     "kare": "küre, 25+ ülke · 5 kıta (metinsiz)",
+     "kullan": "/ihracat/ sayfası OG görseli ve LinkedIn B2B paylaşımı"
+    },
+    {
+     "t": 110,
+     "kare": "yüklü tır kahraman karesi",
+     "kullan": "bayi/dağıtıcı iletişimi, WhatsApp B2B paylaşımı"
+    }
+   ]
+  },
+  {
+   "konu": "og/twitter etiketleri",
+   "oneri": "og:type=website, og:site_name=\"Ege Gazbeton\", og:locale=tr_TR (+ og:locale:alternate=en_US), og:title=\"Her yuva bir çizgiyle başlar — Ege Gazbeton\", og:description=meta description, og:image + og:image:width=1200 + og:image:height=630 + og:image:alt=\"Üç katlı gazbeton binanın önünden geçen, lime streçli gazbeton paletler taşıyan Ege Gazbeton tırı\"; twitter:card=summary_large_image."
+  },
+  {
+   "konu": "Yapılandırılmış veri",
+   "oneri": "JSON-LD: Organization (name \"Ege Gazbeton\", legalName \"Akkuş Mimarlık İnşaat Turizm San. ve Tic. A.Ş.\" [alt bilgi metninden; teyit gerekli], url, logo = GERÇEK logo dosyası [henüz yer tutucu], sameAs = teyit gerekli) + WebSite + ItemList (altı ürün sayfası bağlantısı). Ürün özelliği (λ, G sınıfı) JSON-LD'ye YALNIZ doğrulanmış kaynaktan."
+  },
+  {
+   "konu": "\"Hikâyeyi atla\" bağlantısı",
+   "oneri": "Üç yer: (1) sayfanın ilk odaklanılan öğesi gizli \"Ana içeriğe geç\" (.eg-atla-link → #icerik, mevcut); (2) hero içi görünür \"Hikâyeyi atla\" (.eg-atla → #teklif); (3) yolculuk çubuğunda \"Teklif\". Hepsi aynı finale gider (sahneyeGit('son'), akış p=0,62). #teklif kancası JS'siz ve botlar için gerçek bölüme çapa. data-iz: hikaye_atla / yol_son."
+  },
+  {
+   "konu": "Derin bağlantı ve paylaşım",
+   "oneri": "Yolculuk çubuğundaki bölüm adreslerine (#sahne-s1 …) ek olarak: sayfa açılışında #sahne-sX (ya da #t=90) algılanırsa sahneyeGit; böylece \"ürün turunu göster\" gibi doğrudan paylaşım mümkün. Web Share API \"Paylaş\" yolculuk çubuğu menüsünde (finale ekranında ayrı düğme yok: sadeleştirme): temiz URL + hash. Paylaşılan adrese kaynak parametresi eklenmez."
+  },
+  {
+   "konu": "Çekirdek web verileri",
+   "oneri": "LCP öğesi = poster (kareler/s0/poster.webp): <link rel=\"preload\" as=\"image\" fetchpriority=\"high\"> ve d/m için media koşullu iki preload; CLS: sabit sahne yüksekliği (svh), INP: pasif scroll dinleyicileri (mevcut). Hedef (varsayım, ölçülecek): 4G'de LCP ≤ 2,5 sn."
+  },
+  {
+   "konu": "Anahtar sözcük ve içerik derinliği",
+   "oneri": "\"Ürün grupları\" bölümüne \"Gazbeton nedir?\" kısa bloğu: yalnız doğrulanmış metinle (kum, kireç, çimento, alçı, alüminyum tozu; kabarma; tel kesim; otoklavda buharla sertleşme; kapalı hava hücresi). İkincil anahtar sözcükler: gazbeton blok, gazbeton lento, gazbeton panel, gazbeton tutkalı, U blok, EGEPOR. Söke ve İzmir yer adları doğrulu. Fiyat/\"ucuz\" sözcüğü yok."
+  },
+  {
+   "konu": "Görsel alt metni",
+   "oneri": "Sahne posterleri alt=\"\" aria-hidden (mevcut) kalır; her sahne aria-label ile anlatılır. OG ve basın görselinin alt metni yukarıdaki cümle."
+  }
+ ],
+ "mobil": [
+  {
+   "konu": "Kalıcı CTA yok (hata)",
+   "durum": "hikaye.css ≤760 px: .eg-ust__sag .eg-dugme--kucuk {display:none}",
+   "oneri": "Hikâye boyunca logo gizli olduğundan (marka_gorunurlugu → LOGO) üst çubukta yer var: logo yuvasına düz metin marka adı, sağda [TR/EN] + kompakt lime [Teklif] (min 44×44 px) + menü. 360 px genişlikte dar sığar (16+16 gutter → 328 px; marka metni ≈110 + dil ≈64 + Teklif ≈84 + menü 44 + 3×8 boşluk = ≈326): sığmazsa dil düğmesi menü içine alınır. Logo t=141'de yerine dönünce Teklif düğmesi gizlenir (finalde ana CTA var), sonrası bölümde tekrar görünür."
+  },
+  {
+   "konu": "Kaydırma ipucu telefonda gizli (hata)",
+   "durum": ".eg-giris__alt .eg-kaydir {display:none} (≤760 px)",
+   "oneri": "Tüm anlatım kaydırmaya bağlı; ilk kez gelen telefon kullanıcısı bunu bilmeyebilir. Hero altında orta: büyük ok + parmak mikro animasyonu, ilk hareketle sönsün. t=3 sn'de kıvılcım çizgisi (s0 planı) ek ipucu."
+  },
+  {
+   "konu": "Hero ekranı",
+   "oneri": "360×640 ve 390×844'te 100 svh içinde: eyebrow + H1 + (yükseklik ≤700 px ise cümle gizli, mevcut kural) + 1 lime düğme (tam genişlik, 48 px) + çipler (tek satır başlığı + 3 çip iki satıra sarılabilir) + \"Hikâyeyi atla\". Başlık clamp(38,11vw,52). Üst çubuk 64 px."
+  },
+  {
+   "konu": "Başparmak bölgesi",
+   "oneri": "Telefonda anlatım üst %40, 3B konu alt yarı. Otomatik CTA pencereleri (t=38–40, 64–67, 99–101, 115–118, 131–134) 3B konuyu örtmeden anlatım sütununun altına, finale ise akış içi tam genişlik düğmelere konur (alt sabit çubuk son_bar_mobil ertelendi: numara teyidi gelene dek yok). Kadraj sınaması: her pencere için alt %14 şerit konudan boş olmalı (kareler kontrol edilir)."
+  },
+  {
+   "konu": "Dokunma hedefleri",
+   "oneri": "Tıklanır nokta: görsel halka 18–22 px, vurulabilir alan 48×48 px; komşu noktalar arası ≥ 8 px. Çip, bağlantı, kart düğmeleri ≥44 px. İlk noktada \"dokunun\" nabzı (s2 t=72) bir kez."
+  },
+  {
+   "konu": "Kart = alt sayfa",
+   "oneri": "Nokta kartı telefonda noktanın yanında değil ekran altında alt sayfa (bottom sheet); başlık, tek cümle, kaynak, iki bağlantı yan yana (Ürün sayfası | Teknik föy). Kaydırma kartı kapatır (kartta kalırken film ilerlemez karışıklığı olmaz). Arka plan scrim'i opaklık ile (backdrop-filter yok)."
+  },
+  {
+   "konu": "Kaynak satırı gizleniyor (kural ihlali)",
+   "durum": ".eg-rakam small {display:none} (≤760 px)",
+   "oneri": "\"Her sayının kaynağı kartta yazılı\" kuralı telefonda da geçerli: kaynağı rakamın altında 12 px tek satır göster ya da kartta tek dipnot satırı (finale ajanı da aynı karara varmış: gizlenmez). Kontrast ≥4,5:1."
+  },
+  {
+   "konu": "Veri ve ağ",
+   "oneri": "navigator.connection.saveData veya effectiveType ≤ 3g: \"hafif mod\" = poster + durağan sütun (az-hareket gibi) + tüm CTA'lar görünür + \"Hikâyeyi izle\" isteğe bağlı düğme. Kare indirme zaten yakın sahneyle sınırlı; m seti her 2. kare (EGE_MINSTEP=2). Tahmini indirme boyutu sınama sonrası yazılır (rakam şimdi yok)."
+  },
+  {
+   "konu": "iOS/Android adres çubuğu",
+   "oneri": "Adres çubuğu açılıp kapanınca innerHeight değişir; main.js resize → akisBoyu() akış yüksekliğini her seferinde yeniden yazıyor: yalnız genişlik/yön değişince ya da yükseklik değişimi >%15 ise yeniden hesapla; konumlar svh tabanlı. Aksi hâlde kaydırma sırasında sahne sıçrar (dönüşümü doğrudan bozar)."
+  },
+  {
+   "konu": "Başparmakla kaydırma uzunluğu",
+   "oneri": "Toplam akış 3212 vh ≈ 32 ekran. Yolculuk çubuğu (bölüm adı + ilerleme) t=2'den itibaren görünür; adından dokununca bölüm listesi + \"Teklif\" atlaması açılır: uzun kaydırmada yorulan ziyaretçi için kaçış yolu."
+  },
+  {
+   "konu": "Tel / WhatsApp",
+   "oneri": "ERTELENDİ: numara teyidi gelene dek finalde WhatsApp düğmesi ve alt sabit çubuk konmaz (son_whatsapp_mobil, son_bar_mobil → finale_cikarilan_ertelenen). Teyit gelirse (önceden dolu \"Hikâyeden geliyorum: {ürün}\") finaldeki ≤7 etkileşimli öğe sınırı korunarak yeniden değerlendirilir. Numara ve çalışma saati teyit gerekli: uydurma numara konmaz.",
+   "teyit_gerekli": true
+  },
+  {
+   "konu": "Teklif formu el değmesi",
+   "oneri": "Site işi: urun ön seçili; ölçü alanında inputmode=\"decimal\"; ≤3 zorunlu alan (ad, telefon/e-posta, ölçü/açıklama); \"Hikâyede baktığınız: EGEPOR ×\" çipi; gönderim sonrası aynı sayfada teşekkür + katalog PDF bağlantısı."
+  },
+  {
+   "konu": "Paylaşma",
+   "oneri": "navigator.share ile \"Paylaş\" (yalnız yolculuk çubuğu menüsü; finale ekranında yok): başlık + temiz URL; WhatsApp B2B'de baskın olduğundan OG görseli ≤300 KB."
+  },
+  {
+   "konu": "Performans ve erişilebilirlik",
+   "oneri": "DPR ≤1,25, ≥50 fps (ege_kare_hiz); prefers-reduced-motion: tek kare + metin + tüm CTA'lar görünür; yatay telefon (oran ≥0,82) d kare setini kullanır: CTA'lar masaüstü yerleşimine geçer."
+  },
+  {
+   "konu": "Dil algısı",
+   "oneri": "navigator.language Türkçe değilse hero'da (çip satırında) \"View in English\" mikro bağlantısı; otomatik geçiş yok."
+  }
+ ],
+ "ilk_10_sn": "AMAÇ: 10 gerçek (duvar saati) saniyede ziyaretçi şunları bilmeli: (1) hangi firma, (2) ne satıyor, (3) nasıl devam edeceği, (4) bu firma özenli ve güvenilir hissi, (5) eylem/çıkış yolu. Hikâye kaydırmaya bağlı olduğu için üç izleyici tipi var; üçü de test edilir.\n\nÖN KOŞUL: poster (s0 F000) ilk boyamada; H1 + cümle HTML'de; LCP ≤2,5 sn (4G, hedef).\n\nPASİF İZLEYİCİ (10 sn kaydırmıyor), masaüstü 1600×900:\n 0,0–0,8 sn  Bej kâğıt, koyu vinyet; makro kadrajda kapı konumunda tek sıcak (amber) ışık noktası nabız atar, kâğıt lifleri eğik ışıkta. Solda: \"EGE GAZBETON · Söke & İzmir\" / \"Her yuva bir çizgiyle başlar.\" / tek cümle (gazbeton blok, lento, panel, tutkal; iki fabrika). Üst çubuk: marka adı (düz metin) + çizgili \"Teklif Al\" (hero ana düğmesi ekrandayken ikincil; hero çıkınca küçük lime). Hissi: sakin, sıcak, el yapımı; \"sıradan bir üretici sitesi değil\".\n 0,8–2,5 sn  Göz ışık noktası → başlık → tek lime düğme. Lime bu karedeki tek keskin renk (ışık bilerek amber). 2 sn'de: firma = Ege Gazbeton, ürün = gazbeton.\n 2,5–3 sn    Kıvılcım nabzı (1 Hz) sürer; imleç kâğıtta grafit iz bırakır (1 sn'de silinir).\n 3,0–4,5 sn  Kaydırmayan kullanıcıya otomatik sinyal: kıvılcım kısa bir çizgi çeker, \"Kaydırın\" oku nabız atar (telefonda da görünür). Hissi: \"bir şey olacak, kontrol bende\".\n 4,5–10 sn   Hero yerinde; çıkış yolları açık: Teklif Al, 3 kitle çipi, \"Hikâyeyi atla\", yolculuk çubuğu. Dikkat dağıtan ikinci düğme yok.\n\nAKTİF İZLEYİCİ (referans hız 22 vh/sn; 10 sn ≈ film t=10):\n sn 0–1  Hero düğme/çip/atla soluklaşır (H1 + cümle kalır); ışınlar kâğıdı boydan boya uzar.\n sn 2–5  Kalem vaziyet planını çizer; \"Önce fikir, sonra plan: güneşe, sokağa ve bahçeye göre.\" (alt çizgiler çizim anında).\n sn 5–8  Kamera eğilir; çizgiler hacme döner: bina kâğıttan YÜKSELMEZ, kalemle ÇİZİLİR.\n sn 8–10 \"Çizgi hacme dönüşür.\" eskiz tamam, kalem kalkar.\n Hissi: merak + hayranlık (\"nasıl yapmışlar?\"); güven: titiz çizgi = titiz üretici. Brand kuyruğu: eyebrow, sekme başlığı, üst çubuk metni.\n\nHIZLI İZLEYİCİ (3× ≈ 66 vh/sn): 10 sn'de t≈30: sokak, lime tır, akşam, \"Peki bu evi iyi yapan ne?\" — soru merak kancası olarak çalışır; kaçırdığını yolculuk çubuğundan geri alır.\n\nTELEFON (390×844): hero 100 svh'de: eyebrow, H1, 1 lime düğme (tam genişlik), çip satırı, \"Hikâyeyi atla\" ve (YENİ) alt ortada büyük \"Kaydırın\" oku. Başparmakla ilk kaydırma ≤3 sn hedefi. Anlatım üstte, kâğıt/ev altta.\n\n10. SANİYENİN SONUNDA ZİYARETÇİ BİLİR: Ege Gazbeton gazbeton (blok, lento, panel, tutkal) üretiyor; iki fabrikası var; bu iş ustalık ve çizgiyle başlıyor; kaydırarak ilerleniyor; teklife/föye/ihracata tek tıkla gidilebiliyor.\nHİSSEDER: sakinlik, merak, \"burada acele ettirilmiyorum\", ilk güven kıvılcımı.\n\nGEÇME ÖLÇÜTLERİ (5 sn ve 10 sn testi; segment başına ≥5 kişi: yapı sahibi, mimar/mühendis, bayi/ihracat; her biri telefon + masaüstü; 5 sn sonra ekran kapatılır):\n 1. \"Hangi firma?\" → doğru ad (5/5 hedef).\n 2. \"Ne satıyor?\" → gazbeton/yapı malzemesi (kitle farkı: mimar kolay, yapı sahibi \"gazbeton\" dediğinde ek puan).\n 3. \"Şimdi ne yapardın?\" → kaydırırım / Teklif Al / atla (bilmeyen = başarısız).\n 4. \"Bir sıfat söyle.\" → sıcak/özenli/profesyonel (satıcı/reklam sıfatı = uyarı).\n 5. \"Hangi renk aklında?\" 10 sn'de lime hatırlanmamalı (lime ilk kez t=17'de, ödül); yalnız düğme.\nBAŞARISIZLIK İŞARETLERİ: boş/gecikmeli poster (>1 sn); H1 okunmuyor; kaydırma yapılacağı anlaşılmıyor (telefon!); 3'ten fazla düğme; hareket kaybı (<50 fps) ya da ilk kaydırmada atlama; \"bu kimin sitesi?\".\nCANLI ÖLÇÜM: ege_hikaye_gor → ege_hikaye_basla (bekleme_ms): ilk eylem süresi; 10 sn içinde ege_atla oranı; ege_ilerleme t=10 oranı; ege_kare_hiz.",
+ "acik_sorular": [
+  "1. [KAPANDI · plan kararı] Açılış H1 = \"Her yuva bir çizgiyle başlar.\" (eyebrow \"EGE GAZBETON · Söke & İzmir\" + tek cümle; akt-s0 t=0); slogan \"Bugünden Yarına Güvenle\" açılışta görünmez, yalnız t=140'ta (ödül) ve title/OG'de. Hero H1 ile eski t=2 vuruşu tek öğe; akt-s0 t=0/t=1/t=2 satırları buna göre güncellendi.",
+  "2. Hikâye boyunca üst çubukta logo SVG gizli, yerinde düz metin \"Ege Gazbeton\" bağlantısı mı kalsın (logo en sonda kuralı), yoksa mevcut yer tutucu logo baştan görünsün mü?",
+  "3. /katalog/ doğrudan PDF dosyası mı yoksa sayfa mı? Katalog \"22.09.25\" tarihli: güncel mi, İngilizce sürümü var mı (ihracat çipi için)?",
+  "4. /teklif/ formu ?urun=&kaynak=&dil=&kitle=&nokta= okuyup ön doldurabilir mi (site işi)? Ürün kodları (duvar, lento, ublok, tutkal, panel, egepor) uygun mu; form \"bayi/ihracat\" türünü ayırıyor mu?",
+  "5. /duvar-tasarla/ aracı tam olarak ne yapıyor (yalnız \"Calculate your walls\" metni var), sonucu teklif formuna aktarabilir mi? Aracın sonuç vaadi yoksa CTA metni \"Duvarlarınızı hesaplayın\" kalır.",
+  "6. /ihracat/ sayfasının içeriği/formu nedir; yurt içi bayilik başvurusu veya toplu alım akışı var mı (\"Toplu alım ve bayilik →\" CTA'sı buna bağlı)?",
+  "7. Hangi güven işaretleri ekranda kullanılabilir: CE belge numaraları (CE 2179-CPR-0043/0052) ve TS EN 771-4 (README'de var, DEVIR.md/dil.js'te yok), ISO 9001, TSE, EPD, kuruluş yılı, referans proje sayısı? ODTÜ −%17: yalnız panele mi tüm gazbeton sistemine mi ait, çalışma adı/yılı/bağlantısı var mı; taban kesme −%14 kullanılabilir mi?",
+  "8. Telefon/WhatsApp numarası, çalışma saatleri ve teklife \"X saatte dönüş\" vaadi verilebilir mi? (Yoksa mobil WhatsApp düğmesi ve vaat konmaz.) Teyit gelene dek WhatsApp düğmesi ve alt sabit çubuk finale konmaz (karar).",
+  "9. Sitede GA4/GTM ve onay (consent) aracı var mı (dataLayer adı \"dataLayer\" mı)? Mevcut aylık teklif sayısı taban çizgisi alınabilir mi? Hikâyesiz kontrol grubu için çerezsiz atama KVKK açısından uygun mu?",
+  "10. Tır kabinine logo çıkartması: SVG katmanıyla (3B'de yazı yok kuralına uyar) ya da EGE_LOGO ile basılırsa \"logo en sonda\" kuralıyla çelişir. Tır logosuz kalsın (lime streç + HTML etiket) mı?",
+  "11. Üretici ürün sayfaları \"A1 Hiç Yanmaz\" yazıyor (DEVIR.md); hikâyedeki ürün sayfası bağlantıları tutarlı olsun diye sayfa metni de \"yangına tepki sınıfı\" olarak düzeltilecek mi?",
+  "12. İngilizce için ayrı URL (/en/) ve hreflang planlanıyor mu? Şimdilik EN yalnız JS ile; arama motoru EN'i göremez. EN kopyada \"lime\" çift anlamı (kireç / renk) için \"lime-green stretch film\" kabul mü?",
+  "13. OG/paylaşım görseline (hikâye dışında) logo ve slogan metni PIL ile eklenebilir mi (3B içinde yazı kuralı yalnız renderlar için mi geçerli)?",
+  "14. Aliağa ve Alsancak limanları (dil.js'te var) kaynaklı mı; pazarlama metnine girsin mi? 1.100.000 m³ kapasite yıllık mı?",
+  "15. Kitle çipi etiketi TR \"Ev / bina yapıyorum\" (müteahhidi kapsar) kabul mü; müteahhit için ayrı çip/yol istenir mi?"
+ ]
+}

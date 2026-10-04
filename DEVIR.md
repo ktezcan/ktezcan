@@ -57,6 +57,12 @@ Sahne arası erime: `GECIS` (ayarlar.js).
    Şu an logosuz (sitede tırı takip eden "Ege Gazbeton" etiketi var). Sayfadaki logolar da YER TUTUCU (`LP\img\logo_white.svg` ile değiştir).
 2. **Köşe bloğu** ürün turunda yok (istenirse eklenir).
 
+### Saniye saniye hikâye planı (yeni, onay bekliyor)
+
+`docs/HIKAYE_OZET.md` (kısa özet + karar listesi), `docs/HIKAYE_PLANI.md` (146 saniyenin her biri), kaynak `docs/plan/*.json`
+(`python tools/plan_md.py` ile belge üretilir). Plan onaylanmadan yeni render serisi başlatılmaz. Planın yakaladığı kod hataları
+(ürün turunda donatıya lime, kamera ayna kayması, panel 8,8 m, dünyada Amerika/Okyanusya arka yüzde) uygulama sırasında düzeltilecek.
+
 ## 4. Kurulum
 
 ```bash

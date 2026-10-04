@@ -1,0 +1,262 @@
+{
+ "genel": "DENETİM ÖZETİ (7 akt + moduller + pazarlama okundu, kod ve render günlükleriyle çapraz kontrol edildi).\n\nYAPISAL: 7 akt dosyası + moduller.json + pazarlama.json geçerli JSON. 146 satır, t=0..145 eksiksiz, ardışık, yinelenen/boş saniye yok; her satırda vh=t*22 ve p=(t-t_bas)/süre doğru. Kare aralıkları her perdede boşluksuz (s0 F0-255, s1 f0-151, s2 f0-99, s3 F0-83(+F84), s4 F0-95, s5 F0-191(+F192)). Geçiş çiftleri (X23=s1 f000; s1 f151=s2 f000; s2 f095-099 ön-ısınma → s3 F00; s3 F84=s4 F000; s4 F095=s5 F000; s5 F192=son F000) sözleşmeye ve birbirine büyük ölçüde uyuyor; sapmalar aşağıda (s4→s5 ve s5→son).\n\nKURALLAR: Ekranda 'yanmaz', ülke adı, fiyat, müşteri sayısı, Reels, yapay zekâ görseli, 3B içi yazı, sonda dışı logo yok; kaynaksız sayı yok (sayıların tamamı dil.js/index.html'de var). Asıl riskler sayı değil İDDİA: s3 'serin yüz' alev sahnesi (yangın direnci ima), 'Kuru blok suda yüzer', 'Hacmin çoğu hava'. Lime: Türkiye poligonu ve s0 t=17 silme çizgisi 'bizim ürün' kuralının sınırında; geri kalanı tutarlı.\n\nEN BÜYÜK SORUNLAR: (1) A1 alev sahnesi; (2) zaman çizelgesi vh=t*22, ayarlar.js GECIS (22 vh x 6 dikiş = 132 vh ölü plato) ile çelişiyor; (3) s1 ve s5 render süresi/boyut tahmini ölçülen günlüklerin 2-3 kat altında; (4) oynatıcı etkin sahne+komşuların TÜM karelerini yüklüyor (en kötü 508 kare, çözülmüş ~2,9 GB); (5) moduller/pazarlama/akt üç belge arasında yerleşim ve politika çelişkileri (çıkış saniyelerinde quiz, kaydırma kilidi vs 'kilit YOK', depolama, açılış H1/slogan); (6) toplam iş ≈110 kişi-gün; render makine süresi (≈26 sa) asıl darboğaz değil.\n\nTEMPO: duygu %22 (32 sn) → kanıt %49 (72 sn) → güç %22 (32 sn) → eylem %7 (10 sn). Duygu→merak (t=28) → kanıt → ölçek → kıvılcım/logo kapanışı iyi bir yay ve en güçlü anlar (t=17 silme, t=28 pencereler, t=67-71 blok çıkış/çözülme, t=120-131 küre, t=138-140 kıvılcım→logo) ayakta. Zayıf yerler: s1 girişi (4 sn soru tekrarı), s1 Paneller (5 sn'de 3 mesaj), s2 hammaddeler (1 sn/ürün), s3 t=96-100 art arda 5 rakam, s4 t=106-110 yükleme/bağlama, s5 t=132-137 altı sessiz saniye, 'Peki...' kalıbının 4 kez tekrarı. 146 sn / ~3212-3344 vh (32-34 ekran) kabul edilebilir ancak üst sınırda; hedef 130-135 sn (≈2900 vh).",
+ "sorunlar": [
+  {
+   "akt": "s3",
+   "onem": "blocker",
+   "sorun": "A1 alev sahnesi (t=97-98) yangın direncini ve 'yanmaz' çağrışımını ima ediyor ve kendi içinde çelişiyor: akt-s3 t=98 'etiket: alev · serin', sol->sağ ısıl degrade, 'sağ yüz soğuk mavi' (EN 13501-2 yangın direnci belgesi YOK; plan kendi açık sorusunda bunu işaretlemiş). moduller.a1_demo ise 'öbür yüz serin görseli YOK, süre/°C yok' diyor. Ayrıca 'alev bloğa tutunmaz, blok yüzeyi değişmez' görseli pratikte 'yanmaz' demonstrasyonu; a1_demo'nun 'basılı tut' flipbook'u ile akt-s3'ün kaydırmayla oynayan kareleri de uyuşmuyor. Alev tezgâhı pahalı yeni iş (s3_tezgah.py ~2,5 gün + flipbook).",
+   "duzeltme": "akt-s3.json t=97/t=98: 'serin' etiketini, sağ yüz soğuk ışığı ve ısıl degradeyi kaldır; sahneyi yalnız 'A1 · yangına tepki sınıfı · EN 13501-1 · CE belgeleri' kartı + nötr tezgâh/blok görseline indir (alev ya hiç yok ya da bloğa değmeyen uzak, süresiz, etki göstermeyen ışık). Yangın direnci belgesi gelmeden s3_tezgah.py'nin alev/flipbook kısmı başlamasın (önce sınıf merdiveni SVG + kart yedeği). moduller.json a1_demo'yu bu karara göre yeniden yaz (flipbook ya düşer ya da bloğa temas etmeyen şematik alev)."
+  },
+  {
+   "akt": "genel",
+   "onem": "high",
+   "sorun": "Zaman/vh çelişkisi: planın tamamı vh=t*22 ve toplam 3212 vh üzerine kurulu (ayarlar.js boy: 704/836/440/308/352/352/220), ama main.js toplamVh = Σboy + GECIS*(N-1) ve dagit() her dikişte GECIS vh boyunca iki sahneyi p=1 / p=0'da dondurup çapraz eritiyor. Plan GECIS=22 öneriyor (6 dikiş = 132 vh = 6 sn ölü plato; son sahne 3124 yerine 3146+ vh'de başlar). Sonuç: tüm 'vh' sütunları, pazarlama cta_zaman_cizelgesi.vh_bas ve ortak.saniyeyeGit(t) ancak bas[] ile doğru; kare eşleşen (son kare = sonraki ilk kare) dikişlerde plato 'her saniyede bir şey değişsin' kuralını da bozar.",
+   "duzeltme": "ayarlar.js: eşleşen kare dikişlerinde GECIS=0 (ya da dagit()'te dikiş bölgesini kaldır; son kare=ilk kare olduğundan erime gerekmez) → vh=t*22 aynen geçerli, toplam 3212 vh. GECIS>0 kalacaksa akt-*.json 'vh' ve pazarlama vh_bas sütunlarını bas[]'a göre yeniden üret ve süre bütçesine +6 sn ekle. Planlara 'GECIS=0, seam kare tek kez yüklenir' notu yaz."
+  },
+  {
+   "akt": "s1",
+   "onem": "high",
+   "sorun": "Render süresi tahmini gerçekçi değil: planlar/DEVIR ~40-45 sn/kare diyor; çalışan s1_urun.py günlüğünde (render/s1.log, 28 kare, 4 çekirdek %391 kullanım) ölçülen: medyan 106 sn, ortalama ≈137 sn (aykırı hariç), min 63, max 1318 sn (kare 92, final dalışı u≈0,97 — plandaki t=67-69 bölgesi). Röntgen/saydam malzeme (transparent_max_bounces=32, bounces 6/3/3/6) ve yeni lime emission/boolean kesit/DOF eklemeleri bunu artırır. 160 kare x ~137 sn ≈ 6,1 sa (plan: ~1,9 sa); ayrıca açık soru 3'teki 96→152 kare (+%58) kararı bu kalibrasyonla ≈+3,5 sa.",
+   "duzeltme": "akt-s1.json uretim alanlarında '~40 sn' değerlerini ölçüme göre (≈100-140 sn; dalış kareleri f140-151 için ≥300 sn riski) güncelle; s1_urun.py'de transparent_max_bounces 32→10-12, samples/threshold ayarı, dalış karelerinde V<1 nesneleri holdout/instance ile hafiflet. Önce f140-151 ve f092 benzeri kareleri EGE_PREVIEW ile süre testine sok, sonra seri başlat; açık soru 3'ü tutacaksa süre bütçesini yeniden onaylat."
+  },
+  {
+   "akt": "s5",
+   "onem": "high",
+   "sorun": "s5 maliyet ve boyut tahmini iyimser: plan '~40 sn/kare, 193 kare ≈ 2,2 sa, kare yükü ≈6 MB (d)'. Ölçülen eski dünya sahnesi (render/is_s4d_k*.log): d 72-79 sn/kare, m 29-35 sn; WebP kare boyutu d ≈178 KB, m ≈104 KB (nokta/gürültü dokusu sıkışmıyor). Yeni sahnede 60k nokta (L0), bulut kabuğu, çift atmosfer, cam gövde de var → 193 x ~75 sn ≈ 4 sa (d) ve 193 x 178 KB ≈ 34 MB (d) / 97 x 104 KB ≈ 10 MB (m) (plan: 6 MB).",
+   "duzeltme": "akt-s5.json yeni_isler son maddesini ve satır uretim alanlarını ≈4 sa (d) / ≈1 sa (m), kare yükü ≈34 MB (d) / ≈10 MB (m) olarak güncelle; kareler.py'de s5 için WebP kalitesi/nokta gürültüsü (q≈70, method 6) denensin; gerekirse 12→10 kare/sn ve L0 nokta sayısı azaltılarak boyut/süre düşürülsün."
+  },
+  {
+   "akt": "genel",
+   "onem": "high",
+   "sorun": "Oynatıcı bellek/yükleme: main.js yukle() etkin sahne VE komşuları (d<=1) için ensure() ile TÜM kareleri indirip img.decode() ediyor; çözülmüş kare 1600x900x4 = 5,76 MB (m 768x1366 = 4,2 MB). Yeni kare sayısı d/m: s0 256/128, s1 152/76, s2 100/50, s3 85/43, s4 96/48, s5 193/97 (toplam 882/442; eski paket ≈160). En kötü eşzamanlı küme s1 etkinken s0+s1+s2 = 508 kare (d) ≈ 2,9 GB çözülmüş (m: 254 kare ≈ 1,07 GB); s4'te s3+s4+s5 = 374 kare ≈ 2,15 GB. Tarayıcı çözülmüş önbelleği düşürürse drawImage her adımda eşzamanlı yeniden çözme yapar (iki çizim/kare) → ≥50 fps ve telefon bellek riski. Sayfa açılışında s0+s1 = 408 kare ≈ 28 MB (d) iner.",
+   "duzeltme": "sahne.js/main.js: komşu sahneler için yalnız anahtar kareler (her 8.), etkin sahnede ±16 kare penceresi createImageBitmap ile çözülmüş tutulup pencere dışı bitmap.close(); tam set ancak sahne etkin olunca. s0'ın 256 karesi için ilk 24 kare + her 8. kare önce (planda var) ve s1 yüklemesini s0 p>0,6 sonrasına ertele. sinama.mjs'e bellek (performance.memory/ölçüm) ve hızlı sarma fps testi ekle."
+  },
+  {
+   "akt": "moduller",
+   "onem": "high",
+   "sorun": "Quiz (bilgi_yarismasi) soruları t=67-69, 87-89, 101-102'de — tam da perdelerin 'çıkış geçişi' saniyeleri (s1 dalışı: 'Peki bu blok nasıl doğuyor?'; s2: 'Sertleşti/Hacmin çoğu hava/İçine bakalım'; s3: küp→blok→palet + palet pini). Bu saniyelerde akt dosyaları zaten tek cümle + nokta/ipucu planlıyor ve pazarlama 'son 3 sn içinde yeni CTA başlamaz' kuralını koyuyor; quiz çipi ekranı 3-4 etkileşimli öğeye çıkarıyor. Ayrıca bu quiz soruları akt-s1/s2/s3 etkilesim alanlarında hiç geçmiyor.",
+   "duzeltme": "bilgi_yarismasi sorularını çıkış dışına taşı: Soru 1 (tutkal/derz) t=56-57 (tutkal durağından ~3 sn sonra, panel durağı girişi), Soru 2 (kabartan hammadde) t=81-82 (kabarma anı), Soru 3 (A1) t=98-99. moduller.json film_haritasi + ilgili modül nerede alanlarını ve akt-s1/s2/s3 etkilesim satırlarını aynı saniyelerle güncelle."
+  },
+  {
+   "akt": "moduller",
+   "onem": "high",
+   "sorun": "Politika çelişkisi: moduller 'panel kipi' film karesini DONDURUYOR, wheel/touchmove/Space'i yutuyor ('kaydırma kilidi'), telefonda 100svh modal sheet, duvar_hesap içinde form+teklif; son sahnede gömülü mini hesap. pazarlama.cta_kurallari ise 'Pop-up, modal, form, kaydırma kilidi YOK; CTA kaydırmayı hiçbir zaman engellemez' diyor. İki belge aynı mimaride uyuşamaz; ayrıca panel açılınca vuruş gizlenmesi 'ekranda 1 başlık+1 cümle' kuralıyla etkileşiyor.",
+   "duzeltme": "Karar: panel kipi kullanıcı başlatımlı ise cta_kurallari'na 'kullanıcı başlatımlı panel istisnası' yaz; otomatik pencereler kilitsiz kalsın; Esc/kapat/geri tuşu ve kaydırmayla kapanma zorunlu. Yoksa moduller.json'da panel kipini 'sahne-içi, kilitsiz' olarak yeniden tanımla (kilit_ve_kaydirma bölümü). duvar_hesap'ı /duvar-tasarla/ ile birleştirme kararını (açık soru 2) aynı turda ver."
+  },
+  {
+   "akt": "son",
+   "onem": "high",
+   "sorun": "Finale (t=141-145) aşırı yüklü: akt-son t=142-143'te H2 + cümle + 3 CTA + bağlam çipi + 'Size en uygun yol' + 3 kitle çipi + 3 kanıt kartı + 'Hikâyeyi baştan izle' + şafak + kâğıt perde; pazarlama ayrıca mobil alt çubuk, WhatsApp, 'Hikâyede baktığınız' vurgusu ekliyor; moduller bunun üstüne quiz rozeti, gömülü duvar_hesap mini formu ve Araçlar çekmecesi koyuyor (akt-son'da yok). ~15-18 etkileşimli öğe 4 saniyede; ana CTA'ya (t=142 = filmin %97'si) ulaşma sürtünmesi artıyor.",
+   "duzeltme": "akt-son.json t=142-145: ana CTA + 1 ikincil + bağlam çipi; kitle çipleri ve kanıt kartlarını t=143'te tek sıraya (kitle çipleri) indir, kanıt kartlarını t=144'e kaydır; quiz rozeti, gömülü mini hesap ve çekmeceyi son sahneden çıkar (rozet yalnız çekmecede). son_whatsapp/son_bar_mobil numara teyidi gelene dek konmasın. pazarlama ve moduller satırlarını bu sadeleştirmeyle eşle."
+  },
+  {
+   "akt": "s0",
+   "onem": "high",
+   "sorun": "Açılış H1/slogan çelişkisi: akt-s0 t=0 'Bugünden Yarına Güvenle' (hero H1) + t=2 'Her yuva bir çizgiyle başlar.'; pazarlama.marka_gorunurlugu/seo ise slogan yalnız t=140'ta ve H1='Her yuva bir çizgiyle başlar.' diyor; akt-son t=138-140 'Güven.' sözcüğünün sloganı 'devralması' ancak slogan açılışta görünmezse ödül olur. Karar verilmeden dil.js, index.html (<title>, H1), s0 t=0/t=2 vuruşları ve son t=140 yazılamaz.",
+   "duzeltme": "Pazarlama önerisini benimse: akt-s0.json t=0 metin_tr/metin_en = eyebrow 'EGE GAZBETON · Söke & İzmir' + H1 'Her yuva bir çizgiyle başlar.' + tek cümle; t=2'deki aynı cümleyi tekrar etme (t=2 satırını 'çizgi kâğıdı boydan boya geçer' görseli + yalnız aks balonu yap); slogan yalnız son t=140 ve <title>/OG. akt-s0 açık soru 1 ve pazarlama açık soru 1'i kapat."
+  },
+  {
+   "akt": "s3",
+   "onem": "high",
+   "sorun": "'Kuru blok suda yüzer' (t=99-100) kaynaksız çıkarım: föy/CE belgelerinde ifade yok (yalnız 300-600 kg/m³ var), plan açık soru 1'de kendisi işaretliyor; sahne cam tank + su + kaustik + blok sönümlü salınım (yeniden kurulum ~2 gün, kare başı ~90 sn) ve t=99 pazarlama CTA'sı (Teknik Özellikler) bu iddiaya bağlanıyor.",
+   "duzeltme": "Onay gelene dek akt-s3 t=99-100'ü 'tank' yerine tezgâhta yan yana G1/G2/G4 blok + '300–600 kg/m³ · yoğunluk aralığı' rakamı ve λ·A1·300–600 şeridi olarak yeniden planla (yüzme/su yok); tezgah F54-F65 render'ı yüzme onayı olmadan başlamasın. Onay gelirse cümle 'yüzer' yerine kaynaklı ifadeye (ör. 'Yoğunluk 300–600 kg/m³') çevrilsin."
+  },
+  {
+   "akt": "genel",
+   "onem": "high",
+   "sorun": "Toplam iş yükü: akt dosyalarındaki gün tahminleri toplamı ≈ s0 16-20 + s1 13 + s2 7 + s3 11 + s4 13 + s5 8-9 + son 12-13 + moduller 25-30 ≈ 105-115 kişi-gün (tek geliştirici ~5 ay) + site tarafı işleri (teklif formu parametreleri, /duvar-tasarla/, /ihracat/, katalog). Render makine süresi (~26 sa) bunun yanında küçük; risk modelleme/JS ve onay turları.",
+   "duzeltme": "Planlara 'MVP kesiti' ekle: 1) kare hattı (s0,s1,s2,s3,s4,s5) + akt-son; 2) modül dalga 1 (urun_secici, duvar_hesap/maket sayacı, once_sonra, kesit_gezgini); a1_demo, karisim_hazirla, uretim_zinciri, bilgi_yarismasi, tezgâh alev/yüzme ve fabrika 'v2' ayrıntıları 2. dalga. Her akt dosyasına 'olmazsa yedek' satırı (örn. tezgâh yerine statik kart) yazılsın."
+  },
+  {
+   "akt": "s2",
+   "onem": "medium",
+   "sorun": "'Hacmin çoğu hava.' (t=88) örtük sayısal iddia ('çoğu' = >%50); plan 'hava hacim oranı: teyit gerekli (ekranda yok)' diyor ama cümle yine de çoğunluk iddiası taşıyor. s3 t=90 'Isıyı tutan, içindeki hava' da buna dayanıyor.",
+   "duzeltme": "akt-s2.json t=88 metin_tr/en'i kaynaksız çoğunluk iddiası içermeyen ifadeye çevir (ör. 'Gözenek gözenek, hava hücresi hücre.' / 'Cell by cell, trapped air.'); ya da Ege Gazbeton'dan yazılı hava hacim oranı kaynağı alınıp rakam kartı olarak eklensin. dil.js'e aynı değişiklik."
+  },
+  {
+   "akt": "s2",
+   "onem": "medium",
+   "sorun": "t=86 'rakam' sütununda planlayıcının genel bilgisi yazılı: 'Tipik AAC otoklavı yaklaşık 180-200 °C, 10-12 bar'. 'Ekranda yok' notu olsa da bu alan üretim betikleri/dil dosyaları tarafından okunabilir; kural 'uydurma/kaynaksız rakam YOK'.",
+   "duzeltme": "akt-s2.json t=86 rakam alanını boşalt (ör. 'Otoklav sıcaklık/basınç: kaynak yok, ekranda yok'); sayıyı hiçbir plan dosyasında tutma. Kadran SVG'si rakamsız kalsın."
+  },
+  {
+   "akt": "s1",
+   "onem": "medium",
+   "sorun": "t=59-60 deprem/ODTÜ: ekranda 'Hafif bina, düşük deprem yükü.' ama onaylı cümle dil.js/pazarlama'da 'Daha hafif bina, daha düşük deprem yükü.'; sismik halka animasyonu + 'deprem' çağrışımı pazarlamanın 'korku dili yok / depreme dayanıklı yok' kuralıyla gerilim taşıyor; −%17'nin kapsamı (yalnız panel mi tüm sistem mi) teyitsiz; pazarlama ise t=59-60'ı 'Paneller: ... ODTÜ' diye panele bağlı sunuyor.",
+   "duzeltme": "akt-s1.json t=59 metni onaylı cümleyle birebir yap; sismik dalga halkalarını kaldır ya da nötr 'yük oku' ile yetin; t=60 etiketi 'ODTÜ çalışması, 8 katlı örnek bina hesabı: yapı kütlesi −%17' (3 katlı evle karışmasın diye 'örnek bina' vurgulu). Kapsam teyidi gelene kadar panel durağına bağlı gösterme ('yalnız panel' iddiası yapma)."
+  },
+  {
+   "akt": "s3",
+   "onem": "medium",
+   "sorun": "G1–G4 kaydırıcısı (t=100: 4 durağan kare, 'G1—G4') ile moduller.dogrulanamayanlar çelişiyor: G3 yoğunluğu ve G1–G4 tam listesi doğrulanmamış (yalnız G1/300, G2/350, G4/600 biliniyor); agirlik modülü 'G3 işaretsiz' diyor ama akt-s3 dört hâl render ediyor (+4 x ~90 sn).",
+   "duzeltme": "akt-s3.json t=100 ve uretim: yalnız G1, G2, G4 (3 durağan kare), G3 etiketi/yoğunluğu çıkarılsın; etiket 'G1 · G2 · G4' veya yalnız '300 → 600'. isi_yolculugu/agirlik modüllerinde aynı üçlü kullanılsın."
+  },
+  {
+   "akt": "moduller",
+   "onem": "medium",
+   "sorun": "film_haritasi ve modül 'nerede' alanları ile akt etkilesim alanları uyuşmuyor: (a) maket_blok_sayaci 'Say' kartı t=17 → akt-s0 t=17 etkilesim yok (kat çipi 'PARAPET' da akt-s0'da yok); (b) urun_secici 'Evde nerede?' t=34-35 → akt-s1 t=34/35 yok; (c) duvar_hesap 'Hesapla' t=39-40 → akt-s1'de yok ve pazarlama s1_duvar_hesapla CTA'sı (t=38-40, /duvar-tasarla/) ile aynı işi iki farklı hedefe yapıyor; (d) kesit_gezgini t=46-50 'Kesit' çipi ve (e) agirlik 'Dene' t=59-60 → akt-s1'de yok; (f) isi_yolculugu 'Kalınlığı dene' t=96 → akt-s3 t=96'da yok; (g) a1_demo 'basılı tut' vs akt-s3 t=97-98; (h) karisim_hazirla 'Hazırla' çipi t=78 → akt-s2 t=78/79'da yok; (i) bilgi_yarismasi 3 soru ve SON modülleri (rozet, mini hesap, çekmece) hiçbir akt'ta yok; (j) kalıcı 'Araçlar n/14' düğmesi (t=0→SON) hiçbir akt/pazarlama satırında yok. Tutarlı olanlar: tir_palet (s0 t=20-23, s4 t=106-117), hucre_dokun (s3 t=91-95), ihracat_kitalar (s5 t=122-131), once_sonra (s1 t=63-64).",
+   "duzeltme": "Her akt dosyasının ilgili satır etkilesim alanına modül çipini yaz (modül id + çip metni + pencere) ve duvar_hesap-CTA ikilisi için tek hedef seç; film_haritasi'ndan satırları tek tablo olarak üretip akt-*.json etkilesim alanına otomatik yaz (tools ile doğrulama betiği: film_haritasi t pencereleri ⊆ akt etkilesim)."
+  },
+  {
+   "akt": "moduller",
+   "onem": "medium",
+   "sorun": "uretim_zinciri: 'kalıcı alt şerit t=80'den başlar' ama düğümlerinin ilk üçü (Hammadde t=73-77, Karışım t=78, Kalıp t=79) şerit başlamadan geçmiş; akt-s2 zaten 5 adımlı stepper (Hammadde/Karışım/Kabarma/Kesim/Otoklav; t=73,78,80,85) planlıyor, modül bunu 8 düğüme genişletip yerini alıyor — iki belge iki ayrı bileşen anlatıyor. Şerit s3'teki 'rakam şeridi' (t=100) ve s4'teki taşıma grafiği/çip/sayaçlarla aynı alt bölgede çakışır.",
+   "duzeltme": "uretim_zinciri'ni t=73'te başlat (s2 stepper'ı yerine geçtiğini akt-s2'ye yaz), s3'te tamamen gizle (yalnız sönük değil), s4'te yalnız t=104-110 (Palet→Yola); akt-s2 stepper satırlarını 'zincir düğümü' diliyle güncelle."
+  },
+  {
+   "akt": "moduller",
+   "onem": "medium",
+   "sorun": "karisim_hazirla 6 kapsül listeliyor (Kum, Kireç, Çimento, Alçı, Alüminyum, SU) oysa onaylı mesaj 'Bir blok, beş hammadde' (akt-s2 t=70 ve risk t=78: 'Su 6. madde gibi okunmasın'). Ayrıca 'alüminyum yok: kabarma yok' gibi eksik-hammadde sonuçları fiziksel iddia taşır.",
+   "duzeltme": "Su'yu kapsül değil 'musluk/ekleme' düğmesi yap; eksik-hammadde mesajlarını yalnız onaylı görev cümlelerinden türet ('Eksik: bağlayıcı' gibi), 'kabarma yok' ifadesini doğrulanmış alüminyum kartına dayandır; moduller.json karisim_hazirla.tr_metin güncelle."
+  },
+  {
+   "akt": "moduller",
+   "onem": "medium",
+   "sorun": "Duvar bloğu kalınlığı '5–35 cm' durumu tutarsız: DEVIR EGEPOR satırında veriyor; index.html/dil.js duvar blokları için de yazıyor; akt-s1 t=38 'teyit gerekli, ekrana yazılmadı' diyor; moduller.dogrulanmis_rakamlar teyit bekliyor notuyla 'doğrulanmış' sayıyor; pazarlama.g_blok 'doğrulandı'. duvar_hesap/agirlik/isi_yolculugu bu aralıkla kaydırıcı/hesap (R, U, kütle) üretiyor.",
+   "duzeltme": "Tek kaynak durumu belirle: ya müşteri/üreticiden 5–35 cm yazılı teyit al ya da kaydırıcıyı teyitli değerlere (20/25 cm örnekleri) sabitle; pazarlama.g_blok'ta durumu 'mevcut site metni; üretici teyidi bekliyor' yap; hesap örneklerini ('20 cm → R 2,50…') yalnız 'örnek hesap' etiketiyle göster."
+  },
+  {
+   "akt": "pazarlama",
+   "onem": "medium",
+   "sorun": "Depolama politikası çelişkisi: pazarlama.olcum 'YENİ çerez/localStorage/sessionStorage yok' ve baglanti_semasi 'yalnız bellek, depolama YOK'; ama akt-son (baglam.js: sessionStorage), moduller.ortak_teknik (baglam: sessionStorage; rozet/ilerleme: localStorage 'ege-modul', 'ege-yaris') depolama kullanıyor.",
+   "duzeltme": "Karar ver: ya modül ve bağlam kayıtları yalnız bellekte (sayfa yenilenince kaybolur) ya da pazarlama.olcum.kurallar'a 'işlevsel sessionStorage/localStorage istisnası + KVKK aydınlatması' yaz. akt-son yeni_isler (sessionStorage) ve moduller.acik_sorular #13 buna göre kapatılsın."
+  },
+  {
+   "akt": "pazarlama",
+   "onem": "medium",
+   "sorun": "'İlk lime anı = ödül t=17' ve 'lime ilk kez t=17' iddiası akt-s0 ile çelişiyor: akt-s0 t=12 (derz lime çizgisi), t=14 (derz lime vurgu), t=15 (lento lime kenar), t=16 (lime tarama ışığı) zaten lime kullanıyor; pazarlama 10 sn testi için 'lime ilk t=17' ve 'lime ritmi' hesabını buna göre kurmuş.",
+   "duzeltme": "Ya akt-s0 t=12-16 lime vurgularını 'beyaz-sıcak ışıltı'ya çevir (ilk lime t=17 silme çizgisi) ya da pazarlama.marka_gorunurlugu 'İLK LİME ANI' ve huni alt aralık kazançlarını 'ilk lime t=12 derz' diye güncelle. Her iki durumda lime ritmi tablosunu akt-s0 ile eşle."
+  },
+  {
+   "akt": "s0",
+   "onem": "medium",
+   "sorun": "Duygu perdesinde etkileşim ve açılış ekranı fazla yüklü: akt-s0 t=4..28 arasında 14-15 nokta/kart (Sokak, Bahçe, Giriş, Eskiz, Blok, Derz, Lento, Panel, Bisikletli, tır etiketi, palet halkası, Kapı, Yuva…) + modül sayaç/kat çipi; t=0'da hero: lime düğme + 3 kitle çipi + atla + üst çubuk Teklif + yolculuk çubuğu + 'Araçlar n/14' ≈ 8 hedef, oysa pazarlama.ilk_10_sn kendi başarısızlık ölçütünde '3'ten fazla düğme'yi hata sayıyor ve huni 'duygu perdesinde CTA düşük' diyor.",
+   "duzeltme": "akt-s0: t=4-11'deki nokta kartlarını en çok 2'ye indir (Sokak, Eskiz), 'Araçlar n/14'ü t<34'te gizle (s1 çip çubuğuyla birlikte belir); hero'da 3 kitle çipini t=0'da tek 'Size en uygun yol' çipine daralt veya t=1'e ertele. pazarlama.ilk_10_sn ve cta_zaman_cizelgesi (giris_kitle_*) buna göre güncellensin."
+  },
+  {
+   "akt": "s0",
+   "onem": "medium",
+   "sorun": "'Ürünleri gör ↓' atlama bağlantısı t=23 (pazarlama s0_tir_urunler; akt-s0 t=23): kullanıcıyı s1'e (t=33) taşıyarak t=24-31'deki duygusal zirveyi (aile eve girer, akşam, 'Peki bu evi iyi yapan ne?') atlatıyor; hikâyenin en güçlü yayı yok oluyor.",
+   "duzeltme": "akt-s0 t=23 etkilesim satırından bağlantıyı çıkar; yerine t=30-31'de ('Kaydırın ipucu: ürünleri keşfedin' zaten var) soru sonrası göster ya da hedefi s0 t=29 yap. pazarlama cta_zaman_cizelgesi s0_tir_urunler t aralığını 30-32'ye al."
+  },
+  {
+   "akt": "s4",
+   "onem": "medium",
+   "sorun": "t=115-117 okuma/etkileşim yükü: akt-s4.gecis_notu '200 t' (0,63-0,81) ve '1.100.000' (0,69-0,81) vuruşlarının t=115-117'de AYNI ANDA ekranda olduğunu söylüyor + başlık (07 · Yol) + 2 sayaç + otoklav noktası + tır etiketi + pazarlama s4_olcek_bayi CTA (t=115-118, çıkış taşması) + uretim_zinciri alt şeridi + t=117 söz ('Tır yola çıktı. Peki nereye gidiyor?'). Planın kendi kuralı 'en çok 1 başlık + 1 cümle/rakam'.",
+   "duzeltme": "akt-s4/gecis_notu: '200 t' t=114'te girip t=115'te çıksın (aynı anda tek rakam), '1.100.000' t=115-116; CTA s4_olcek_bayi'yi t=116 sonrasına taşımak yerine t=112-113'e (tır etiketi öncesi) ya da kaldır; zincir şeridi t=110'da biter."
+  },
+  {
+   "akt": "s4",
+   "onem": "medium",
+   "sorun": "s4→s5 dikiş içerik uyuşmazlığı: s4 t=119 (F095=s5 F000) 'lime Türkiye kıyısı, gri adalar, iki lime halka' diyor; s5 t=120 aynı kare için 'kara serin beyaz noktalar, lime yalnız fabrika iğnesinde' ve Türkiye lime yalnız t=122'den sonra diyor. Ölçek de çelişiyor: s4 'B kipi ≈100→300 km (bölge genişliği)', s5 'nadir kamera 200 km yükseklik' (yükseklik vs genişlik karışmış); s4 t=118→119 20 km→100 km sıçraması.",
+   "duzeltme": "İki dosyada F095/F000'ı tek tanıma indir: 'beyaz-gri kara noktaları + iki lime halka (Söke, İzmir); Türkiye lime dalgası t=122'de'. Birim sözlüğü: 'yükseklik (km)' ve 'görüş genişliği (km)'ı ayrı yaz ve s4 t=118-119 irtifa eğrisini s5 F000-F011 yükseklik eğrisiyle (200→450→1.500 km) tek tabloda birleştir."
+  },
+  {
+   "akt": "s5",
+   "onem": "medium",
+   "sorun": "s5→son kompozisyon uyuşmazlığı ve tempo: akt-s5 t=135 'küre sağ-ortada, solda boşluk; logo ve slogan bu görselin üstüne belirir' (logo solda) ama akt-son t=136-137 küreyi Ege'ye çöküp kıvılcımı MERKEZE alıyor ve logo t=140'ta; ayrıca t=132-137 arası altı saniye metinsiz (s5 t=132-135 dört sn rakamsız dönüş/cam gövde + son t=136-137 çöküş). Sözleşme 'logo ve slogan belirir' için 5 sn gecikme var.",
+   "duzeltme": "akt-s5.json t=135 pazarlama/efekt metnini 'küre sağ-ortada; son bölüm kompozisyonu merkeze toplar, logo t=140' olarak düzelt. Tempo: t=132-135'i bir saniye kısalt (cam gövde 2 sn'de tamamlansın) ve t=136-137'yi tek saniyeye indir ya da bu sessiz bölümde Ege halkası/damla ritmiyle bir 'kaynak' işareti ekle (metinsiz kalsın)."
+  },
+  {
+   "akt": "s1",
+   "onem": "medium",
+   "sorun": "Kare hızı/ghosting: s1 4 kare/sn (152 kare) ve kamera yörüngesi az +32°→+380° (ortalama 9°/sn, tepe ~20-28°/sn → kare başı 5-7°); oynatıcı komşu kareleri doğrusal çapraz eritiyor (sahne.js render: ctx.globalAlpha=t) — saydam/röntgen evde ara karede çift görüntü. Telefon her 2. kare (m: 2 kare/sn; s2 2,5; s3/s4 3) → kare başı 10-14°. Plan yalnız s4'te 'hayalet riski' görüyor.",
+   "duzeltme": "akt-s1.json: yörünge geçişi saniyelerinde (t=40-41, 50-52, 54-56, 60-63) kare hızını 6'ya çıkar (diğer durak saniyeleri 4) ya da m setinde s1-s4'te EGE_MINSTEP=1 (yalnız hareketli saniyeler); sahne.js'te gap>1 için hareket-yönlü (hızlı) erime. Altın kare sınaması telefon setinde (ara kareler dahil) yapılsın."
+  },
+  {
+   "akt": "s3",
+   "onem": "medium",
+   "sorun": "Okuma yoğunluğu: t=94 (7 kelime + 2 etiket), t=96 'λ 0,08 · W/mK · G2/350 duvar tasarım değeri' (7), t=97 'A1 · yangına tepki sınıfı' (4), t=99 (5), t=100 (şerit) — 7 saniyede 5 rakam/etiket, her biri 1 sn, 3 kelime/sn sınırı aşılıyor; 'mühür' etkisi (üç rakamı yan yana okutma) yerine hızlı akış.",
+   "duzeltme": "akt-s3: λ t=95-96 (2 sn), A1 t=97-98 (2 sn), yoğunluk t=99-100 (2 sn); yüzme sahnesi çıkarılınca t=100'deki şerit tek başına 2 sn kalsın; t=94 'sıcak · soğuk' etiketlerini t=95'e kaydır."
+  },
+  {
+   "akt": "s0",
+   "onem": "medium",
+   "sorun": "Okuma yükü tepe noktaları (yeni kelime/sn): t=2-3'te hero + cümle (5+9=14 kelime 2 sn'de ≈7 kel/sn), t=13 (10 kelime), t=20 (9 kelime + etiket + palet halkası). Diğer perdelerde tepe: s4 t=114 (6), s5 t=122 (8, yarım sn gecikmeli), son t=142 (6). Plan kendi kuralı 'yeni sözcük ≤3/sn'ye uymuyor (s2/s3/s4 gecis_notu).",
+   "duzeltme": "akt-s0: t=3 cümlesini 6-7 kelimeye kısalt ('Önce fikir, sonra plan.' + 'güneşe, sokağa, bahçeye göre' t=4 altı çizili); t=13 cümlesi 'Blok blok, 1–3 mm derzle.' (rakam kartına taşı); t=20 'Tırda Söke ve İzmir paletleri.' dil.js TR/EN'i güncelle."
+  },
+  {
+   "akt": "s5",
+   "onem": "medium",
+   "sorun": "İhracat rakamı güncellik riski: '25+ ülke · 5 kıta' tek kaynak ihracat bölümü; dış haberlerde 19 ülke/4 kıta yazıyor (plan açık sorusu). Üstelik s5 t=130'da sayaç 0'dan 25'e sayarken 19'dan geçiyor, kıta adları etiketi (Avrupa…Okyanusya) onaya bağlı. s4/s5/son ve pazarlama g_ihracat/finale kanıt kartı aynı rakama dayanıyor.",
+   "duzeltme": "Yayın öncesi ihracat bölümünden YAZILI ve tarihli teyit al, pazarlama.g_ihracat durumunu 'teyit bekliyor' yap; sayaç animasyonunu rakam saymadan (ör. '25+' tek hamlede belirme) ya da yalnız halka dolumu olarak tasarla; kıta adları onaysızsa 1–5 numara + 5 halka (planda yedek var)."
+  },
+  {
+   "akt": "son",
+   "onem": "medium",
+   "sorun": "WebGL canlı katman yaşam döngüsü kuralla gerilimli: kural 'canlı gözenek katmanı yalnız son bölümde, WebGL yok'; plan canli.js'i (565 KB) t>=104'te (s4 başı) indirip t>=128'de başlatıyor ve t=135'te ilk render alıyor — s5'in küre dönüşü sırasında (t=128-135) shader derleme/bağlam oluşturma ≥50 fps'i riske atar; ayrıca TIERS dprMax şu an 1,5/2 (kural DPR≤1,25).",
+   "duzeltme": "akt-son: canli.js indirmesi s4 sonunda kalsın ama WebGL bağlamı/shader derlemesi son sahne etkin olunca (t>=136) idle'da ve opacity 0 ile; ilk render t=138-139 'Güven.' beklemesinde yapılsın. TIERS dprMax 1,25 (planda var) ilk işte yapılsın; sinama.mjs'e t=128-140 fps penceresi ekle."
+  },
+  {
+   "akt": "s5",
+   "onem": "medium",
+   "sorun": "Lime kuralı sınırı: Türkiye poligonu lime (s4 t=119, s5 t=122-135, son t=137) ve s0 t=17 'lime tarama/silme çizgisi' ürün/ambalaj/şerit değil; DEVIR'de 'Türkiye vurgusu yalnız gerçek poligon' renk belirtmiyor, 'lime yalnız ürün/ambalaj/şerit' kuralı kesin. s5 gecis_notu 'kürede lime sızıntısı olmasın' derken kürede lime Türkiye + lime yaylar var (yaylar palet yolu olarak savunulabilir).",
+   "duzeltme": "Müşteriden tek cümlelik onay al: 'Türkiye poligonu lime' = marka vurgusu olarak kabul mü? Onay yoksa Türkiye'yi sıcak beyaz/amber nokta, yaylar ve İzmir/Söke iğneleri lime bırak. Metin: s5 gecis_notu'ndaki 'lime sızıntısı olmasın' ifadesini 'zemin/ışık lime sızıntısı yok; yaylar ve Ege iğneleri lime' diye netleştir."
+  },
+  {
+   "akt": "genel",
+   "onem": "medium",
+   "sorun": "Tempo ve uzunluk: 146 sn/3212 vh (≈32-34 ekran; 900 px ekranda ≈30.000 px kaydırma) kabul edilebilir ama sınırda; referans 22 vh/sn çok yavaş, gerçek kullanıcı 3-6x hızlı kaydırır. Zayıf/uzun anlar: s1 girişi (t=32-35) soru tekrarı + 'İçindekiler' + 'Her durakta bir ürün' + tarama (4 sn); s1 Lento durağında 'duvarla aynı malzeme' (t=44-45); s4 t=106-110 yükleme/forklift/kayış (5 sn) ve s5 t=132-135 (4 sn); buna karşın s2 hammaddeleri 1 sn/ürün (kum, çimento, alçı) ve s1 Paneller 5 sn'de 3 mesaj. Tüm filmde saniyede 1 yeni öğe: 'nefes' anı yok.",
+   "duzeltme": "Hedef 130-135 sn (~2900 vh): s1 girişini 4→2-3 sn (soru+tarama birleştir), Lento 5→4, Paneller 5→6-7 (çeşit + 6 m + ODTÜ'yü ayır), s2 kum/çimento/alçı'yı 2 sn'de topla, s4 yükleme/kayışı 2 sn kısalt, s5 kuyruğunu 1-2 sn kısalt; kazanılan saniyeleri t=28 sonrası ve t=100 sonrası 2'şer saniyelik 'nefes' (UI sakin) anlarına ver. Perde boy'larını (ayarlar.js) buna göre güncelle ve metin yoğun saniyeler için 26-28 vh/sn, saf görsel saniyeler için 16-18 vh/sn kullan."
+  },
+  {
+   "akt": "s1",
+   "onem": "medium",
+   "sorun": "Paneller durağı (t=56-60) 5 sn'de üç ayrı mesaj ve iki rakam taşıyor: çeşit çipleri (Çatı/Döşeme/Duvar), 6 m açıklık sayacı, hafif bina/deprem yükü, ODTÜ −%17 kütle çubuğu; ayrıca modüller agirlik 'Dene' çipi ve CTA'lar (t=59-61 panel_kart) aynı saniyelerde.",
+   "duzeltme": "akt-s1: Paneller durağını 7 sn'ye çıkar (t=56-62) ya da ODTÜ −%17'yi ayrı bir 'kanıt' anına (s3 t=96 öncesi) taşı; t=59-60 etkilesim satırlarını tek öğeye indir."
+  },
+  {
+   "akt": "pazarlama",
+   "onem": "medium",
+   "sorun": "CTA çizelgesi–akt etkilesim uyuşmazlıkları: s1_sistem_teklif t=64-67 (ana CTA) akt-s1 t=64 çipler + t=65 rakam kartı + t=66 cümle + once_sonra çipleriyle aynı saniyelerde ve akt-s1 etkilesim satırlarında geçmiyor; s4_olcek_bayi t=115-118 çıkış (t=117-119) ile çakışıyor ve 'bayilik başvurusu var mı' teyit bekliyor; s5_ihracat t=131-134 CTA'sı 'rakam kartlarının altı' diye konumlanmış ama akt-s5 t=134'te rakamlar çözülüyor (CTA yetim kalır, kural 'kadraj temizlenir'); ust_teklif t=0-146 mobilde gizli (hata notu var).",
+   "duzeltme": "cta_zaman_cizelgesi satırlarını akt-s1/s4/s5 etkilesim alanlarına birebir yaz; s5_ihracat'ı t=130-133 (rakamlar görünürken) ve çıkış taşmasız bitir; s4_olcek_bayi'yi t=113-116'ya al. Telefonda üst çubuk CTA hatası için hikaye.css düzeltmesi iş listesine açık madde olarak eklensin."
+  },
+  {
+   "akt": "genel",
+   "onem": "low",
+   "sorun": "'Peki …' kancası dört kez tekrar ediyor: s0 t=28, s1 t=68, s2 t=89 ('İçine bakalım.'), s4 t=117 — kalıp ikinci/üçüncü kez öngörülebilir hâle geliyor; s0 t=28 ile s1 t=32 aynı soru art arda (EN: 'home' vs 'house' tutarsız).",
+   "duzeltme": "En az birini görselle kapat (örn. s2→s3'te sözsüz gözenek dalışı; s4→s5'te 'Peki nereye gidiyor?' yerine yalnız sözsüz yükseliş); s1 t=32 satırını 'Bu evi iyi yapan ne?' yerine 'Altı ürün. Tek sistem.' gibi yeni bilgi taşıyan kısa başlığa çevir; EN'de 'home/house' birleştir (dil.js h0e/s1 başlığı)."
+  },
+  {
+   "akt": "s0",
+   "onem": "low",
+   "sorun": "Tekrarlayan rakamlar: '1–3 mm' 5 kez (s0 t=14, s1 t=37/40/53-55, s2 t=84), '60 × 25 cm' 4 kez, '4,50 m lento' ve '6 m panel' s0 t=15-16'da ekrana alınıyor ve s1 t=45/58'de tekrar; pazarlama.huni bu ikisinin s0'da yalnız nokta kartında olmasını öneriyor.",
+   "duzeltme": "akt-s0.json t=15-16 rakam alanlarını boşalt (yalnız nokta kartında kalsın); s1 t=53-55 ve t=40'tan bir '1–3 mm' tekrarını kaldır (t=53 etiketi + t=55 rakamı yeter)."
+  },
+  {
+   "akt": "s2",
+   "onem": "low",
+   "sorun": "Kicker numaralandırması 05 (s2), 06 (s3), 07 (s4), 08 (s5) ile başlıyor; s0/s1 satırlarında 01-04 yok → 'neden 05'ten başladı' süreklilik boşluğu. Ayrıca s3 başlığı '06 · Yapı' ile EN 'lime' (kireç/renk) çift anlamı kartlarda ('Lime — Binder') belirsiz.",
+   "duzeltme": "Numaraları kaldır ya da s0=01, s1 durakları=02-04 diye ata (dil.js h*.kicker); EN'de kireç için 'Quicklime' ya da 'Lime (binder)' kullan, streç için 'lime-green stretch film'."
+  },
+  {
+   "akt": "s4",
+   "onem": "low",
+   "sorun": "t=109 'işçi kayışı atar; yakın plan...' sahnesi kuralla (yakın plan yüz yok, insan orta/uzak plan, ≥12 m) gerilimli; t=107 işçi ≥12 m olarak belirtilmiş ama kayış yakın planında işçi/eller kadrajda olabilir.",
+   "duzeltme": "akt-s4 t=109 efekt/risk: kadraj yalnız kayış/çırçır/köşe koruyucu (insan kadraj dışı veya omuz altı, yüzsüz silüet); insan.py 'kayis' pozu için yüz kapalı kontrol."
+  },
+  {
+   "akt": "s4",
+   "onem": "low",
+   "sorun": "Altın kare listesi eksik: pazarlama OG ve reklam kareleri t=22 (s0 S44) ve t=110 (kahraman kare, F036-041) için 'detayı yüksek olsun' diyor; akt-s4 altın kareler yalnız F000/F030/F048/F066/F084/F095.",
+   "duzeltme": "akt-s4 yeni_isler son maddesine F036-F041'i (t=110 kahraman) ekle; OG tırı için s0 S44 ile birlikte seri öncesi onay kareleri olsun."
+  },
+  {
+   "akt": "genel",
+   "onem": "low",
+   "sorun": "Teslim boyutu ve depo: kare WebP toplamı ≈100 MB (d ≈79 MB + m ≈21 MB; tahminim: s0 16, s1 12, s2 5, s3 4+1, s4 8, s5 34 MB d) — mevcut paket 15 MB; depo herkese açık ve git geçmişi büyür. İlk ziyarette hızlı yükleme için yalnız anahtar kareler önce iner (planda var).",
+   "duzeltme": "WebP kareleri depoya commit etme, yalnız zip/sürüm varlığı olarak teslim et (DEVIR.md'ye yaz); kareler.py'de s5 ve s4 için kalite/boyut hedefi (KB/kare) ve toplam bütçe (≤100 MB) denetimi ekle."
+  },
+  {
+   "akt": "s5",
+   "onem": "low",
+   "sorun": "Planlanan kıta sayacı/CTA metinleri TR/EN anlam farkı: pazarlama s5_ihracat 'İhracat bölümüne ulaşın →' / 'Contact our export team →' aynı eylem değil; dil.js i4.metin hâlâ Aliağa/Alsancak liman ifadesini içeriyor (kaynaksız; plan 'kartta kalır' diyor).",
+   "duzeltme": "EN ve TR CTA'yı hizala ('Contact our export team' ↔ 'İhracat ekibine yazın'); dil.js i4.metin ve NOKTALAR.kaynak'tan limanlar çıkarılsın (akt-s5 açık soru 1 onayı gelene kadar)."
+  }
+ ],
+ "render_maliyeti": {
+  "not": "Yeni Blender karesi (d): s0 167 (E38+D40+M8+S64+A14+K2+P1) + s1 160 (152-4+8 makro+4 çift render) + s2 100 + s3 105 (85+4 G1-G4+16 flipbook) + s4 96 + s5 193 + son 0 = 821 kare; telefon (EGE_MINSTEP=2) ≈411 → toplam ≈1232 render karesi. Oynatıcıdaki kare: 882 (d) / 442 (m). Plan iddiası ≈19 sa (d ≈13 + m ≈6). Ölçülen günlüklerle kalibre (4 çekirdek, Cycles): s0 plan ölçümden muhafazakâr (egim 17 sn, dolum 33, sokak 64, plaka 116 ölçüldü); s1 ölçüm 63-1318 sn (medyan 106, ort. ≈137) → 160 kare ≈6,1 sa (plan 1,9); s5 eski dünya 72-79 sn → 193 kare ≈4 sa (plan 2,2); s2 ≈1,6, s3 ≈1,8, s4 ≈2,3 → d ≈19 sa + m ≈6-7 sa ≈ 26 sa (aralık 19-40; altın kare yeniden render payıyla ≈40 sa ≈ 2 gün kesintisiz). Disk: PNG kaynaklar ≈2,5-3 GB (boş 26 GB yeterli), WebP ≈100 MB (d ≈79 + m ≈21; plan ≈48). Oynatıcı bellek: kare başına 5,76 MB (d) / 4,2 MB (m) çözülmüş; en kötü küme s0+s1+s2 = 508 kare ≈2,9 GB (d) → pencereli ImageBitmap önerilir. vh toplamı 3212 (+GECIS=22 ile 3344); makul ama üst sınırda, hedef ≈2900 vh. İş yükü asıl darboğaz: ≈105-115 kişi-gün.",
+  "tahmini_saat_4cekirdek": 26,
+  "toplam_yeni_kare": 1232
+ }
+}

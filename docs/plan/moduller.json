@@ -1,0 +1,560 @@
+{
+  "surum": "1.0",
+  "aciklama": "Hikâye boyunca eklenecek etkileşimli + öğretici modül kataloğu (14 modül). Render gerektirmez; HTML/SVG/CSS/2B canvas/JS, çevrimdışı, ≥50 fps. Her modülde sayıların kaynağı yazılıdır; doğrulanamayanlar 'teyit gerekli'. Ek alanlar: kip, mobil, bagimlilik (modül başına); film_haritasi, ortak_teknik, dogrulanmis_rakamlar, dogrulanamayanlar (üst düzey).",
+  "moduller": [
+    {
+      "id": "urun_secici",
+      "ad": "Evde nerede? — ürün seçici ve araç rafı",
+      "kip": "sahne-ici + panel (kalıcı 'Araçlar' çekmecesi)",
+      "nerede": "s1 Ürün turu (Perde 2) · film t=34–35 sn (İçindekiler; çip çubuğuyla birlikte 'Evde nerede?' çipi belirir) · ayrıca t=0–135 sn kalıcı 'Araçlar n/14' düğmesi (yolculuk çubuğunun yanında, .eg-yol); SON sahnede (t≥136) düğme ve çekmece yok, modül yüzeyi yok: yalnız seçilen ürün tek bağlam çipine ('EGEPOR ×') taşınır.",
+      "ne_yapar": "Maket evin 3 katlı kesit silüeti (bina_detay.py ile aynı 12 × 9 m aks, 3 kat) açılır; 7 sıcak nokta: dış duvar, pencere/kapı üstü, çatı kenarı (parapet hatılı), derz, döşeme/çatı, kolon-kiriş, otopark ve bodrum tavanı. Dokununca nokta lime halka alır (yalnız Ege ürünü vurgulanır), altta ürün adı + tek cümle + iki düğme çıkar: 'Turda gör' (ürünün film durağına 4× hızla sarma: duvar t=36, lento t=41, U blok t=46, tutkal t=51, panel t=56, EGEPOR t=61) ve 'Dene' (ilgili modül: dış duvar → duvar_hesap, çatı kenarı → kesit_gezgini, kolon-kiriş → once_sonra). 'Araçlar' çekmecesi: 14 modülün kart ızgarası, denenenler işaretli, ilerleme çubuğu; her modül kendi bağlamında açılır. Dokunulan ürün baglam.js'e yazılır (akt-son): SON'daki tek bağlam çipi ('EGEPOR ×') ve /teklif/?urun=… bağlantısı bu seçimle gelir; 'Hikâyede baktığınız' kartı yalnız sticky bırakıldıktan sonra 'Ürün grupları'nda öne çıkar (finale ekranında değil).",
+      "ogretici_deger": "Ürün adı → evdeki yeri eşlemesini YER üzerinden öğretir (zihinsel harita): duvar = blok, açıklık üstü = lento, çatı hatılı = U blok, derz = tutkal, döşeme/çatı = panel, kolon-kiriş = EGEPOR. Soruyu tersine çevirir ('nerede kullanıyorum?'); ürün adını bilmeyen yapı sahibi de, mimar da kendi sorusundan girer. Çekmece ayrıca öğrenme sırasını gösterir (nerede → ne kadar → içinde ne → neden → nasıl yapılır → nasıl gider → pekiştir).",
+      "pazarlama_degeri": "Niyet sinyali: hangi noktaya basıldığı = hangi ürünle ilgilendiği; baglam.js üzerinden Teklif CTA'sına ?urun= taşınır, satış ekibi ilk temasta ilgiyi bilir. Hero'daki kitle seçici (yapı sahibi / mimar / bayi) 'kim olduğunu' sorar, bu modül 'ne için' sorusunu ekler. 'Araçlar n/14' ilerleme çubuğu keşfi oyunlaştırır; modül kullanım oranı, oturum süresi ve araçtan CTA'ya geçiş ölçülebilir olur.",
+      "veri_ve_kaynak": "Rakam üretmez; açılan kartlarda yalnız doğrulanmış değerler: 60 × 25 cm blok yüzü, 1–3 mm derz, 4,50 m'ye kadar lento, 6 m'ye varan panel açıklığı (Ürün föyleri); EGEPOR kullanım yerleri: dış cephe, otopark ve bodrum tavanı, kolon/kiriş kaplaması (Ürün föyleri, egegazbeton.com.tr/urunlerimiz/egepor/, müşteri onaylı); U blok kullanım yerleri (Ürün föyleri, /urunlerimiz/u-bloklar/). Ev silüeti = 'maket modeli' (blender/bina_detay.py: 4 × 3 aks, 3 kat, kat yüksekliği 3,0 m). Köşe bloğu hikâyede yok (DEVIR §3 teyit bekleyen #2) → seçicide de yok.",
+      "teknik": "Tek inline SVG (≤90 düğüm), 7 hit-area ≥44 px, geçişler yalnız transform/opacity (CSS); rAF kullanmaz. Çekmece: role=dialog + aria-modal=false (modal değil), odak tuzağı YOK, Esc/geri/kaydırma = kapat. KABUK (src/hikaye/moduller/kabuk.js ≈6 KB min) hikaye.js içine girer; modül gövdeleri tembel: ilk 'Dene/Araçlar' dokunuşunda ya da s1 başında requestIdleCallback ile assets/js/moduller.js (≤60 KB min, klasik IIFE; canli.js deseni, file:// uyumlu <script src> enjeksiyonu). Panel kipi KİLİTSİZ ve kullanıcı başlatımlı (ortak_teknik.kilit_ve_kaydirma): wheel/touchmove/tuş yutulmaz, passive:false yok; kaydırma paneli kapatır, kare kaydırma konumundan türediği için panel açıkken zaten sabit kalır. Masaüstü: sol anlatım sütununda açılır (konu sağda görünür kalır); telefon: alt sheet (≤70svh, tam ekran/100svh YOK), kapat 44 px. localStorage 'ege-modul' (denenen modüller) try/catch içinde, yoksa oturum belleği. Ek bitmap yok; çekmece açıkken sahne render'ı zaten durur → ≥50 fps korunur. Efor ≈ 3–4 gün (kabuk + çekmece + SVG).",
+      "tr_metin": "chip: Evde nerede? | baslik: Hangi ürün, evin neresinde? | ipucu: Bir noktaya dokunun. | noktalar: Dış duvar · Pencere üstü · Çatı hatılı · Derz · Döşeme ve çatı · Kolon ve kiriş · Otopark ve bodrum tavanı | dugmeler: Turda gör · Dene | cekmece: Araçlar {n}/14 · Denedikleriniz işaretli",
+      "en_metin": "chip: Where in the house? | title: Which product, where in the house? | hint: Tap a point. | points: Exterior wall · Above openings · Roof bond beam · Joint · Floor and roof · Columns and beams · Car park and basement ceilings | buttons: See it on the tour · Try it | drawer: Tools {n}/14 · Ticked = tried",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'urun_secici', eylem:'ac|nokta|tura_git|dene|cekmece_ac|cekmece_kapat', hedef:'duvar|lento|ublok|tutkal|panel|egepor', film_sn, dil}; seçilen ürün baglam.js'e 'urun' olarak yazılır (akt-son: son_goruldu, urun, kitle olaylarıyla aynı şema).",
+      "efor": "buyuk",
+      "kural_riski": "Lime yalnız seçilen Ege ürününde (halka/kenar); kolon, kiriş, donatı, çelik gri. Ürün–yer eşlemesi yalnız teyitli kullanım yerlerinden; köşe bloğu veya yeni ürün eklenmez. 'Araçlar' düğmesi yolculuk çubuğunu kalabalıklaştırmamalı (≤2 kelime). Logo yok (logo en sonda). Panel kullanıcıyı hikâyede hapsetmez (kilit YOK): kaydırma, Esc, belirgin Kapat, geri tuşu ve dış dokunma kapatır; yalnız kullanıcı açar (çip/'Araçlar'). Telefonda anlatım alanı 40svh olduğundan s1 çip çubuğu (akt-s1 t=34) ile çakışma testi gerekir.",
+      "mobil": "Çekmece ve seçici alt sheet (≤70svh, kilitsiz); ev silüeti üstte, ürün kartı altta; çipler 44 px; hover yok, yalnız dokunma.",
+      "bagimlilik": "akt-s1 çip çubuğu ve duraklar; akt-son baglam.js (urun/kitle); ortak.saniyeyeGit(t) yeni yardımcı (t × 22 vh, main.js bas[] ile); arayuz.js kart/odak mantığı yeniden kullanılır."
+    },
+    {
+      "id": "maket_blok_sayaci",
+      "ad": "Bu evde kaç blok var? — maket sayacı",
+      "kip": "sahne-ici (köşe sayacı) + sonuç kartı",
+      "nerede": "s0 Hayalden yuvaya (Perde 1) · film t=12–17 sn (dolum: tel kafes → gazbeton bloklar sıra sıra iner; 'Duvarlar gazbetonla, sıra sıra' t=12, 60 × 25 cm t=13, 1–3 mm derz t=14); 'Say' kartı t=17 sn (vuruş p≈0,53) ve araç rafı.",
+      "ne_yapar": "Bloklar inerken ekranın sağ-altında canlı sayaç 0'dan yükselir ('Maket evde: N blok'); sayı kaydırma konumuna bağlıdır, geri kaydırınca azalır. Dolumun kat çipleri (ZEMİN → 1. KAT → 2. KAT → PARAPET; akt-s0 t=12) aynı veriden dolar. Dolum bitince 'Say' kartı açılır: toplam, kat başına, 'tam / kesik' ayrımı, duvar hacmi (m³), 300–600 kg/m³ aralığında toplam kütle; 'Senin evin?' düğmesi duvar_hesap'ı maket evin net alanıyla önyükleyip açar. 'Kesik' kutusuna dokununca kısa açıklama: kesik blok, tam bloktan kesilir (kesim/fire kavramı).",
+      "ogretici_deger": "Blok adedi = alan ÷ 0,15 m² (60 × 25 cm yüz); bir evin duvarı binlerce bloktur; şaşırtmalı örgüde kat kat ilerleme; kesik blok kavramı; duvar hacmi → kütle bağı (hafiflik s3'te tamamlanır).",
+      "pazarlama_degeri": "Sayı etkisi: 'bu evin duvarı ≈1.700 blok' somut, paylaşılabilir bir cümle; hikâyeyi 'izlenen şey'den 'hesaplanabilir şey'e çevirir. Dolumun heyecanını ölçülebilir sayıyla taçlandırır ve duvar_hesap'a doğal köprü kurar (lead).",
+      "veri_ve_kaynak": "KAYNAK = 'maket modeli' (gerçek proje değil). Bugünkü blender/bina_detay.py çıktısından hesaplandı: 2.107 blok parçası = 1.253 tam + 854 kesik parça; kat dağılımı 627 / 626 / 626 + 228 parapet (toplam 1.879 + 228). Duvar+parapet nominal alanı 253,65 m² (222,15 m² 3 kat + 31,5 m² parapet) ÷ 0,15 m² = 1.691 tam-blok eşdeğeri; nominal hacim 50,73 m³ (20 cm duvar); 300–600 kg/m³ ile 15,2–30,4 t (hesap). Sayılar elle yazılmaz: tools/maket_say.py (yeni) bina_detay.uret() ve s0_hayal.kip_dolum'daki zaman formülüyle (t = lerp(−0,04; 1,045; seg(u; 0,06; 0,94)); parça, z01 < t ise yerleşmiş) her dolum karesi için kümülatif sayıyı assets/js/maket-say.js (window.EGE_MAKET) dosyasına yazar. İç bölme duvarı (akt-s1: y=0 aksı) ve 4,5 m panel bölmesi bina_detay'a eklenince sayı değişir → üretim derleme zamanında zorunlu.",
+      "teknik": "Veri: window.EGE_MAKET = {toplam, tam, kesik, kat:[…], parapet, alan_m2, hacim_m3, kare:[kümülatif tamsayılar…]} (dolum kare sayısı kadar tamsayı, <1 KB, .js globali: file:// fetch yapmaz). Gösterim: tek <output> + 4 SVG çubuk (transform:scaleX); metin yalnız yuvarlanmış sayı değişince yazılır (tabular-nums). Kendi rAF'ı yok: Sahne.render içinde frameFloat() → kare dizisi interpolasyonu. Canvas yok; ≤0,1 ms/kare; bellek ≈0. Telefonda sayaç anlatım alanı ile 3B konu arasında 44 px şerit (konunun üstüne taşmaz). Efor ≈ 1 gün (maket_say.py 0,5 + JS 0,5).",
+      "tr_metin": "sayac: Maket evde: {n} blok | kart-baslik: Maket evin blok sayımı | satirlar: Toplam {n} parça · {tam} tam + {kesik} kesik · Kat başına: {k0} · {k1} · {k2} · parapet {p} · Duvar hacmi: {v} m³ · Alan eşdeğeri: {a} m² ÷ 0,15 m² = {e} blok | not: Kesik parçalar tam bloktan kesilir. Maket modeli; gerçek proje değil. | kaynak: maket modeli | dugme: Senin evin kaç blok?",
+      "en_metin": "counter: In the model house: {n} blocks | card-title: Block count of the model house | rows: Total {n} pieces · {tam} full + {kesik} cut · Per floor: {k0} · {k1} · {k2} · parapet {p} · Wall volume: {v} m³ · Area equivalent: {a} m² ÷ 0.15 m² = {e} blocks | note: Cut pieces are cut from full blocks. Model house, not a real project. | source: model house | button: How many blocks in your house?",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'maket_sayac', eylem:'kart_ac|kesik_bilgi|senin_evin', deger:<toplam>, film_sn, dil}",
+      "efor": "kucuk",
+      "kural_riski": "Kaynak etiketi 'maket modeli' ve 'gerçek proje değil' ibaresi zorunlu (her sayının kaynağı kartta). İki sayı (2.107 parça / 1.691 eşdeğer) tek cümlede açıklanmazsa karışır. Maket derzi görünürlük için 12 mm çizilmiş (bina_detay DERZ=0,012) — yazılı 1–3 mm ile çelişir; sayım nominal 60 cm adımla yapılır, sayaç/kart metninde derz kalınlığı geçmez. Panel (20 şerit × 8,8 m) sayımı yapılmaz: föydeki 6 m açıklıkla çelişir (akt-s1 bunu 4,5 m'ye böler). Sayaç eksik inmiş karede sıçramasın (kare interpolasyonu). 3B karede rakam yok: sayaç HTML.",
+      "mobil": "Sayaç 44 px şerit olarak anlatım alanının altında; 'Say' kartı sheet; kat çipleri 3 parçalı ince şerit.",
+      "bagimlilik": "blender/bina_detay.py, blender/s0_hayal.py (kip_dolum zaman formülü), tools/maket_say.py (yeni), tools/kareler.py (kare sayısı), akt-s0 dolum kare haritası (D), akt-s0 t=12 kat çipi."
+    },
+    {
+      "id": "duvar_hesap",
+      "ad": "Duvar hesaplayıcı",
+      "kip": "panel (kullanıcı başlatımlı, kilitsiz) · SON'da modül yüzeyi YOK (form, 'Hesapla' bağlantısı ve ayrı ölçü çipi yok; ölçü yalnız tek bağlam çipine eklenir)",
+      "nerede": "s1 Ürün turu (Perde 2) · film t=38–40 sn (Duvar blokları: 'Düz · Geçmeli' etiketi ve 60 × 25 cm yüz rakamı t=38; t=38–40 tek otomatik öğe = pazarlama s1_duvar_hesapla bağlantısı 'Duvarlarınızı hesaplayın →': statik href /duvar-tasarla/, JS'te düz sol tık bu paneli açar; ayrı 'Hesapla' çipi yok) · araç rafı (çekmece). SON'da modül yüzeyi YOK (akt-son sadeleştirmesi): t=142'de 'Duvar ölçünüzü iletin' cümlesi + ana CTA yeter; hesap yoluna kitle çipi 'Ev / bina yapıyorum' (t=143, /duvar-tasarla/) ulaştırır; ölçü varsa yalnız tek bağlam çipinde taşınır ('EGEPOR · 84 m² ×').",
+      "ne_yapar": "Girdiler: duvar toplam uzunluğu (m), yükseklik (m), açıklık (pencere + kapı) toplam alanı (m²), kalınlık kaydırıcısı (5–35 cm), isteğe bağlı fire payı (% — varsayılan 0, öneri yok). Anında çıktı: net duvar alanı (m²), blok adedi (alan ÷ 0,15 m², yukarı yuvarlanmış), duvar hacmi (m³), 300–600 kg/m³ aralığında kütle aralığı (t). Animasyon: SVG minyatür duvar girdilerin oranında çizilir ve 60 × 25 şaşırtmalı bloklarla örülür, açıklıklar boş kalır (çizim 0,8 sn). 'Maket evle kıyas' çubuğu: sonuç maket evin %X'i (maket_blok_sayaci verisi). 'Özeti kopyala', 'Bu ölçüyle teklif iste' (yalnız kullanıcı sonuç ürettikten SONRA görünür; panel açıkken ekranın tek lime dolgulu düğmesi) ve yumuşak 'Ayrıntılı tasarım →' (/duvar-tasarla/, ölçüleri taşır) düğmeleri; sonuç baglam.js'e yazılır ve SON'daki TEK bağlam çipine eklenir ('EGEPOR · 84 m² ×'; ayrı ikinci çip ve ayrı bağlantı yok; blok adedi çipte gösterilmez: 'ön hesap' yalnız hesap panelinde; örnek hesap: 84 ÷ 0,15 = 560).",
+      "ogretici_deger": "Metraj mantığı: net alan = brüt − açıklık; blok adedi = alan ÷ blok yüzü (0,15 m²); kalınlık hacmi ve kütleyi belirler; ince derzle örüldüğü için adet nominal yüzden hesaplanır. Mimar için hızlı ön metraj, yapı sahibi için 'duvarım kaç blok' somutluğu.",
+      "pazarlama_degeri": "En güçlü lead aracı: kullanıcı kendi ölçüsünü girer (yüksek niyet), sonuç teklif bağlamına taşınır (?alan=&kalinlik= — site tarafı iş). Hero'daki 'Yapı sahibiyim' (→ /duvar-tasarla/) ve menüdeki 'Araçlar' ile aynı dili konuşur; hikâyenin ortasında (t=38–40) ve çekmecede iki giriş kapısı (SON'da yok: son sahnede yol 'Ev / bina yapıyorum' çipinden /duvar-tasarla/). KARAR (açık soru 2): /duvar-tasarla/ ile çakışmaz, onun film içi 'ön metraj' ön kapısıdır: t=38–40'taki 'Duvarlarınızı hesaplayın →' hem /duvar-tasarla/'ya giden gerçek bağlantı hem panel açıcıdır (JS'siz/orta tık/yeni sekme → site aracı); panelde sonucun altında 'Ayrıntılı tasarım →' derin bağlantısı (ölçüler ?uzunluk=&yukseklik=&acik=&kalinlik= ile; okunması site işi, okunmazsa yok sayılır). dataLayer ile ölçü dağılımı ve terk noktası analiz edilir; dil.js'te hazır duran (kullanılmayan) 'cta.hesapla' = 'Duvarlarınızı hesaplayın' anahtarı bu girişin düğme metni olur.",
+      "veri_ve_kaynak": "60 × 25 cm = 0,15 m² → 6,67 blok/m² (Ürün föyleri; hesap). Kalınlık aralığı 5–35 cm (dil.js u_duvar / h1b.k1, Ürün föyleri; üretici teyidi akt-s1 açık sorusunda bekliyor; stok kalınlıkları teyit gerekli → kaydırıcı sürekli, 'standart kalınlık' etiketi yok). Kütle: 300–600 kg/m³ (Ürün sınıfları G1/300 – G4/600; ortak rakamlar) × hacim (hesap). Fire payı: sektör oranı teyit gerekli → varsayılan 0, kullanıcı girer. Tutkal tüketimi (kg/m²), palet başına blok adedi, tır kapasitesi: teyit gerekli, ekranda yok.",
+      "teknik": "HTML form (5 alan, native <input type=number|range>, inputmode=decimal, virgül/nokta kabulü), sonuç satırları aria-live=polite (500 ms debounce). Minyatür duvar: tek inline SVG, ≤12 düğüm (blok deseni <pattern> ile; binlerce blokluk duvar bile DOM'u büyütmez); rAF yalnız 0,8 sn çizim süresince. Panel kullanıcı başlatımlı ve KİLİTSİZ: kaydırma yutulmaz, kaydırma/Esc/Kapat/geri tuşu paneli kapatır; kare kaydırma konumundan türediği için panel açıkken film zaten sabit kalır. Bellek ≈0; JS ≈4 KB. Kopyalama: navigator.clipboard (file://'da güvenli bağlam olmayabilir) → yedek: seçili <textarea> + execCommand. Sayı biçimi Intl.NumberFormat('tr-TR' / 'en-GB'), yedek elle biçim. Efor ≈ 1,5–2 gün.",
+      "tr_metin": "giris: Duvarlarınızı hesaplayın → (cta.hesapla) | baslik: Duvarınız kaç blok? | alanlar: Duvar uzunluğu (m) · Yükseklik (m) · Pencere ve kapı alanı (m²) · Kalınlık (cm) · Fire payı (%, isteğe bağlı) | sonuc: Net alan {a} m² · {n} blok · {v} m³ | kutle: Kütle {k1}–{k2} t (300–600 kg/m³) | not: Ön hesaptır; 60 × 25 cm blok yüzüne göre (Ürün föyleri). Kesin metraj için ekibimizle görüşün. | dugmeler: Özeti kopyala · Bu ölçüyle teklif iste · Ayrıntılı tasarım →",
+      "en_metin": "entry: Calculate your walls → (cta.hesapla) | title: How many blocks is your wall? | fields: Wall length (m) · Height (m) · Window and door area (m²) · Thickness (cm) · Allowance (%, optional) | result: Net area {a} m² · {n} blocks · {v} m³ | mass: Mass {k1}–{k2} t (300–600 kg/m³) | note: Preliminary estimate based on a 60 × 25 cm block face (product sheets). Talk to our team for an exact take-off. | buttons: Copy summary · Request a quote with this size · Detailed wall design →",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'duvar_hesap', eylem:'ac|hesapla|kopyala|teklif|ayrintili', alan_m2, kalinlik_cm, blok_adet, fire_pct, film_sn, dil}; 'hesapla' 1,2 sn hareketsizlikte bir kez; teklif tıklaması ayrıca ege_tik hedef 'hesap_teklif', Ayrıntılı tasarım tıklaması ege_tik hedef 'hesap_ayrintili'.",
+      "efor": "orta",
+      "kural_riski": "'Ön hesap' ibaresi ve kaynak ('Ürün föyleri') zorunlu; fire, tutkal, palet rakamı uydurulmaz. Sürekli kalınlık kaydırıcısı stokta olmayan kalınlığı ima edebilir (teyit). Sitede zaten /duvar-tasarla/ aracı var: ÇAKIŞMA KARARI: iki ayrı sonuç göstermez; mini hesap onun 'ön metraj' ön kapısıdır ve /duvar-tasarla/ formülü (alan ÷ 0,15 m² ile aynı mı?) teyit edilene dek 'ön hesap' etiketi + 'Ayrıntılı tasarım →' bağlantısı zorunlu; formül farklıysa panel kapatılır, yalnız bağlantı kalır (açık soru 2). Form yalnız ölçü alanıdır (ad/e-posta/telefon yok, gönderim yok); pazarlama.cta_kurallari 'kullanıcı başlatımlı panel istisnası' kapsamında; panel içi teklif düğmesi yalnız sonuç sonrası (sürtünme sırası: araç → teklif). Teklif URL parametreleri site tarafı iş (akt-son açık sorusu). KVKK: kişisel veri alınmaz, yalnız ölçü. Lime yalnız minyatür duvardaki blok kenarı ve CTA; açıklıklar gri. Kütle yazarken 'kuru birim hacim ağırlığı' notu.",
+      "mobil": "Alt sheet (≤70svh, kilitsiz, tam ekran değil); alanlar tek sütun, sonuç satırı sticky üstte; SVG duvar küçük (120 px yükseklik); klavye açılınca sonuç görünür kalır (visualViewport), klavye açılışı paneli kapatmaz.",
+      "bagimlilik": "rakamlar.js (60×25, 0,15, 300–600); maket-say.js (kıyas); baglam.js (akt-son); pazarlama.json s1_duvar_hesapla (t=38–40 tek giriş kapısı); site /teklif/ ve /duvar-tasarla/ (parametre teyidi); dil.js 'cta.hesapla'."
+    },
+    {
+      "id": "agirlik",
+      "ad": "Hafiflik: blok ve duvar ağırlığı (+ ODTÜ −%17)",
+      "kip": "panel (rakam kartına bağlı) + sahne-içi kısa çip",
+      "nerede": "s3 Gözenek (Perde 4) · film t=99–100 sn ('300–600 kg/m³ yoğunluk aralığı (G1–G4)' rakamı + tezgâhta yan yana G1/G2/G4 blok ve λ · A1 · 300–600 şeridi; film içi kaydırıcı ve 'suda yüzer' sahnesi yok; 'Dene' çipi yalnız t=100'de açılır, t=98–99 Soru 3 çipi (bilgi_yarismasi) ile yarışmaz) · ikinci giriş: s1 t=59–60 sn (Paneller: '−%17 yapı kütlesi' rakamı t=60) · araç rafı.",
+      "ne_yapar": "Tek yoğunluk kaydırıcısı (300 → 600 kg/m³; G1/300, G2/350, G4/600 işaretli, G3 işaretsiz) ve ürün seçici (Duvar bloğu 5–35 cm · U blok G4/06 · EGEPOR 150–200). Çıktı: tek blok (60 × 25 × kalınlık) kg, 1 m² duvar kg, 10 m² duvar kg. SVG terazi: bir kefede blok, öbür kefede kullanıcının girdiği 'kendi duvarım' (yoğunluk + kalınlık; varsayılan BOŞ — kıyas rakamını biz vermeyiz) ve fark % hesabı. Blok yüzü şematiği: yoğunluk arttıkça hücre (daire) sayısı azalır (temsili). İkinci sekme 'Deprem yükü': 8 katlı örnek bina kütle çubuğu 100 → 83 (−%17) ve onaylı cümle 'Daha hafif bina, daha düşük deprem yükü.'; ODTÜ kaynak etiketi.",
+      "ogretici_deger": "Kütle = yoğunluk × hacim; kalınlık ve yoğunluk iki ayrı kaldıraçtır; sınıf adındaki sayı (G2/350) kuru yoğunluğu anlatır; hafif yapı kütlesi → deprem yükü ilişkisi (ODTÜ çalışması). 'Hafif' soyut sıfattan ölçülebilir kg'a iner.",
+      "pazarlama_degeri": "Taşıma, işçilik ve temel yükü konuşmalarına rakamsız söz vermeden kapı açar; kullanıcı kendi malzemesini girerek kıyası kendisi üretir (iddia bizden değil, hesap kullanıcıdan); ODTÜ üçüncü taraf güvencesi. Mimar/mühendis için 'kütle' dili, yapı sahibi için 'hafif = rahat' sezgisi.",
+      "veri_ve_kaynak": "300–600 kg/m³ (G1/300 – G4/600; Ürün sınıfları); 350 = G2/350 sınıf adından; U blok G4/06 600 kg/m³ (Ürün föyleri); EGEPOR 150–200 kg/m³ kuru (Ürün föyleri); blok 60 × 25 cm; kalınlık 5–35 cm (Ürün föyleri; teyit akt-s1); −%17 yapı kütlesi (ODTÜ çalışması, 8 katlı örnek bina hesabı). Hesap örnekleri: 60 × 25 × 20 cm blok = 0,03 m³ → 9–18 kg; 1 m² × 20 cm duvar → 60–120 kg; 1 m² × 35 cm → 105–210 kg; EGEPOR 1 m² × 5 cm → 7,5–10 kg. TEYİT GEREKLİ (kullanılmaz): G3 sınıfı yoğunluğu, nem etkisi, 'suda yüzer' ifadesi, −%17'nin kapsamı (yalnız panel mi tüm sistem mi — etiket birebir kalır), taban kesme −%14 (README'deki eski karta ait; DEVIR.md/dil.js'te yok).",
+      "teknik": "SVG terazi (≈40 düğüm; CSS transform: rotate geçişi 300 ms), native range; rAF yok → ≤0,1 ms. Hücre şematiği: 30 daireli sabit SVG, opacity ile seyreltilir. Canvas yok. JS ≈3 KB. Film tarafı: akt-s3'te G1–G4 durağan kare/kaydırıcı yok (tezgâhta yan yana G1/G2/G4 blok, tek sürekli pan); modül yalnız panel/overlay (t=99–100 vuruşunda rakam kartı köşesinde 'Dene' olarak eklenir; çip t=100'de açılır, t=99'da Soru 3 çipi vardır). Efor ≈ 1 gün.",
+      "tr_metin": "chip: Tartıya koy | baslik: Bir blok kaç kilo? | alanlar: Yoğunluk (kg/m³) · Kalınlık (cm) · Ürün: Duvar bloğu · U blok · EGEPOR | sonuc: Tek blok {b1}–{b2} kg · 1 m² duvar {m1}–{m2} kg | kendi: Kendi duvarınızı girin (yoğunluk, kalınlık) | odtu: Yapı kütlesi −%17 · ODTÜ çalışması, 8 katlı örnek bina hesabı · Daha hafif bina, daha düşük deprem yükü. | not: Kuru birim hacim ağırlığıdır.",
+      "en_metin": "chip: Put it on the scale | title: How heavy is one block? | fields: Density (kg/m³) · Thickness (cm) · Product: Wall block · U-block · EGEPOR | result: One block {b1}–{b2} kg · 1 m² of wall {m1}–{m2} kg | own: Enter your own wall (density, thickness) | metu: Building mass −17% · METU study, calculation for an 8-storey sample building · A lighter building means a lower seismic load. | note: Values are for dry density.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'agirlik', eylem:'ac|kaydir|urun|kendi_gir|odtu_sekme', yogunluk, kalinlik_cm, film_sn}; 'kaydir' 800 ms debounce.",
+      "efor": "kucuk",
+      "kural_riski": "'Suda yüzer' ve diğer çıkarımlı iddialar yok (akt-s3 açık sorusu). Kıyas malzemesi rakamı uydurulmaz: yalnız kullanıcı girer. ODTÜ etiketi birebir 'ODTÜ çalışması, 8 katlı örnek bina hesabı'; −%17 'yapı kütlesi' dışına taşırılmaz (deprem yükü yüzdesi verilmez). Birim hacim ağırlığı kuru; şantiye/nem ağırlığı farklı olabilir notu. Lime yalnız Ege blok/levha; kıyas kefesi gri.",
+      "mobil": "Sheet; terazi üstte 140 px, kaydırıcılar altta; ODTÜ sekmesi tek çubuk.",
+      "bagimlilik": "akt-s3 t=99–100 (G1/G2/G4 blok sırası, rakam şeridi), akt-s1 t=59–60 (ODTÜ rakamı), rakamlar.js, dil.js i3.kaynak ve h1e.metin."
+    },
+    {
+      "id": "isi_yolculugu",
+      "ad": "Isı yolculuğu: λ'dan R ve U",
+      "kip": "panel (rakam kartına bağlı)",
+      "nerede": "s3 Gözenek (Perde 4) · film t=96–97 sn ('λ 0,08 · W/mK · G2/350 duvar tasarım değeri' rakamı t=96; kartın köşesinde 'Kalınlığı dene') · ikinci giriş: s1 t=64–65 sn (EGEPOR rakam kartı λ 0,051–0,062) · araç rafı.",
+      "ne_yapar": "Duvar kesiti (iç | duvar | dış) üzerinde ısı yolculuğu: malzeme seç (G2/350 duvar λ 0,08 tasarım · U blok G4/06 λ 0,16 kuru · EGEPOR λ 0,051–0,062 kuru, iki uç gölge bant), kalınlık kaydırıcısı (5–35 cm), iç/dış sıcaklık kaydırıcıları (örnek senaryo). Çıktı: R = d/λ (m²K/W), U ≈ λ/d (W/m²K, yüzey dirençleri hariç), ısı akısı q = ΔT·λ/d (W/m²), duvar içinde doğrusal sıcaklık profili. 50 turuncu ısı damlası iç yüzden dışa akar; hız ve sıklık q ile orantılıdır: duvarı kalınlaştırdıkça damlalar yavaşlar ve seyrekleşir. 'Aynı malzeme, ikinci duvar' yan yana (ör. 20 cm ↔ 25 cm) farkı gösterir. Film gözenek ölçeğinde (isi_akis.js), bu modül duvar ölçeğinde: 'gözenekten duvara' ölçek zinciri.",
+      "ogretici_deger": "λ, R, U kavramları ve ilişkisi (R = d/λ; U ≈ 1/R): kalınlık ↔ iletkenlik, neden iki kaldıraç; λ'nın hangi koşulda verildiğini (tasarım / kuru) okumayı öğretir. Isı geçişinin duvar içinde doğrusal düştüğünü görünür kılar.",
+      "pazarlama_degeri": "λ rakamı soyut kalır; kaydırıcıyla duvara dönüşür. Mimar/mühendis kitlesine 'hesabı gösteren üretici' güveni; teknik föy bağlantısı (cta.foyler); G2/350 değerinin ortak rakamlardan geldiği açıkça yazılır. Yapı sahibi için 'kalınlık seçimi' kararını destekler.",
+      "veri_ve_kaynak": "λ 0,08 W/mK: G2/350 duvar tasarım değeri (Ege Gazbeton ortak rakamlar); λ 0,16 W/mK kuru: U blok G4/06 (Ürün föyleri); λ 0,051–0,062 W/mK kuru: EGEPOR (Ürün föyleri); kalınlık 5–35 cm (Ürün föyleri; teyit akt-s1); formüller R = d/λ, U ≈ λ/d, q = ΔT·λ/d (fizik, hesap). Örnek (hesap, G2/350 λ 0,08): 20 cm → R 2,50, U ≈ 0,40; 25 cm → R 3,13, U ≈ 0,32; 35 cm → R 4,38, U ≈ 0,23. Sıcaklıklar (varsayılan iç 20, dış 0 °C) kullanıcı senaryosudur, ürün verisi değildir. TEYİT GEREKLİ (ekranda yok): yüzey dirençleri (Rsi/Rse), TS 825 sınır değerleri, yönetmelik kıyası.",
+      "teknik": "2B tuval 360 × 200 CSS px (DPR ≤1,25) + SVG profil (≈30 düğüm). 50 damla; rAF yalnız panel görünürken ve sekme açıkken, dt ≤0,05 sabitlemeli; ≤0,5 ms/kare; IntersectionObserver + visibilitychange ile durur. Hareket azaltmada oklar statik, damla yok. Bitmap yok, bellek <1 MB. JS ≈6 KB. Efor ≈ 2 gün.",
+      "tr_metin": "chip: Kalınlığı dene | baslik: Isı duvardan nasıl geçer? | alanlar: Malzeme · Kalınlık (cm) · İç sıcaklık · Dış sıcaklık (örnek senaryo) | sonuc: R = {r} m²K/W · U ≈ {u} W/m²K · q = {q} W/m² | etiket: λ {l} W/mK ({tur}) | not: U, yüzey dirençleri hariç yaklaşık değerdir. Tasarım ve kuru λ değerleri birbiriyle kıyaslanmaz.",
+      "en_metin": "chip: Try the thickness | title: How does heat cross a wall? | fields: Material · Thickness (cm) · Indoor temperature · Outdoor temperature (example scenario) | result: R = {r} m²K/W · U ≈ {u} W/m²K · q = {q} W/m² | label: λ {l} W/mK ({tur}) | note: U is approximate, excluding surface resistances. Design and dry λ values are not compared with each other.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'isi_yolculugu', eylem:'ac|malzeme|kalinlik|karsilastir', malzeme:'g2_350|ublok|egepor', kalinlik_cm, film_sn}",
+      "efor": "orta",
+      "kural_riski": "En büyük risk: tasarım değeri (0,08) ile kuru değerlerin (0,16; 0,051–0,062) aynı ekranda 'daha iyi/kötü' sıralamasına dönüşmesi → ürünler arası sıralama yok, her malzemenin yanında λ türü yazılı; kıyas 'aynı malzeme, farklı kalınlık' ile yapılır. U 'yaklaşık, yüzey dirençleri hariç' etiketli; yönetmelik uygunluğu iddia edilmez; ısı tasarrufu yüzdesi verilmez. Isı rengi turuncu → mavi (yeşil değil); lime yalnız Ege malzeme dilimi.",
+      "mobil": "Sheet; tuval 100% genişlik × 160 px; kaydırıcılar alt alta; sonuç 3 satır.",
+      "bagimlilik": "akt-s3 t=94–96 (isi_akis.js gözenek ölçeği, λ rakamı), akt-s1 t=65 (EGEPOR λ), rakamlar.js; teknik föy bağlantısı (/teknik-foyler/)."
+    },
+    {
+      "id": "a1_demo",
+      "ad": "A1 sınıf merdiveni — yangına tepki sınıfı",
+      "kip": "sahne-ici (nötr tezgâh üstünde SVG sınıf merdiveni + A1 kartı) + mini kart",
+      "nerede": "s3 Gözenek (Perde 4) · film t=97–98 sn (t=97 'A1 · yangına tepki sınıfı' rakamı; t=98 'EN 13501-1 · CE belgeleri' + sınıf merdiveni çizilir; nötr tezgâh F42–F53, akt-s3; t=98–99 Soru 3 çipi (bilgi_yarismasi) belirir: A1 mini kartı açıkken soru bekler, çünkü kart cevabı verir) · araç rafı.",
+      "ne_yapar": "Nötr tezgâh sahnesinde HTML/SVG 'sınıf merdiveni' (7 basamak: A1 A2 B C D E F; yalnız A1 vurgulu, ötekiler sönük ve dokunulmaz) kaydırmayla alttan çizilir; A1 rozetine/basamağına dokununca 'Yangına tepki sınıfı' mini kartı açılır: 'Yangına tepki sınıfı, malzemenin yangına nasıl tepki verdiğini sınıflandırır.' (genel tanım; teyit gerekli), altında 'A1 · yangına tepki sınıfı · EN 13501-1' ve kaynak 'CE belgeleri' + CE belgeleri/teknik föy bağlantısı. Sahnede ve modülde alev, kor, ısıl degrade, 'öbür yüz serin' görseli, süre ve sıcaklık YOK. Önceki 'Alevi yaklaştır — basılı tut' alev flipbook'u DÜŞTÜ: yangın direnci (EN 13501-2) belgesi yok; 'alev bloğa tutunmaz, yüzey değişmez' görseli pratikte 'yanmaz' gösterimi olurdu; basılı tut flipbook'u ile akt-s3'ün kaydırmayla oynayan kareleri de uyuşmuyordu. Modülün kendi karesi/oynatıcısı yok: yalnız film kareleri + SVG/HTML.",
+      "ogretici_deger": "'Yangına tepki' kavramını öğretir; A1'in bir sınıf adı olduğunu (rakam/süre değil) ve sınıfın EN 13501-1 standardından geldiğini gösterir. Yangın direnci (EN 13501-2) ayrımı belge gelene dek anlatılmaz, yalnız 'teyit gerekli' notuyla beklemede.",
+      "pazarlama_degeri": "Güvenlik güveni en yüksek duygusal değerlerden; bilgi tonuyla (sınıf adı + belge kapısı, dramatik görsel yok) verilir. CE belgeleri bağlantısı (/teknik-foyler/) mimar ve bayi için kanıt kapısı. Aynı sahnedeki λ ve 300–600 mührüyle 'üç kaynaklı güven' bütünlüğü.",
+      "veri_ve_kaynak": "A1, yangına tepki sınıfı (EN 13501-1) — CE belgeleri (dil.js i2.k2). Başka rakam YOK: süre, °C, direnç yok. TEYİT GEREKLİ: sınıf merdiveni harfleri (A1 A2 B C D E F) EN 13501-1 standardından alınır, ekranda yalnız A1 vurgulu (teyit gelmezse yalnız A1 rozeti + kart); yangın direnci (EN 13501-2) belgesi yok (akt-s3 açık sorusu) → 'öbür yüz serin', alev ve ısıl görsel kullanılmaz; 'yangına tepki' genel tanım cümlesi.",
+      "teknik": "Yalnız SVG + HTML: merdiven ≈20 düğüm (7 basamak + etiket), kaydırmaya bağlı stroke-dashoffset çizimi (ayrı rAF yok; sahne kick() hattında), mini kart statik. Bitmap, canvas, flipbook, parçacık YOK (ek bellek ≈0, ≤0,1 ms). Native button (Enter/Space), aria-label 'A1, yangına tepki sınıfı'. Hareket azaltma: merdiven çizilmiş halde, statik. Efor ≈ 0,5–0,75 gün (önceki ≈1,5 gün; flipbook render'ı ve JS çıktı).",
+      "tr_metin": "chip: Sınıfı gör | etiket: A1 · yangına tepki sınıfı | alt: EN 13501-1 · CE belgeleri | kart: Yangına tepki sınıfı, malzemenin yangına nasıl tepki verdiğini sınıflandırır. | not: Şematik gösterim.",
+      "en_metin": "chip: See the class | label: A1 · reaction-to-fire class | sub: EN 13501-1 · CE certificates | card: The reaction-to-fire class classifies how a material reacts to fire. | note: Schematic illustration.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'a1_demo', eylem:'ac|karti_ac|foy_tikla', film_sn, dil}",
+      "efor": "kucuk",
+      "kural_riski": "'Yanmaz' sözcüğü hiçbir yerde kullanılmaz (şık, alt yazı, aria-label dahil); üretici sayfası 'A1 Hiç Yanmaz' yazsa da bizde yasak. Alev, kor, ısıl degrade, 'serin yüz', süre, °C ve 'alev bloğa tutunmaz / yüzey değişmez' izlenimi veren her görsel YOK; 'yangın güvenliği garantisi' izlenimi verilmez. Alev ya da yangın çağrıştıran öğe, yangın direnci belgesi gelene dek geri gelmez; gelirse ayrı karar olarak yalnız bloğa değmeyen, süresiz, etki göstermeyen şematik biçimde değerlendirilir. EN 13501-2 ayrımı belge gelene dek kullanılmaz. Merdivende lime yok (A1 sınıfı ürün değil; renk nötr). Metin kontrastı (WCAG).",
+      "mobil": "Merdiven sahnenin üstünde tek satır yatay (7 harf; dokunma hedefi ≥44 px yalnız A1'de); kart alt sheet; duvar parçası ortada-alt.",
+      "bagimlilik": "akt-s3 t=97–98 (nötr tezgâh F42–F53, a1_kart çapası), tools/s3_birlestir.py (meta), rakamlar.js (A1), CE belgeleri bağlantısı. Flipbook ve s3_tezgah.py alev kısmına bağımlılık YOK."
+    },
+    {
+      "id": "hucre_dokun",
+      "ad": "Hücreye dokun — kapalı hava hücresi",
+      "kip": "sahne-ici (SVG halkalar) + mikroskop kartı",
+      "nerede": "s3 Gözenek (Perde 4) · film t=91–95 sn (t=91 'Gözeneklerde hapsolmuş hava' + 'dokunun' ipucu; t=92 'Kapalı hava hücresi' etiketi; t=93 hayalet hücreler; t=94 ısı gözenekleri dolanır; t=95 mineral duvar; akt-s3) · araç rafı.",
+      "ne_yapar": "Film üzerinde 6 SVG halka (meta çapaları hucre_1…6; akt-s3) imleçle tek tek parlar; dokunulan hücre lime halka alır ve 'mikroskop kartı' açılır: 2B kesit — mineral duvar (gri) içinde hava hücresi, 40 hava noktası hücrede hapsolmuş titreşir. Soldan ısı darbesi (turuncu halka dalgası) gelir: hücrenin kenarına ulaşınca hava içinden değil mineral duvar boyunca dolanır ve yavaşlar. Anahtar 'Kapalı hücre ↔ açık boşluk': açık boşlukta noktalar akar (hava hareketi) ve ısı hızla geçer — fark yaşatılır. 'Hücre çokluğu' kaydırıcısı (az ↔ çok, şematik): darbenin karşıya varış gecikmesi artar. Her halka aynı 'Kapalı hava hücresi' kartını (dil.js hucre), mineral duvara dokunmak 'Mineral matris' kartını (dil.js matris) açar.",
+      "ogretici_deger": "Gazbetonun yalıtım nedeni: hapsolmuş, hareketsiz hava + mineral yolun uzaması (dil.js onaylı cümleler). Kapalı/açık boşluk ayrımı; 'ısı hava hareketiyle de taşınır' sezgisi.",
+      "pazarlama_degeri": "Ürünün 'neden?' sorusuna oyunla cevap: 3B filmden sonra elle öğrenme; kısa (≈20 sn) etkileşim; 'Isıyı tutan, içindeki hava' vaadini yaşatır; SON'daki canlı gözenek katmanıyla görsel dilde süreklilik (aynı lime halka dili).",
+      "veri_ve_kaynak": "Yalnız dil.js kartları: hucre ('Hücredeki hava hareket etmez; ısı kolay geçemez.'), matris ('Otoklavda buharla sertleşen kalsiyum silikat yapı.'), i2.metin ('Kapalı hava hücreleri ısının geçişini yavaşlatır.'). Hiçbir sayı yok: gözenek boyutu (mm), hacimce hava oranı, hücre sayısı TEYİT GEREKLİ (akt-s2/s3 açık soruları) → şematik, 'ölçek yok, temsili' etiketi.",
+      "teknik": "Halkalar: akt-s3'ün SVG katmanı (Sahne.renderHotspots ile aynı çapa hattı; ≤8 düğüm). Mikroskop kartı: 2B tuval 280 × 200 (DPR ≤1,25), 40 + 24 parçacık, yalnız kart açıkken rAF; ≤0,4 ms/kare; bitmap yok. Isı dalgası: halka yarıçapı + mineral yol üzerinde kenar boyunca ilerleyen nokta (ön hesaplı 40 noktalı yol). Hareket azaltmada tek durağan çizim + açıklama. JS ≈5 KB. Efor ≈ 1,5–2 gün.",
+      "tr_metin": "ipucu: Bir hücreye dokunun. | kart-baslik: Kapalı hava hücresi | tuslar: Kapalı hücre · Açık boşluk | slider: Hücre çokluğu | alt: Hücredeki hava hareket etmez; ısı kolay geçemez. | not: Şematik gösterim; ölçek ve oran temsilidir.",
+      "en_metin": "hint: Tap a cell. | card-title: Closed air cell | buttons: Closed cell · Open void | slider: Number of cells | sub: The air in the cell does not move; heat cannot pass easily. | note: Schematic illustration; scale and proportions are representative.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'hucre_dokun', eylem:'hucre|matris|mod_degistir|slider', hedef:'hucre_1…6|kapali|acik', film_sn}; kapanışta dokunulan hücre sayısı.",
+      "efor": "orta",
+      "kural_riski": "Gözenek ölçeği/oranı sayı olarak verilmez (teyit gerekli). 'Açık boşluk' karşı örneği bir rakip ürünü ima etmemeli: genel fizik etiketi. Lime halka = ürünün gözeneği (bizim); hammadde yeşili değil. 3B karede yazı yok: etiketler HTML/SVG. Simülasyon ürün performans garantisi gibi okunmamalı → 'şematik' notu; film içindeki isi_akis.js ile çelişen yön/hız olmamalı.",
+      "mobil": "Mikroskop kartı alt sheet (60svh), film üstte görünür kalır; halkalar 44 px dokunma alanı.",
+      "bagimlilik": "akt-s3 t=91–95 (hucre_1…6 çapaları, isi_akis.js), dil.js hucre/matris, rakamlar.js yok (sayı yok)."
+    },
+    {
+      "id": "kesit_gezgini",
+      "ad": "Kesit gezgini — blok, U blok, EGEPOR",
+      "kip": "panel (3 sekme) + sahne-içi 'Kesit' çipi",
+      "nerede": "s1 Ürün turu (Perde 2) · otomatik çip yalnız t=46–50 sn (U bloklar: t=48 donatı etiketi, t=49 'beton dökülür'; varsayılan sekme U blok). Duvar bloğu sekmesine duvar_hesap'taki 'Kesite bak' bağlantısından (t=38–40), EGEPOR sekmesine once_sonra'daki 'Kesiti gör' bağlantısından (t=63–64) ve araç rafından ulaşılır (durak başına tek çip kuralı).",
+      "ne_yapar": "3 sekmeli SVG kesit + 'Katmanları ayır' kaydırıcısı (0→1: parçalar yerlerinden ayrılır; her parçaya dokununca ad + tek cümle). (a) Duvar bloğu: yatay kesit (üstten plan) — iki sıra şaşırtmalı örgü, 1–3 mm derz (lens: derz abartılı çizim), 'Düz ↔ Geçmeli' geçiş düğmesi. (b) U blok: enine kesit — U kabuk (lime kenar), donatı (koyu gri çelik), hatıl betonu (gri); kaydırıcı betonu dolduruyor; 'Ahşap kalıp ↔ U blok' karşılaştırması (aynı sürüklemeli karşılaştırma bileşeni): kalıp yok; 6 kullanım pini (yüksek duvar ara hatılı, çatı hizası, yatay/düşey betonarme hatıl, gizli baca, yağmur iniş borusunu gizleme) maket silüetinde yeri vurgular. (c) EGEPOR: kolon plan kesiti — betonarme kolon (maket 35 × 35 cm) çevresinde EGEPOR levhaları; kalınlık kaydırıcısı 5–35 cm; ölçü çizgileri; nitel ısı okları kolondan geçerken azalır.",
+      "ogretici_deger": "Ürünün 'içini' gösterir: örgü ve derz mantığı, U bloğun kalıp işi görmesi (kanala donatı, sonra beton), EGEPOR'un kaplama olarak yeri. Kesit okuma becerisi; donatı–beton–kalıp ayrımı.",
+      "pazarlama_degeri": "Mimar/mühendis kitlesine derinlik (her sekmede 'Teknik föy' bağlantısı = föye ilk adım); 'ahşap kalıp yerine' iş gücü/süre avantajını rakamsız görselleştirir; EGEPOR'u bilmeyen kitleye tanıtır (çapraz satış).",
+      "veri_ve_kaynak": "Blok 60 × 25 cm; derz 1–3 mm; kalınlık 5–35 cm (Ürün föyleri). U blok: 60 × 25 cm, 20–25 cm kalınlık, G4/06, λ kuru 0,16 W/mK, 600 kg/m³ (Ürün föyleri; egegazbeton.com.tr/urunlerimiz/u-bloklar/); kullanım yerleri ürün sayfasından (DEVIR §3). EGEPOR: 60 × 25–50 cm, 5–35 cm, λ kuru 0,051–0,062 W/mK, 150–200 kg/m³ (Ürün föyleri; /urunlerimiz/egepor/; kolon ve kiriş kaplaması müşteri onaylı). Kolon 35 × 35 cm = maket modeli (bina_detay COL). TEYİT GEREKLİ (ekranda yok): U bloktaki '50 kgf/cm²' (DEVIR'de neyin değeri olduğu yazılı değil), 'ısı köprüsü' ifadesi (akt-s1 açık sorusu) → 'kolon ve kiriş kaplaması' denir.",
+      "teknik": "3 inline SVG (her biri ≤110 düğüm); parçalar <g> + CSS transform: translate; tek kaydırıcı → tek CSS değişkeni (--ayir 0..1), layout yok. Beton dolumu clip-path yerine scaleY (akt-s1/hikaye.css oz-dol deseni). rAF yok; JS ≈7 KB; çizimler kodla (üretilmiş görsel yok), yazılar HTML/SVG TR/EN. Mevcut .eg-ozellik çizimleri (oz-ukabuk, oz-beton, oz-donati) başlangıç noktası olarak yeniden kullanılır. Bellek ≈0. Efor ≈ 3 gün (üç sekme + pinler).",
+      "tr_metin": "sekmeler: Duvar bloğu · U blok · EGEPOR | kaydirici: Katmanları ayır | parcalar: U kabuğu · Donatı · Hatıl betonu · Derz · Levha · Kolon | tus: Ahşap kalıp ↔ U blok | pinler: Yüksek duvar ara hatılı · Çatı hizası · Yatay/düşey hatıl · Gizli baca · İniş borusunu gizleme | not: Şematik kesit; ölçüler ürün föylerine göredir.",
+      "en_metin": "tabs: Wall block · U-block · EGEPOR | slider: Separate the layers | parts: U shell · Reinforcement · Bond beam concrete · Joint · Board · Column | button: Timber formwork ↔ U-block | pins: Intermediate beam in tall walls · Roof level · Horizontal/vertical beam · Hidden chimney · Concealed downpipe | note: Schematic section; dimensions per the product sheets.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'kesit_gezgini', eylem:'ac|sekme|ayir|parca|pin|foy', sekme:'blok|ublok|egepor', hedef, film_sn}",
+      "efor": "buyuk",
+      "kural_riski": "Donatı/çelik yeşil olamaz (koyu gri); s1 yönergesi: donatı ve hatıl betonuna lime uygulanmaz → yalnız U kabuğu, EGEPOR levha ve derz tutkalı lime. Köşe bloğu çizilmez. 'Ahşap kalıp yok' ürün sayfasındaki 'kalıp yerine' ifadesidir; süre/maliyet kazancı rakamla söylenmez. 'Isı köprüsü' teyitsiz kullanılmaz. Derz abartılı çizim 'ölçek dışı' notuyla. Kolon kesiti maket ölçüsü: gerçek proje değil.",
+      "mobil": "Sekmeler üstte, kesit tam genişlik 220 px, kaydırıcı altta; pinler liste olarak (6 satır) açılır.",
+      "bagimlilik": "akt-s1 t=46–50 (U blok donatı, dolum) ve t=62–65 (EGEPOR), hikaye.css .eg-ozellik, dil.js u_ublok/u_egepor, rakamlar.js, karsilastir.js (once_sonra ile ortak bileşen)."
+    },
+    {
+      "id": "once_sonra",
+      "ad": "Önce / sonra kaydırıcısı — kolon kaplama",
+      "kip": "sahne-ici (tam sahne üstünde bölme çizgisi)",
+      "nerede": "s1 Ürün turu (Perde 2) · film t=63–64 sn (EGEPOR: 'Isı sızıntısı' etiketi ve bölme çizgisi, akt-s1 t=63) · araç rafı ve urun_secici'de 'Kolon ve kiriş' noktası.",
+      "ne_yapar": "Ekranın ortasında dikey bölme çizgisi: sol 'Önce' — kolon ve kiriş turuncu ısı parıltısıyla (ısı sızıntısı, nitel); sağ 'Sonra' — aynı kadraj, kolon-kiriş EGEPOR levhalarla kaplı ve soğuk tonda; levhalar lime kenarlı. Çizgi parmak/fare ile sürüklenir (klavyede ← →); ilk girişte 1,5 sn otomatik süpürme ipucu. 'Kesiti gör' bağlantısı kesit_gezgini EGEPOR sekmesini açar. Aynı bileşen (karsilastir.js) kesit_gezgini'ndeki 'Ahşap kalıp ↔ U blok' karşılaştırmasında yeniden kullanılır.",
+      "ogretici_deger": "Kolon/kiriş kaplamasının amacını yan yana görerek öğretir: ısı kaybı yüzeylerde yoğunlaşabilir, EGEPOR bunları kaplar (nitel). Karşılaştırmayla öğrenme: aynı kadrajda tek değişken.",
+      "pazarlama_degeri": "Tek bakışta 'fark'; ekran görüntüsü olarak paylaşılabilir kalite; EGEPOR'u (az bilinen/yeni ürün) öne çıkarır, Egepor ürün sayfasına yönlendirir (/urunler/egepor/).",
+      "veri_ve_kaynak": "Rakam yok (nitel). Kart rakamları: λ kuru 0,051–0,062 W/mK; 150–200 kg/m³ (Ürün föyleri). Görsel kaynak: s1 çift render (f124 ≈ 'önce', f127 ≈ 'sonra'; akt-s1) — render'daki turuncu parıltı ısı sızıntısı SEMBOLÜDÜR, ölçüm değil → alt yazı 'şematik gösterim'.",
+      "teknik": "Yeni kare indirilmez: s1 dizisindeki iki kare Sahne.frames'ten alınır (zaten bellekte). Tek 2B tuval içinde: sol bölüm frame A, sağ bölüm frame B → ctx.drawImage ile iki kırpılmış çizim (clip-path / mix-blend YOK); yalnız pointermove (rAF'la birleştirilmiş) ve bölme konumu değişince çizilir; ≤1 ms (1600 × 900, DPR ≤1,25). Tutamak: touch-action:pan-y (yatay sürükleme JS'e, dikey kaydırma sayfaya); role=slider, aria-valuenow, ← → ve Home/End. Çizgi + tutamak SVG (≤6 düğüm). JS ≈2 KB. Efor ≈ 1 gün (render'ın kendisi akt-s1 işi).",
+      "tr_metin": "etiketler: Önce · Sonra | ust: Isı sızıntısı | ipucu: Çizgiyi sürükleyin. | alt: Kolon ve kiriş kaplaması (EGEPOR). Şematik gösterim. | baglanti: Kesiti gör",
+      "en_metin": "labels: Before · After | top: Heat leakage | hint: Drag the line. | sub: Column and beam cladding (EGEPOR). Schematic illustration. | link: See the section",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'once_sonra', eylem:'ac|surukle|tamamla|kesit_ac', konum_pct:<ilk sürükleme>, sure_sn, film_sn}",
+      "efor": "kucuk",
+      "kural_riski": "'Isı sızıntısı' görseli rakamsız ve şematik; 'ısı köprüsü' sözcüğü teyit gerekli (akt-s1 açık sorusu). Turuncu = ısı (yeşil değil); lime yalnız EGEPOR levha kenarı. 3B karede yazı yok; Önce/Sonra HTML. Dikey kaydırmayı bozmamak (touch-action) telefonda sınanır. Çift render hizalaması (f124/f127 aynı kamera) bozulursa çizgide sıçrama görünür → altın kare onayı.",
+      "mobil": "Çizgi tam genişlik, tutamak 44 px; etiketler üst köşelerde; dikey kaydırma serbest.",
+      "bagimlilik": "akt-s1 t=63 (çift render f124–127, 'Isı sızıntısı' etiketi), Sahne.frames erişimi (ortak API), karsilastir.js."
+    },
+    {
+      "id": "uretim_zinciri",
+      "ad": "Üretim zinciri çizelgesi — hammaddeden yola",
+      "kip": "sahne-ici (kalıcı alt şerit)",
+      "nerede": "s2 Doğuş (Perde 3) t=80 sn'den s4 Yol (Perde 5) t=117 sn'e kalıcı alt şerit (s3'te sönük): düğümler Hammadde t=73–77 · Karışım t=78 · Kalıp t=79 · Kabarma t=80–82 · Tel kesim t=83–84 · Otoklav t=85–86 · Blok t=87 · Palet t=102–106 · Yola t=110.",
+      "ne_yapar": "Ekranın altında 8 düğümlü yatay çizelge ('Hammadde → Karışım → Kalıp → Kabarma → Tel kesim → Otoklav → Palet → Yola'); 'Buradasınız' imleci kaydırmayla ilerler, geçilen düğümler dolar. Düğüme dokun: 4× hızla o ana sar + kart (NOKTALAR: kum, kirec, cimento, alci, aluminyum, kabarma, kesim, matris, blok; yeni: kalip, otoklav, palet). Her düğümde yalnız aktifken oynayan 1 mikro ikon animasyonu (kum yığını, toz bulutu, daire çoğalması, tel geçişi, buhar, streç sarılması, tır). akt-s2'nin 5 adımlı stepper'ını (Hammadde, Karışım, Kabarma, Kesim, Otoklav) 8 düğüme genişletir ve s3–s4'e taşır; 'üretimden sahaya' tek zincir olarak okunur.",
+      "ogretici_deger": "Sıra ve gerekçe: hammadde → karışım → kabarma → kesim → otoklav → paketleme → sevkiyat; neyin neden önce geldiği. 'Kabartan alüminyum', 'otoklavda buharla sertleşir' (süre/basınç yok) akılda kalır; zincirin tamamı tek ekranda görülür.",
+      "pazarlama_degeri": "Üretim kontrolü ve ölçek hissi: 'iki fabrika, tek standart'; kendi kireç tesisi (günde 200 t) ve 1.100.000 m³ kapasite bu zincirde fabrikaya bağlanır; bayi/mimar sunumlarında kurumsal anlatı olarak ekran görüntüsüne uygun.",
+      "veri_ve_kaynak": "Sıra: dil.js kartları ve i1 adımları (Karışım, Kabarma, Kesim ve otoklav). Rakam yok; yalnız kart bağlantıları: 200 t/gün kireç tesisi (Söke), 1.100.000 m³ üretim kapasitesi, 2 fabrika (Ege Gazbeton ortak rakamlar). TEYİT GEREKLİ: süreler, sıcaklık, basınç (otoklav değerleri, ön sertleşme süresi; akt-s2 açık sorusu) → çizelge sıralıdır, zaman ölçekli değildir.",
+      "teknik": "Tek inline SVG şerit (≈50 düğüm) + 8 ikon <symbol>; aktif düğüm CSS animasyonu (transform/opacity); düğüm tıklayınca ortak.saniyeyeGit(t) (t × 22 vh; main.js bas[] ile). Kaydırma ilerlemesi → imleç translateX (Sahne.render içinde; ek rAF yok). Mobilde şerit 44 px yükseklikte yatay kaydırılabilir. Bellek ≈0. JS ≈4 KB. Efor ≈ 2 gün.",
+      "tr_metin": "dugumler: Hammadde · Karışım · Kalıp · Kabarma · Tel kesim · Otoklav · Palet · Yola | imlec: Buradasınız | ipucu: Bir adıma dokunun.",
+      "en_metin": "nodes: Raw materials · Mixing · Mould · Rising · Wire cutting · Autoclave · Pallet · On the road | marker: You are here | hint: Tap a step.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'uretim_zinciri', eylem:'dugum|sar', hedef:'hammadde|karisim|kalip|kabarma|kesim|otoklav|palet|yola', film_sn}",
+      "efor": "orta",
+      "kural_riski": "Süre/sıcaklık/basınç yazılmaz. Kalıp, otoklav ve tel kesme makineleri temsili (akt-s2 açık sorusu: gerçek Söke hattı referansı yok). Lime yalnız blok, palet streci ve fabrika şeridi; kalıp, tel, ray, otoklav gri/beyaz/amber. Düğüm etiketleri ≤2 kelime (okuma hızı). Şerit anlatım metniyle çakışmamalı (alt 56 px).",
+      "mobil": "Şerit ekranın altında 44 px, yatay kaydırılır; aktif düğüm ortalanır; kart sheet olarak yükselir.",
+      "bagimlilik": "akt-s2 stepper (t=70–89), akt-s3 t=102 palet, akt-s4 t=106–117, ortak.saniyeyeGit (yeni), dil.js NOKTALAR (+kalip, otoklav, palet)."
+    },
+    {
+      "id": "karisim_hazirla",
+      "ad": "Karışımı sen hazırla",
+      "kip": "panel (sol sütun) + sahne-içi 'Hazırla' çipi",
+      "nerede": "s2 Doğuş (Perde 3) · film t=78–79 sn ('Karışım — Su katılır' t=78; 'Kalıp dolar' t=79; çip t=78'de belirir) · beş hammadde noktaları (t=73–77) tamamlanınca çip nabız atar · araç rafı.",
+      "ne_yapar": "Sol sütunda küçük bir tezgâh: 5 hammadde kapsülü (kum, kireç, çimento, alçı, alüminyum tozu) + su. Kapsülü mikser kabına sürükle (veya dokun) → kabın rengi/dokusu değişir, kapsülün görevi tek sözcükle çıkar (Ana hammadde · Bağlayıcı · Dayanımı destekler · Prizi düzenler · Kabartır). 'Karıştır ve dök' → karışım kalıba dolar ve kabarma animasyonu başlar: alüminyum VARSA hücreler (SVG daireler) çoğalır, kek şişer; YOKSA kek şişmez, hücre oluşmaz. Eksik her hammadde için görevini söyleyen tek satır ('Eksik: bağlayıcı'). Sıra serbest; miktar/oran YOK (şematik). Tam karışımda ödül: 'Hava hücreleri oluştu' + kek lime kenar (ürün doğdu) + zincirde (uretim_zinciri) 'Kabarma' ilerlemesi.",
+      "ogretici_deger": "Her hammaddenin görevi (dil.js onaylı cümleler); alüminyum = kabartıcı → hava hücresi → yalıtım zincirini kurar; 'çıkarırsam ne olur?' deneyerek öğrenme (sorgulayarak keşif, ezber değil).",
+      "pazarlama_degeri": "Üretici bilgisine marka sahipliği ('bunu bilen firma'); geniş kitle (öğrenci, çocuklu aile, mimarlık öğrencisi) ilgisi; hafif, rakamsız 'Karışım ustası' rozeti ve ekran kaydı/paylaşım anı; sevimli ve hatırlanır.",
+      "veri_ve_kaynak": "Görev cümleleri dil.js'ten: kum 'Silis kumu: gazbetonun ana hammaddesi.'; kireç 'Karışımın bağlayıcısı.' (Söke'de günde 200 ton kapasiteli kendi kireç tesisi; Ege Gazbeton ortak rakamlar); çimento 'Dayanımı destekleyen bağlayıcı.'; alçı 'Prizlenmeyi düzenler.'; alüminyum 'Kireçle tepkimeye girip hidrojen açığa çıkarır: karışım kabarır, hava hücreleri oluşur.' Gerçek reçete/oran/süre: gösterilmez (ticari gizlilik + teyit gerekli). Kimyasal denklem yok (akt-s2'deki 'Al + Ca(OH)₂ + H₂O → H₂↑' şeması teyit gerekli; modül yalnız sözcükle anlatır). 'Priz' sözlüğü teyit gerekli.",
+      "teknik": "HTML + pointer events (HTML5 DnD yok: mobilde çalışmaz); 6 kapsül <button> (klavyede Enter ile kaba eklenir). Kabarma: 36 SVG daire, CSS scale/transform (≤40 düğüm); toplam DOM ≈70; rAF yok (CSS animasyon). ≤0,3 ms. Bellek ≈0; JS ≈4 KB. Çevrimdışı: tamamen yerel. Hareket azaltmada animasyonsuz sonuç. Efor ≈ 2 gün.",
+      "tr_metin": "chip: Hazırla | baslik: Karışımı sen hazırla | kapsuller: Kum · Kireç · Çimento · Alçı · Alüminyum tozu · Su | gorevler: Ana hammadde · Bağlayıcı · Dayanımı destekler · Prizi düzenler · Kabartır | dugme: Karıştır ve dök | tam: Kabardı: hava hücreleri oluştu. | eksik-alum: Alüminyum yok: kabarma yok. | eksik-kirec: Eksik: bağlayıcı. | not: Şematik; gerçek oranlar paylaşılmaz.",
+      "en_metin": "chip: Prepare | title: Prepare the mix yourself | capsules: Sand · Lime · Cement · Gypsum · Aluminium powder · Water | roles: Main raw material · Binder · Supports strength · Regulates setting · Makes it rise | button: Mix and pour | full: It rose: air cells formed. | missing-alu: No aluminium: no rising. | missing-lime: Missing: binder. | note: Schematic; real proportions are not shared.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'karisim_hazirla', eylem:'ac|ekle|karistir|tamamla', eksik:'yok|aluminyum|kirec|cimento|alci|kum|su', deneme_sayisi, film_sn}",
+      "efor": "orta",
+      "kural_riski": "Hammadde renkleri: kireç beyaz (lime-yeşil DEĞİL), alüminyum gümüş-gri, çimento koyu gri, kum bej; lime yalnız bitmiş kek kenarı (ürün). Oran/miktar/süre yok; 'eksik olursa' ifadeleri yalnız onaylı görev cümlelerinden türetilir (ör. 'kireç yok → bağlayıcı eksik'; çökme/kırılma gibi fiziksel iddia yok). Kimyasal denklem ve sıcaklık yok. Temsili tezgâh gerçek Söke hattı değildir. İnsan figürü/yüz yok.",
+      "mobil": "Sheet; kapsüller 2 × 3 ızgara 56 px; kap ortada, sonuç altta; dokun-ekle (sürükleme gerektirmez).",
+      "bagimlilik": "akt-s2 t=72–79 (hammadde noktaları, stepper), dil.js NOKTALAR kum/kirec/cimento/alci/aluminyum, uretim_zinciri (ilerleme senkronu)."
+    },
+    {
+      "id": "tir_palet",
+      "ad": "Tır ve palet etiketi — palet röntgeni",
+      "kip": "sahne-ici (takip eden etiket) + palet röntgeni kartı",
+      "nerede": "s0 Hayalden yuvaya (Perde 1) · film t=20–23 sn (sokakta geçen Ege tırı: takip eden 'Ege Gazbeton' etiketi t=20; palet halkası t=21–22; 'Ürünleri gör ↓' mikro bağlantısı t=23) · s4 Yol (Perde 5) · t=106–117 sn (palet t=106, fabrika t=108, kayış t=109, tır etiketi t=110–117) · s3 t=102 palet pininden de açılır.",
+      "ne_yapar": "(1) Tırı izleyen HTML etiketi 'Ege Gazbeton' (meta çapası 'tir' → translate3d; kaydırma hızıyla 1:1; kadraj dışına çıkınca küçük okla kenara yapışır). (2) Palete dokun: 'palet röntgeni' açılır — patlatılmış SVG: ahşap palet → şaşırtmalı blok katları → köşe koruyucu → lime streç film (sarım çizgileri çizilir) → kayış (amber); 'Patlat' kaydırıcısı; her parçaya dokununca ad + tek cümle ('Lime streç: paletleri sarar', 'Kayış: yükü bağlar'). (3) Tır ve forklift parça noktaları (kabin, ikiz arka aks, dorse bağlama, forklift çatalı) — yalnız film detayı güçlü olduğunda açılır; amaç 'ayrıntı' algısını artırmak (önceki oturum şikâyeti). Gerçek takip/ETA/konum verisi YOK.",
+      "ogretici_deger": "Ürünün sahaya nasıl hazırlanıp gittiği: palet yapısı, streç ve kayış; ambalajın korumadaki rolü (tek cümle). s0'da yoldan geçen tır ile s4'te doğduğu fabrika arasında bağ kurar.",
+      "pazarlama_degeri": "Marka görünürlüğü (lime streç = Ege imzası); lojistik güveni (bayi/inşaat firması kitlesi); s0 'tır'dan s4 'fabrika'ya hikâye kafiyesi: etiket her iki yerde aynı bileşen. 'Ürünleri gör ↓' mikro bağlantısı ürün turuna atlatır (urun_secici/ortak.saniyeyeGit).",
+      "veri_ve_kaynak": "dil.js tir kartı: 'Lime streçli paletler: Söke ve İzmir'den sahaya.'; 2 fabrika (Söke & İzmir; Ege Gazbeton ortak rakamlar). TEYİT GEREKLİ (ekranda yok): palet başına blok adedi/m³, palet ölçüsü, tır kapasitesi, sefer sayısı ('bu ev kaç tır?' hesabı ancak föy/lojistik rakamı gelirse eklenir). Konum/ETA/hız/plaka: uydurulmaz.",
+      "teknik": "Etiket: tek <button> DOM, transform; konum Sahne.renderHotspots hattında (ek maliyet ≈0). Palet röntgeni: inline SVG ≈60 düğüm, CSS transform (patlatma kaydırıcısı → --patla), streç sarımı stroke-dashoffset. Tuval yok; rAF yok. s0 ve s4 için aynı bileşen, farklı çapalar (meta 'tir', 'palet', 'ankraj'). Bellek ≈0; JS ≈4 KB. Telefonda röntgen alt sheet (60svh, kilitsiz). Efor ≈ 2 gün.",
+      "tr_metin": "etiket: Ege Gazbeton | palet: Palet röntgeni | parcalar: Ahşap palet · Blok katları · Köşe koruyucu · Lime streç · Kayış | kaydirici: Patlat | mikro: Ürünleri gör ↓ | not: Şematik; ölçüler gösterilmez.",
+      "en_metin": "label: Ege Gazbeton | pallet: Pallet X-ray | parts: Wooden pallet · Block layers · Corner protector · Lime stretch film · Strap | slider: Explode | micro: See the products ↓ | note: Schematic; dimensions are not shown.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'tir_palet', eylem:'etiket|palet_ac|patlat|parca|urunleri_gor', hedef, sahne:'s0|s3|s4', film_sn}",
+      "efor": "orta",
+      "kural_riski": "Logo yalnız en sonda: tır kabininde logo yok, HTML 'Ege Gazbeton' etiketi (DEVIR teyit #1: gerçek logo dosyası gelirse karar). Lime = streç film (bizim ambalaj); kayış amber, dorse/çelik gri, palet ahşap kahve; yeşil kayış/çelik yok. Sahte takip/ETA/hız/plaka yok; palet/tır rakamı yok. Tır/araç ayrıntısı hâlâ zayıfsa parça noktaları açılmaz (görsel kalite kapısı). Sürücü/insan: yüzsüz, orta-uzak plan.",
+      "mobil": "Etiket 'Ege Gazbeton' tek satır 12 px; palet röntgeni alt sheet 60svh; parçalar liste olarak da erişilir.",
+      "bagimlilik": "akt-s0 t=20–23 (tır v2, tır etiketi, palet halkası), akt-s4 t=106–117 (palet v2, kayış, tır v3, 'ankraj' alanı), akt-s3 t=102 (palet pini), dil.js NOKTALAR tir/palet."
+    },
+    {
+      "id": "ihracat_kitalar",
+      "ad": "İhracat kıtaları — 5 halka ve 25+ ülke sayacı",
+      "kip": "sahne-ici (küre üstünde SVG sayaç)",
+      "nerede": "s5 Dünya (Perde 6) · film t=122–131 sn (t=122 'beş kıta' cümlesi; t=124 Avrupa, t=125 Afrika, t=126 Amerika, t=128 Asya, t=130 Okyanusya + '25+ ülke'; t=131 '5 kıta'; akt-s5) · SON kanıt kartında (t=144) yeniden kullanılır.",
+      "ne_yapar": "Ekranda 5 halkalı sayaç (SVG): her kıtaya yay vardığında bir halka dolar (kaydırmaya bağlı; geri kaydırınca boşalır). Halkaya dokununca ilgili varışın halkası küre üzerinde yeniden nabız atar (kare çapası v_avrupa…v_okyanusya) — ülke/sayı/kıta bazında bilgi verilmez. '25+' sayacı p'ye bağlı 0 → 25 ve sonunda '+' belirir. Rakam kartına dokununca 'kitalar' kartı: '5 kıtada 25'ten fazla ülkeye ihracat' + kaynak. Etkileşim: kaydırma hızı = yay üstündeki ışık damlasının hızı (akt-s5 t=123/125). Kıta adları yalnız onay gelirse (açık soru); onay yoksa halkalar numaralı (1–5).",
+      "ogretici_deger": "Coğrafi ölçek: iki fabrika (Söke, İzmir) → 5 kıta; sayma ritmiyle '5' akılda kalır; Türkiye silüeti gerçek poligon; ülke adı vermeden güven.",
+      "pazarlama_degeri": "İhracat alıcısı/bayi kitlesine güven (hero kitle seçicisindeki 'İhracat alıcısı / bayiyim' → /ihracat/); sayaç tamamlandığı anda CTA ('İhracat için iletişim'); 'dünyaya ihracat yapan yerel üretici' prestiji.",
+      "veri_ve_kaynak": "25+ ülke · 5 kıta — Ege Gazbeton ihracat bölümü (tek kaynak, DEVIR §2). Ülke adı, ülke sınırı, müşteri sayısı, fiyat, liman adı (Aliağa/Alsancak kaynaksız, akt-s5 açık sorusu) YOK. TEYİT GEREKLİ: güncellik ve tarih (dış haberlerde 19 ülke / 4 kıta yazıyor; akt-s5 açık sorusu) → yayın öncesi ihracat bölümünden yazılı teyit.",
+      "teknik": "SVG 5 halka + sayaç (≈25 düğüm); halka dolumu stroke-dashoffset (p'ye bağlı, Sahne.render içinde, ek rAF yok); sayaç metni yalnız tamsayı değişince yazılır. Küre/yay filmden (akt-s5: 12 kare/sn, 193 kare). Etiketler HTML. ≤0,1 ms/kare. Bellek ≈0; JS ≈2 KB. Efor ≈ 1 gün.",
+      "tr_metin": "sayac: 5 kıta · 25+ ülke | halkalar: Avrupa · Afrika · Amerika · Asya · Okyanusya (onaya bağlı; yoksa 1–5) | kart: 5 kıtada 25'ten fazla ülkeye ihracat. Kaynak: Ege Gazbeton ihracat bölümü | ipucu: Halkaya dokunun.",
+      "en_metin": "counter: 5 continents · 25+ countries | rings: Europe · Africa · Americas · Asia · Oceania (subject to approval; otherwise 1–5) | card: Exports to more than 25 countries on five continents. Source: Ege Gazbeton export department | hint: Tap a ring.",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'ihracat_kitalar', eylem:'halka|sayac_kart|ihracat_link', hedef:'1…5', film_sn, dil}",
+      "efor": "kucuk",
+      "kural_riski": "En sıkı kural alanı: yalnız '25+ ülke · 5 kıta'; ülke adı/sınırı/müşteri sayısı/fiyat yok; Türkiye vurgusu yalnız gerçek poligon (modül Türkiye'ye dokunmaz). Küreye lime sızdırılmaz (akt-s5); sayaç halkası UI olarak lime olabilir. 25+ doğrulaması ve 19/4 çelişkisi görünürlük riski: yayın öncesi yazılı teyit. Kıta adı etiketi onaya bağlı; haritada sınır çizgisi yok.",
+      "mobil": "Sayaç anlatım alanında tek satır (5 halka 28 px); küre alt yarıda serbest; kart sheet.",
+      "bagimlilik": "akt-s5 t=122–131 (kıta sayacı, varış çapaları v_*), dil.js NOKTALAR kitalar, rakamlar.js (25+, 5)."
+    },
+    {
+      "id": "bilgi_yarismasi",
+      "ad": "3 soruda gazbeton — mini bilgi yarışması",
+      "kip": "sahne-ici (köşe soru çipi) + çekmecede sonuç kartı/rozet (SON'da yok)",
+      "nerede": "Soru 1 — s1 Ürün turu t=56–57 sn (tutkal durağı t=51–55 biter bitmez, panel durağı girişi: 'Paneller' başlığı t=56; konu tutkal/derz). Soru 2 — s2 Doğuş t=81–82 sn (kabarma anı: 'Karışım şişer.' t=81, 'Hava hücreleri kalır.' t=82; konu kabartan hammadde). Soru 3 — s3 Gözenek t=98–99 sn (A1 rakamı t=97'den hemen sonra, sınıf merdiveni t=98 ile birlikte; konu A1). Üç pencere de perdelerin çıkış geçişi DIŞINDADIR (s1 t=67–69, s2 t=87–89, s3 t=101–103: hiçbir modül çipi açılmaz). Sonuç kartı ve rozet: YALNIZ 'Araçlar' çekmecesinde (araç rafı); SON sahnede yok. Kaçırılan soru çekmecede 'bekliyor' kalır (SON'da sorulmaz).",
+      "ne_yapar": "Her soru köşede tek satır + 3 şık (tek dokunuş); doğruysa 'Doğru' + kaynak, yanlışsa doğrusu ve nedeni gösterilir (geri sayım/baskı yok). Soru 1: 'Bloklar neyle birleşir?' → gazbeton tutkalı (1–3 mm ince derz). Soru 2: 'Karışımı ne kabartır?' → alüminyum tozu. Soru 3: 'A1 neyi anlatır?' → yangına tepki sınıfını (EN 13501-1). Sonuç: rozet (SVG) 'Gazbeton bilgisi N/3' yalnız çekmecedeki yarışma kartında; 3/3'te kartta 'Teknik föylere göz at' bağlantısı, eksikte eksik soruları çekmeceden yanıtlama (SON'daki ince 'Hikâyeyi baştan izle' bağlantısı ayrıdır, kartta kopyası yok). Kişisel veri/giriş istemez.",
+      "ogretici_deger": "Anlatılandan hemen sonra geri çağırma (retrieval practice): bilgi kalıcılaşır; yanlış cevap kavram ayrımı öğretir (A1 = yangına tepki sınıfı; yoğunluk sınıfı ve ısı iletkenliği başka şeylerdir).",
+      "pazarlama_degeri": "Hikâye boyunca dikkati canlı tutar; 'kaç kişi 3/3 yaptı' kampanya metriği; son soru sonrası CTA tıklama farkı ölçülür; rozet paylaşımı (Web Share varsa). Teklif öncesi 'güven' basamağını bilgiyle kurar.",
+      "veri_ve_kaynak": "Cevaplar yalnız doğrulanmış metinlerden: 'Bloklar 1–3 mm gazbeton tutkalıyla birleşir' (Ürün föyleri; dil.js derz); 'Alüminyum tozu: kireçle tepkimeye girip hidrojen açığa çıkarır: karışım kabarır' (dil.js aluminyum); 'A1: yangına tepki sınıfı, EN 13501-1' (CE belgeleri; dil.js i2.k2). Yanlış şıklar sayı içermez (uydurma rakam yok): kavram adları (ahşap kalıp, alçı, kum, çimento, yoğunluk sınıfı, ısı iletkenliği).",
+      "teknik": "Saf HTML/CSS + durum makinesi (<fieldset role=radiogroup>); sonuç localStorage 'ege-yaris' (try/catch) + oturum belleği; rAF yok; JS ≈3 KB. Mobil: soru anlatım alanının alt şeridinde (≤2 satır). Cevaplanmayan soru 3 sn sonra çipe küçülür. Çevrimdışı. Efor ≈ 1 gün.",
+      "tr_metin": "soru1: Bloklar neyle birleşir? · Gazbeton tutkalı · Ahşap kalıp · Alçı | soru2: Karışımı ne kabartır? · Alüminyum tozu · Kum · Çimento | soru3: A1 neyi anlatır? · Yangına tepki sınıfını · Yoğunluk sınıfını · Isı iletkenliğini | dogru: Doğru. | yanlis: Doğrusu: {cevap} | sonuc: Gazbeton bilgisi {n}/3 | cta: Teknik föylere göz atın",
+      "en_metin": "q1: What joins the blocks? · AAC adhesive · Timber formwork · Gypsum | q2: What makes the mix rise? · Aluminium powder · Sand · Cement | q3: What does A1 describe? · The reaction-to-fire class · The density class · Thermal conductivity | correct: Correct. | wrong: The answer: {cevap} | result: AAC knowledge {n}/3 | cta: Browse the technical specifications",
+      "dataLayer_olayi": "{event:'ege_modul', modul:'bilgi_yarismasi', eylem:'cevap|sonuc|cta', soru:1|2|3, dogru:true|false, skor:0–3, film_sn, dil}",
+      "efor": "kucuk",
+      "kural_riski": "Şıklarda 'yanmaz' asla (şık olarak bile). Yanlış şıklar ürünün yanlış özelliğini iddia ediyormuş gibi okunmamalı. Rozet kurumsal (lime köşe işareti, ürün rengi değil). Sorular anlatılan metinden birebir ve kaynaklı. Cevaplanmamış soru ekranı kirletmemeli. Okuma hızı: soru ≤8 kelime, şık ≤3 kelime. Zamanlama: soru çipleri çıkış geçişi (perdenin son 3 sn'si) dışında başlar ve biter (s1 t=56–57, s2 t=81–82, s3 t=98–99); cevabı veren kart/nokta (tutkal kartı, alüminyum/kabarma noktası, A1 mini kartı) açıkken soru bekler, kart kapanınca çıkar; soru çipi CTA değildir (satış eylemi yok; s2 'CTA'sız' kuralını bozmaz), bilgi CTA'sı yalnız çekmecedeki sonuç kartındadır (SON'da yok); soru penceresinde başka yeni çip açılmaz (s3'te agirlik 'Dene' çipi t=100'e kayar).",
+      "mobil": "Soru çipi anlatım alanının altında tek satır + 3 düğme 44 px yan yana; sonuç kartı sheet.",
+      "bagimlilik": "akt-s1 t=56–57, akt-s2 t=81–82, akt-s3 t=98–99, baglam.js (skor yalnız ege_modul olayına ve çekmece rozetine yazılır; SON bağlam çipine taşınmaz), dil.js kartları (kaynak satırı)."
+    }
+  ],
+  "oncelik_sirasi": [
+    "urun_secici",
+    "duvar_hesap",
+    "maket_blok_sayaci",
+    "once_sonra",
+    "kesit_gezgini",
+    "bilgi_yarismasi",
+    "agirlik",
+    "isi_yolculugu",
+    "hucre_dokun",
+    "ihracat_kitalar",
+    "tir_palet",
+    "karisim_hazirla",
+    "uretim_zinciri",
+    "a1_demo"
+  ],
+  "acik_sorular": [
+    "Panel kipi (KARAR, onayınıza sunulur): panel yalnız kullanıcı başlatımlıdır ve KİLİTSİZdir; kaydırma/tuş olayı yutulmaz, kaydırma, Esc, Kapat, geri tuşu ve dış dokunma paneli kapatır; film kaydırma konumuna bağlı olduğundan panel açıkken zaten durur; telefonda tam ekran modal yerine alt sheet (en çok 70svh). pazarlama.cta_kurallari'na 'kullanıcı başlatımlı panel istisnası' yazıldı, otomatik pencereler kilitsiz kalır. Onaylar mısınız (özellikle telefonda sheet yüksekliği ve 'kaydırınca kapanır' davranışı)?",
+    "duvar_hesap ile /duvar-tasarla/ (KARAR, onayınıza sunulur): birleştirilmez ve çakışmaz; mini hesap sitedeki aracın film içi 'ön metraj' ön kapısıdır. t=38–40'taki tek 'Duvarlarınızı hesaplayın →' öğesi hem /duvar-tasarla/'ya giden gerçek bağlantı hem paneli açan düğmedir (JS'siz/yeni sekme → site aracı); panelde sonucun altında 'Ayrıntılı tasarım →' ölçüleri taşır; SON'da gömülü form yok. Teyit gerekli: /duvar-tasarla/ ne hesaplıyor (formül alan ÷ 0,15 m² ile aynı mı; farklıysa panel kapatılıp yalnız bağlantı kalır), ölçü parametrelerini (?uzunluk=&yukseklik=&acik=&kalinlik=) okuyup ön doldurabilir mi ve /teklif/ formu ?urun=&alan=&kalinlik=&kaynak=hikaye parametrelerini okuyabilir mi (site işi)?",
+    "Duvar bloğu 5–35 cm kalınlığı üreticiden teyitli mi; stok kalınlıkları (kaydırıcı adımı) ve G3 sınıfının yoğunluğu nedir? Teyit gelene dek kaydırıcı sürekli, G3 işaretsiz.",
+    "Duvar hesabında fire/kırık payı için yönlendirme yapılsın mı (varsayılan 0, kullanıcı girer)? Tutkal tüketimi (kg/m²), palet başına blok adedi/m³ ve tır kapasitesi verilirse 'bu ev kaç palet / kaç tır?' maket sayacına eklenir.",
+    "Isı modülünde tasarım değeri λ 0,08 (G2/350) ile kuru değerler (U blok 0,16; EGEPOR 0,051–0,062) aynı panelde ayrı etiketlerle gösterilebilir mi? U hesabına yüzey dirençleri (Rsi/Rse) eklensin mi ve TS 825 sınır değeriyle kıyas yapılsın mı (müşteri kararı; şimdilik yok)?",
+    "ODTÜ −%17 yapı kütlesi yalnız panele mi tüm gazbeton sisteme mi ait? README'deki eski '−%14 taban kesme' DEVIR/dil.js'te yok: doğrulanmış mı, kullanılabilir mi?",
+    "'Suda yüzer' ve 'öbür yüz serin' (EN 13501-2 yangın direnci) için belge var mı? A1 modülünde sınıf merdiveni harfleri (A1…F) standarttan gösterilebilir mi? Üretici sayfasında 'A1 Hiç Yanmaz' yazıyor; bizde yasak kalmaya devam ediyor mu?",
+    "Kıta adları (Avrupa, Afrika, Amerika, Asya, Okyanusya) ekranda gösterilebilir mi? 25+ ülke · 5 kıta için ihracat bölümünden güncel yazılı teyit ve tarih var mı (dış haberlerde 19 ülke / 4 kıta çelişkisi)?",
+    "EGEPOR için 'ısı köprüsü' ifadesi ve ODTÜ/ürün föylerindeki 'kolon ve kiriş kaplaması' dışındaki kullanım iddiaları üreticiden teyitli mi? U bloktaki '50 kgf/cm²' hangi değerin etiketi?",
+    "Maket sayacı bina_detay.py çıktısına bağlı: iç bölme duvarı (y=0 aksı) ve 4,5 m panel bölmesi eklenince sayılar değişir; derz maketi görünürlük için 12 mm çizili. Sayımı hep derleme zamanında üretmeyi ve 'maket modeli, gerçek proje değil' etiketini onaylar mısınız?",
+    "Karışım ve zincir modüllerinde makine/tezgâh temsilî olacak (gerçek Söke hattı referansı yok); gerçek reçete, oran ve süre hiçbir yerde gösterilmeyecek: onaylı mı?",
+    "Tır kabininde logo kararı (DEVIR teyit #1) ve tır/araç ayrıntısı yeterli kalite eşiğine gelmeden tır/forklift parça noktaları açılmasın: kalite kapısı için altın kare onayı kim verecek?",
+    "Analitik: GTM'de 'ege_modul' olayı ve parametre şeması (modul, eylem, film_sn …) tanımlanabilir mi? Denenen modül rozeti için localStorage 'ege-modul' ve 'ege-yaris' kullanımı KVKK aydınlatmasında belirtilmeli mi (çerez değil, kişisel veri yok)?",
+    "14 modülün hepsi mi yoksa önceliğe göre ilk dalga (urun_secici, duvar_hesap, maket_blok_sayaci, once_sonra, kesit_gezgini, bilgi_yarismasi) mı hikâyeyle birlikte yayımlansın; kalanlar ikinci dalga olarak mı gelsin?"
+  ],
+  "film_haritasi": [
+    {
+      "t": "12–17",
+      "sahne": "s0 (Perde 1)",
+      "modul": "maket_blok_sayaci",
+      "kip": "sahne-ici",
+      "not": "dolum sayacı + kat çipi; t=17 'Say' kartı"
+    },
+    {
+      "t": "20–23",
+      "sahne": "s0 (Perde 1)",
+      "modul": "tir_palet",
+      "kip": "sahne-ici",
+      "not": "takip eden etiket + palet halkası; t=23 'Ürünleri gör ↓'"
+    },
+    {
+      "t": "34–35",
+      "sahne": "s1 (Perde 2)",
+      "modul": "urun_secici",
+      "kip": "panel",
+      "not": "'Evde nerede?' çipi çip çubuğuyla birlikte"
+    },
+    {
+      "t": "38–40",
+      "sahne": "s1 (Perde 2)",
+      "modul": "duvar_hesap",
+      "kip": "panel",
+      "not": "duvar durağının tek otomatik öğesi = pazarlama s1_duvar_hesapla bağlantısı 'Duvarlarınızı hesaplayın →' (statik href /duvar-tasarla/; JS'te sol tık paneli açar; ayrı 'Hesapla' çipi yok); 'Kesite bak' ikincil"
+    },
+    {
+      "t": "46–50",
+      "sahne": "s1 (Perde 2)",
+      "modul": "kesit_gezgini",
+      "kip": "panel",
+      "not": "U blok durağı; varsayılan sekme U blok"
+    },
+    {
+      "t": "56–57",
+      "sahne": "s1 (Perde 2)",
+      "modul": "bilgi_yarismasi",
+      "kip": "sahne-ici",
+      "not": "Soru 1 (tutkal/derz); tutkal durağı (t=51–55) biter bitmez, panel durağı girişi; çıkış geçişi (67–69) dışında"
+    },
+    {
+      "t": "59–60",
+      "sahne": "s1 (Perde 2)",
+      "modul": "agirlik",
+      "kip": "panel",
+      "not": "−%17 rakam kartı köşesinde 'Dene' (ODTÜ sekmesi)"
+    },
+    {
+      "t": "63–64",
+      "sahne": "s1 (Perde 2)",
+      "modul": "once_sonra",
+      "kip": "sahne-ici",
+      "not": "EGEPOR durağı; 'Kesiti gör' ikincil"
+    },
+    {
+      "t": "78–79",
+      "sahne": "s2 (Doğuş)",
+      "modul": "karisim_hazirla",
+      "kip": "panel",
+      "not": "'Hazırla' çipi; beş nokta bitince nabız"
+    },
+    {
+      "t": "80–117",
+      "sahne": "s2–s4",
+      "modul": "uretim_zinciri",
+      "kip": "sahne-ici",
+      "not": "kalıcı alt şerit; s3'te sönük"
+    },
+    {
+      "t": "81–82",
+      "sahne": "s2 (Doğuş)",
+      "modul": "bilgi_yarismasi",
+      "kip": "sahne-ici",
+      "not": "Soru 2 (kabartan hammadde); kabarma anı ('Karışım şişer.' → 'Hava hücreleri kalır.'); çıkış geçişi (87–89) dışında"
+    },
+    {
+      "t": "91–95",
+      "sahne": "s3 (Gözenek)",
+      "modul": "hucre_dokun",
+      "kip": "sahne-ici",
+      "not": "6 SVG halka + mikroskop kartı"
+    },
+    {
+      "t": "96",
+      "sahne": "s3 (Gözenek)",
+      "modul": "isi_yolculugu",
+      "kip": "panel",
+      "not": "λ 0,08 rakam kartı köşesinde 'Kalınlığı dene'"
+    },
+    {
+      "t": "97–98",
+      "sahne": "s3 (Gözenek)",
+      "modul": "a1_demo",
+      "kip": "sahne-ici",
+      "not": "A1 rakamı + nötr tezgâh; sınıf merdiveni + kart (alev yok)"
+    },
+    {
+      "t": "98–99",
+      "sahne": "s3 (Gözenek)",
+      "modul": "bilgi_yarismasi",
+      "kip": "sahne-ici",
+      "not": "Soru 3 (A1); A1 rakamı (t=97) ve sınıf merdiveni ile birlikte; çıkış geçişi (101–103) dışında; kaçırılırsa çekmecede bekler (SON'da sorulmaz)"
+    },
+    {
+      "t": "99–100",
+      "sahne": "s3 (Gözenek)",
+      "modul": "agirlik",
+      "kip": "panel",
+      "not": "300–600 rakam kartı köşesinde 'Dene' (çip yalnız t=100'de; t=98–99 Soru 3 çipiyle yarışmaz); kaydırıcı yalnız panelde (film içi G1–G4 kaydırıcısı yok)"
+    },
+    {
+      "t": "106–117",
+      "sahne": "s4 (Yol)",
+      "modul": "tir_palet",
+      "kip": "sahne-ici",
+      "not": "palet noktası t=106; tır etiketi t=110–117"
+    },
+    {
+      "t": "122–131",
+      "sahne": "s5 (Dünya)",
+      "modul": "ihracat_kitalar",
+      "kip": "sahne-ici",
+      "not": "5 halka + 25+ sayacı"
+    },
+    {
+      "t": "136–145",
+      "sahne": "SON",
+      "modul": "— (modül yüzeyi yok)",
+      "kip": "yok",
+      "not": "Son sahneden çıkarıldı (akt-son sadeleştirmesi): quiz rozeti/sonuç kartı, gömülü mini hesap formu, 'Araçlar' çekmecesi ve düğmesi. t=142–145 yalnız ana CTA + 1 ikincil + tek bağlam çipi; modüllerin bağlamı (urun, alan) o çipe ve /teklif/ bağlantısına akar. Rozet yalnız çekmecede."
+    }
+  ],
+  "ortak_teknik": {
+    "amac": "14 modül, hikâye akışına binen, render gerektirmeyen (HTML/SVG/CSS/2B canvas/JS) ETKİLEŞİMLİ + ÖĞRETİCİ katman. Film saniyeleri akt-s0..akt-son planlarıyla aynı çizelgedir (22 vh/sn; s0 t=0–32, s1 32–70, s2 70–90, s3 90–104, s4 104–120, s5 120–136, SON 136–146). Perde adları: s0 = Perde 1 Hayalden yuvaya, s1 = Perde 2 Ürün turu, s2 = Doğuş, s3 = Gözenek, s4 = Yol, s5 = Dünya.",
+    "ogrenme_yolu": "Nerede (urun_secici) → Ne kadar (maket_blok_sayaci, duvar_hesap) → İçinde ne (kesit_gezgini, once_sonra) → Nasıl yapılır (karisim_hazirla, uretim_zinciri) → Neden hafif ve yalıtkan (hucre_dokun, isi_yolculugu, agirlik, a1_demo) → Nasıl gider (tir_palet, ihracat_kitalar) → Pekiştir (bilgi_yarismasi).",
+    "iki_kip": "SAHNE-İÇİ: filmin üstünde tek çip ('Dene', ≤2 kelime) ya da küçük overlay (sayaç, etiket, halka, bölme çizgisi); film kaydırmayla akmaya devam eder; çip yalnız kendi saniye penceresinde görünür. PANEL (KULLANICI BAŞLATIMLI, KİLİTSİZ): yalnız kullanıcı eylemiyle (çip, rakam kartı, 'Araçlar' rafı ya da Enter) açılır; SON sahnede hiçbir çip/panel modül açmaz (bağlam çipi yalnız × ile silinir); hiçbir panel kendiliğinden açılmaz, otomatik pencerelerde yalnız çip/etiket görünür. Masaüstünde sol anlatım sütununu devralır (konu sağda görünür kalır); telefonda alt sheet olur (en çok 70svh, üstte ≥30svh film şeridi açık; 100svh tam ekran/modal YOK). Panel kaydırmayı kilitlemez: kare kaydırma konumundan türediği için panel açıkken kareler zaten ilerlemez (doğal durma, JS kilidi yok) ve sahne rAF efektleri (sayaç, nabız) duraklar; kullanıcı kaydırınca panel kapanır ve film aynı jestle sürer (ayrıntı: kilit_ve_kaydirma). Panel açılınca anlatım vuruşu (başlık + cümle) gizlenir, kapanınca kaldığı p'de geri gelir: ekranda aynı anda ya vuruş ya panel vardır, en çok 1 başlık + 1 cümle kuralı korunur (panel başlığı araç başlığıdır; panel açıkken yeni anlatım vuruşu başlamaz). Durak başına en çok 1 otomatik çip; diğer sekme/modüllere ikincil bağlantı ve araç rafı ile ulaşılır. Çip penceresi kaçırılırsa modül rafta kalır. ÇIKIŞ KURALI (pazarlama.cta_kurallari ile aynı): perdenin son 3 saniyesinde (çıkış geçişi: s0 t=29–31, s1 t=67–69, s2 t=87–89, s3 t=101–103, s4 t=117–119, s5 t=133–135) hiçbir modül otomatik çip/pencere BAŞLATMAZ; kalıcı şerit düğümleri ve yalnız kullanıcı dokunuşuyla açılan sıcak nokta/pin kartları bu kuralın dışındadır. Dayanak: pazarlama.cta_kurallari 'kullanıcı başlatımlı panel istisnası'.",
+    "kabuk_ve_dosyalar": "src/hikaye/moduller/kabuk.js (çekmece/panel, kapatma yolları: Esc, geri tuşu, kaydırma; çip yaşam döngüsü, dil/dataLayer yardımcıları; kilit ve odak tuzağı YOK) hikaye.js içine; gövdeler src/hikaye/moduller/*.js → tools/derle.mjs'e üçüncü esbuild girişi: assets/js/moduller.js (klasik IIFE, ≤60 KB min; canli.js deseni; ilk dokunuşta ya da s1 başında requestIdleCallback ile <script src> enjeksiyonu → file:// çalışır). Veri dosyaları .js global (fetch/XHR file://'da çalışmaz): assets/js/maket-say.js (window.EGE_MAKET), çapa metası kareler-meta.js içinde (alev flipbook'u yok). src/hikaye/rakamlar.js = TEK KAYNAK: her doğrulanmış sayı {değer, kaynak, kullananlar} olarak burada durur; modüller ve kartlar yalnız buradan okur (kaynak etiketsiz sayı derlenmez). CSS: hikaye.css'e .eg-modul, .eg-cip, .eg-sheet (yalnız transform/opacity).",
+    "kilit_ve_kaydirma": "KİLİT YOK (denetim kararı; pazarlama.cta_kurallari 'kaydırma kilidi YOK' kuralıyla uyumlu): hiçbir kipte wheel/touchmove/PageUp/PageDown/Space/ok tuşları yutulmaz; preventDefault ve passive:false dinleyici YOK (tüm dinleyiciler passive:true); iOS için position:fixed hilesi de KULLANILMAZ (sticky akışı bozar). Panel kullanıcı başlatımlıdır ve kaydırma panelin KAPANMA tetikleyicisidir, engeli değil: panel dışındaki wheel, touchmove (≥24 px) ve PageUp/PageDown/Space/ok tuşları (odak panel içindeki bir form alanında değilken) paneli kapatır ve sayfa aynı jestle kayar; panel içeriği taşarsa içeride kayar (overflow:auto, overscroll-behavior:contain), taşmıyorsa wheel/touchmove sayfaya geçer ve paneli kapatır. Form alanı odaktayken tuşlar alana gider; telefonda klavye açılınca oluşan scroll/resize (visualViewport) kullanıcı kaydırması sayılmaz (yalnız wheel/touchmove/tuş olayı sayılır). Kapatma yolları (hepsi zorunlu): belirgin 'Kapat' (≥44 px), Esc, tarayıcı geri tuşu (açılırken history.pushState; geri = kapat, kapalıyken geri sayfayı normal terk eder), panel dışına dokunma/tıklama, kaydırma; telefonda ayrıca tutamaçtan aşağı sürükleme. Modal değil: aria-modal=false, odak tuzağı yok (Tab sayfaya çıkabilir); açılınca odak panel başlığına, kapanınca açan öğeye döner. 'Turda gör' ve saniyeyeGit atlamaları önce paneli kapatır, sonra sarar. Film 'donması' ayrı bir mekanizma değildir: kare kaydırma konumundan türediği için panel açıkken konum değişmedikçe kare sabit kalır. Sahne-içi sürüklemeler (once_sonra) touch-action:pan-y: yatay sürükleme JS'te, dikey kaydırma sayfada. Yeni yardımcı: ortak.saniyeyeGit(t) = t × 22 vh (akt-s* 'vh' sütunu; main.js bas[] ile) — çip/çizelge/seçici atlamaları 4× hızlı sarma yapar.",
+    "performans": "≥50 fps sözleşmesi: modül kendi rAF'ını yalnız etkileşim varken ve görünürken çalıştırır (IntersectionObserver + visibilitychange + panel açık/kapalı); dt ≤0,05 sabitleme; canvas ≤360 × 300 CSS px, DPR ≤1,25; parçacık ≤60; SVG düğüm ≤120/panel; yalnız transform/opacity animasyonu, canvas üstünde backdrop-filter/mix-blend YOK (ışıma önceden pişirilir). Bellek: hiçbir modül yeni bitmap indirmez (a1_demo alev flipbook'u düştü; yalnız SVG sınıf merdiveni + kart) (once_sonra mevcut s1 karelerini kullanır). Sahne render'ı ve modül aynı kick()/rAF hattını paylaşır; boşta iş yok.",
+    "cevrimdisi": "Tüm modüller file:// ile çalışır: harici font/CDN/fetch yok; yazı tipleri yerel Barlow; veri .js global; <script src> enjeksiyonu; localStorage/sessionStorage erişimi try/catch içinde (gizli pencerede çökmez); Intl yedeği elle biçim; navigator.clipboard/share yoksa yedek veya gizlenir.",
+    "dil": "Tüm metinler dil.js'e 'm.<id>.<anahtar>' olarak (EN) ve index.html data-i18n (TR) olarak girer; yeni NOKTALAR kartları: kalip, otoklav, palet, kesik, a1sinif (TR/EN, kaynaklı). Sayı biçimi tr-TR (1.100.000; 0,08) / en-GB (1,100,000; 0.08). arayuz.js dil değişiminde açık panel yeniden yazılır (ege:dil olayı). tr_metin/en_metin alanlarındaki {…} yer tutucudur.",
+    "analitik": "Ortak şema (çerez/harici servis yok; mevcut arayuz.js deseni): window.dataLayer.push({event:'ege_modul', modul, eylem, deger?, film_sn, dil, …modüle özgü}); tıklama bağlantıları ayrıca mevcut ege_tik {hedef} olayını korur. 'film_sn' = round(yVh/22). Her modülde 'ac' ve 'kapat' (kullanım süresi sn) ortak; öteki eylemler kartta yazılı. Parametre değerleri ≤100 karakter, kişisel veri yok. Ölçülecek hunisi: çip görüldü → açıldı → kullanıldı → CTA ('teklif', 'foy', 'urunleri_gor').",
+    "baglam_ve_cta": "baglam.js (akt-son) ile birleşir: urun_secici → urun; duvar_hesap → alan, kalinlik, blok_adet; bilgi_yarismasi → skor; hepsi sessionStorage'a yazılır ve SON'daki TEK bağlam çipi ('Hikâyede baktığınız: EGEPOR ×'; ölçü girildiyse 'EGEPOR · 84 m² ×') ile /teklif/?urun=…&alan=…&kalinlik=…&kaynak=hikaye bağlantısına taşınır; skor (bilgi_yarismasi) çipe ve bağlantıya taşınmaz (rozet yalnız çekmecede). /teklif/ formunun bu parametreleri okuyup okumadığı site tarafı iştir (açık soru).",
+    "erisilebilirlik": "Klavye: çip ve nokta Tab ile gelir, Enter/Space açar, ← → kaydırıcıları yönetir, Esc kapatır; role/aria-live (sonuçlar polite), odak halkası mevcut :focus-visible; dokunma hedefi ≥44 px; renk tek başına anlam taşımaz (ısı oku + etiket); hareket azaltma ve ?kayit kipinde çipler gizlenir, modüllerin durağan sürümü anlatım bloğunda satır içi görünür (hesap formu, iki karelik önce/sonra yan yana, sayaç son değeri); no-js'te modül yok, metin bütünlüğü bozulmaz.",
+    "mobil": "Anlatım alanı üstte 40svh olduğundan modüllerin telefondaki ana yeri alt sheet'tir (en çok 70svh, kilitsiz: tam ekran/100svh modal YOK; üstte ≥30svh film şeridi görünür, orada kaydırma sayfayı sürer ve sheet'i kapatır); sahne-içi öğeler ≤44 px şerit/etiket olur; hover'a bağlı hiçbir işlev yok; klavye açılınca sonuç satırı görünür kalır (visualViewport).",
+    "sinama": "tools/sinama.mjs'e modül senaryoları: (1) file:// ve http'de konsol hatasız yükleme; (2) her modül için aç → kullan → kapat ve dataLayer olayı doğrulama; (3) rAF aralığı p95 ≤20 ms (panel açık/kapalı); (4) panelin kilitsiz olduğu: wheel/touchmove/tuş olaylarında defaultPrevented=false, panel dışı kaydırmanın paneli kapattığı ve filmin aynı jestle sürdüğü; Esc, Kapat, geri tuşu ve dış dokunmanın kapattığı; panel içi kaydırmanın sayfayı oynatmadığı; klavye (visualViewport) açılışının paneli kapatmadığı; (5) TR/EN anahtar eşitliği; (6) kural taraması: metinde 'yanmaz', ülke adı, backdrop-filter/mix-blend, kaynaksız sayı yok; (7) hareket azaltma durağan sürümü; (8) iki viewport (1600×900, 768×1366).",
+    "renk_kurali": "Kontrol öğeleri (düğme, kaydırıcı, çip) site markasının lime-hi tonunu kullanır (mevcut .eg-dugme/.eg-dil deseni). ÇİZİMLERDE lime yalnız Ege ürünü/ambalajıdır: blok/U kabuk/EGEPOR levha kenarı, tutkal derzi, streç film, gözenek halkası. Donatı, çelik, kayış, kolon-kiriş betonu, kalıp, ısı okları (turuncu→mavi), alev (turuncu-kırmızı) lime/yeşil OLAMAZ.",
+    "oncelik_mantigi": "Önce altyapı ve en yüksek lead değeri (urun_secici kabuğu, duvar_hesap), sonra ucuz ve etkileyici olanlar (maket sayacı, önce/sonra, kesit, yarışma), sonra öğretici derinlik (ağırlık, ısı, hücre), sonra filmdeki çapa/render bağımlıları (ihracat, tır-palet, karışım, zincir) ve en sonda kural riski en yüksek A1 demosu (alev flipbook'u düştü: yalnız SVG sınıf merdiveni + kart, render bağımsız). Kaba toplam efor ≈ 24–29 gün (tek geliştirici); modüller bağımsız yayımlanabilir (kabuk hazır olunca her biri ayrı)."
+  },
+  "dogrulanmis_rakamlar": [
+    {
+      "anahtar": "blok_yuz",
+      "deger": "60 × 25 cm (0,15 m²; 6,67 blok/m² hesap)",
+      "kaynak": "Ürün föyleri",
+      "kullananlar": "maket_blok_sayaci, duvar_hesap, agirlik, kesit_gezgini"
+    },
+    {
+      "anahtar": "derz",
+      "deger": "1–3 mm",
+      "kaynak": "Ürün föyleri",
+      "kullananlar": "kesit_gezgini, bilgi_yarismasi, duvar_hesap"
+    },
+    {
+      "anahtar": "blok_kalinlik",
+      "deger": "5–35 cm",
+      "kaynak": "Ürün föyleri (dil.js u_duvar/h1b.k1); üretici teyidi akt-s1 açık sorusunda bekliyor",
+      "kullananlar": "duvar_hesap, agirlik, isi_yolculugu, kesit_gezgini"
+    },
+    {
+      "anahtar": "lento",
+      "deger": "4,50 m'ye kadar açıklık",
+      "kaynak": "Ürün föyleri",
+      "kullananlar": "urun_secici"
+    },
+    {
+      "anahtar": "panel",
+      "deger": "6 m'ye varan açıklık (döşeme/çatı)",
+      "kaynak": "Ürün föyleri",
+      "kullananlar": "urun_secici"
+    },
+    {
+      "anahtar": "u_blok",
+      "deger": "G4/06 · 60 × 25 cm · 20–25 cm · λ kuru 0,16 W/mK · 600 kg/m³",
+      "kaynak": "Ürün föyleri (egegazbeton.com.tr/urunlerimiz/u-bloklar/)",
+      "kullananlar": "kesit_gezgini, isi_yolculugu, agirlik"
+    },
+    {
+      "anahtar": "egepor",
+      "deger": "60 × 25–50 cm · 5–35 cm · λ kuru 0,051–0,062 W/mK · 150–200 kg/m³",
+      "kaynak": "Ürün föyleri (egegazbeton.com.tr/urunlerimiz/egepor/); kolon ve kiriş kaplaması müşteri onaylı",
+      "kullananlar": "kesit_gezgini, once_sonra, isi_yolculugu, agirlik"
+    },
+    {
+      "anahtar": "lambda_g2_350",
+      "deger": "λ 0,08 W/mK (G2/350 duvar tasarım değeri)",
+      "kaynak": "Ege Gazbeton ortak rakamlar",
+      "kullananlar": "isi_yolculugu"
+    },
+    {
+      "anahtar": "a1",
+      "deger": "A1 yangına tepki sınıfı (EN 13501-1)",
+      "kaynak": "CE belgeleri",
+      "kullananlar": "a1_demo, bilgi_yarismasi"
+    },
+    {
+      "anahtar": "yogunluk",
+      "deger": "300–600 kg/m³ (G1/300 – G4/600)",
+      "kaynak": "Ürün sınıfları G1/300 – G4/600",
+      "kullananlar": "agirlik, maket_blok_sayaci, duvar_hesap"
+    },
+    {
+      "anahtar": "odtu",
+      "deger": "−%17 yapı kütlesi (8 katlı örnek bina hesabı)",
+      "kaynak": "ODTÜ çalışması",
+      "kullananlar": "agirlik"
+    },
+    {
+      "anahtar": "fabrika",
+      "deger": "2 fabrika (Söke ve İzmir)",
+      "kaynak": "Ege Gazbeton ortak rakamlar",
+      "kullananlar": "tir_palet, uretim_zinciri"
+    },
+    {
+      "anahtar": "kapasite",
+      "deger": "1.100.000 m³ üretim kapasitesi",
+      "kaynak": "Ege Gazbeton ortak rakamlar",
+      "kullananlar": "uretim_zinciri"
+    },
+    {
+      "anahtar": "kirec",
+      "deger": "200 t/gün (Söke kendi kireç tesisi)",
+      "kaynak": "Ege Gazbeton ortak rakamlar",
+      "kullananlar": "karisim_hazirla, uretim_zinciri"
+    },
+    {
+      "anahtar": "ihracat",
+      "deger": "25+ ülke · 5 kıta",
+      "kaynak": "Ege Gazbeton ihracat bölümü",
+      "kullananlar": "ihracat_kitalar"
+    },
+    {
+      "anahtar": "maket",
+      "deger": "3 kat × 3,0 m · 12 × 9 m aks · 20 cm duvar · kolon 35 × 35 cm · bugün 2.107 blok parçası (1.253 tam + 854 kesik; 627/626/626 + 228 parapet) · nominal alan 253,65 m² · hacim 50,73 m³",
+      "kaynak": "maket modeli (blender/bina_detay.py, hesaplandı; tools/maket_say.py ile yeniden üretilecek)",
+      "kullananlar": "maket_blok_sayaci, urun_secici, kesit_gezgini"
+    },
+    {
+      "anahtar": "hesaplar",
+      "deger": "R = d/λ; U ≈ λ/d (yüzey dirençleri hariç); q = ΔT·λ/d; kütle = ρ·V; blok adedi = alan ÷ 0,15",
+      "kaynak": "hesap (yukarıdaki doğrulanmış girdilerden)",
+      "kullananlar": "isi_yolculugu, agirlik, duvar_hesap"
+    }
+  ],
+  "dogrulanamayanlar": [
+    "G3 sınıfının yoğunluğu ve G1–G4'ün tam listesi (yalnız G1/300, G2/350, G4/600 bilinir)",
+    "Duvar bloğu stok kalınlıkları ve 5–35 cm'nin üretici teyidi",
+    "Fire/kırık payı, tutkal tüketimi (kg/m²), palet başına blok adedi ve m³, palet ölçüsü, tır kapasitesi",
+    "Hacimce hava oranı, gözenek boyutu (mm), hücre sayısı",
+    "Otoklav sıcaklık/basınç/süre, ön sertleşme süresi, kabarma süresi, kimyasal tepkime denklemi, 'priz' sözlüğü",
+    "ODTÜ −%17'nin kapsamı (yalnız panel mi tüm sistem mi) ve README'deki eski −%14 taban kesme kartı",
+    "A1 sınıf merdiveni harfleri ve 'yangına tepki' genel tanımı; yangın direnci (EN 13501-2) belgesi; 'öbür yüz serin' görseli",
+    "Yüzey dirençleri (Rsi/Rse), TS 825 sınır değerleri, yönetmelik kıyası",
+    "'Isı köprüsü' ifadesi (EGEPOR); U bloktaki '50 kgf/cm²' değerinin etiketi",
+    "'Suda yüzer' ifadesi",
+    "Kıta adlarının ekranda gösterilmesi; 25+ ülke · 5 kıta'nın güncel yazılı teyidi (dış haberlerde 19 ülke / 4 kıta); Aliağa/Alsancak liman ifadesi",
+    "Gerçek logo dosyası (tır kabini kararı)"
+  ]
+}
