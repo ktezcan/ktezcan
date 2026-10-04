@@ -6,9 +6,11 @@ noktaları (Natural Earth, kamu malı) ve kıtalar. Türkiye noktaları lime
 (kaynak = biz), yay ulaştığında o kıtanın noktaları yumuşakça aydınlanır.
 Kartlarda: 25+ ülke · 5 kıta (sahneden sonra, metinde).
 
-Giriş   (0,00–0,25) Kamera İzmir'e bakan küreye yaklaşır; Türkiye lime yanar.
-Gelişme (0,22–0,72) Yaylar sırayla Avrupa, Afrika, Asya, Amerika, Okyanusya'ya uzanır.
-Sonuç   (0,72–1,00) Kamera geri çekilir: tüm yaylar ve kıtalar, zeminde lime hale.
+Plan (docs/plan/akt-s5.json): 193 kare (12 kare/sn), kare numarası F. Küre boylamı c(F) ile DÖNER (27° → −22° → 78° → 40°)
+ki Amerika ve Okyanusya ön yüzde yansın; kıta ışıması varış noktasından jeodezik dalgayla yayılır.
+Giriş   (F0–36)    Kamera İzmir'e bakan küreye yaklaşır; Türkiye lime yanar.
+Gelişme (F40–138)  Yaylar sırayla Avrupa, Afrika, Amerika, Asya, Okyanusya'ya uzanır; küre kıtaya döner.
+Sonuç   (F126–192) Kamera geri çekilir: tüm yaylar ve kıtalar (F192 = finale ilk karesi, metinsiz).
 
 Kullanım: python s4_dunya.py --variant d|m --frames all|0,40 --out DIR
 """
@@ -26,23 +28,30 @@ import kit  # noqa: E402
 import bpy  # noqa: E402
 from mathutils import Vector, Matrix  # noqa: E402
 
-FRAMES = 72
+FRAMES = 193
 R = 1.0
 IZMIR = (38.42, 27.14)
 # yay hedefleri: kıtanın iç bölgesi (ülke işaretlemez; varışta tüm kıta aydınlanır)
-TARGETS = [  # (kıta id, lat, lon, başlangıç t)
-    (0, 50.5, 12.0, 0.24),
-    (2, 6.0, 21.0, 0.32),
-    (1, 40.0, 92.0, 0.40),
-    (3, 18.0, -86.0, 0.48),
-    (4, -25.0, 134.0, 0.56),
+TARGETS = [  # (kıta id, lat, lon, yay başı F, yay bitişi F, varış dalgası bitişi F) — plan kare programı
+    (0, 50.5, 12.0, 40, 50, 62),     # Avrupa
+    (2, 6.0, 21.0, 46, 59, 71),      # Afrika
+    (3, 15.0, -88.0, 53, 73, 88),    # Amerika (Orta Amerika: kara üstü; eski hedef 18°,−86° değil, denizde kalıyordu)
+    (1, 40.0, 92.0, 88, 103, 115),   # Asya
+    (4, -25.0, 134.0, 102, 124, 138),  # Okyanusya
 ]
-ARC_DUR = 0.14
+GIRIS_F = 36  # nadir İzmir → küre doğuşu
+# küre dönüşü: (F, merkez boylamı c°). Aralar ease-in-out; tepe hız ≤ 33°/sn (12 kare/sn)
+BOYLAM = [(0, IZMIR[1]), (36, IZMIR[1]), (73, -22.0), (126, 78.0), (192, 40.0)]
+# küre eğimi (F, derece): İzmir enlemi → ekvatora yaklaş (Okyanusya'nın güneyi de görünsün) → hafif geri
+EGIM = [(0, 38.42 * 0.62), (73, 18.0), (112, 7.0), (192, 12.0)]
+# kamera uzaklığı anahtarları (F, d çarpanı: d0=1 → d1 → d2)
+D_ANAHTAR = [(36, 0.0), (132, 1.0), (192, 2.0)]
 H_GIRIS = {'d': 0.42, 'm': 0.5}  # girişte İzmir'in üstündeki kamera yüksekliği
 
+YEREL = {}  # varış halkası adı → (kıta noktası, yönelim matrisi)
 VARIANTS = {
-    'd': dict(res=(1600, 900), lens=50.0, d0=3.5, d1=6.3),
-    'm': dict(res=(768, 1366), lens=36.0, d0=2.9, d1=4.1),
+    'd': dict(res=(1600, 900), lens=50.0, d0=3.5, d1=6.3, d2=9.0),
+    'm': dict(res=(768, 1366), lens=36.0, d0=2.9, d1=4.1, d2=5.9),
 }
 
 
@@ -51,11 +60,14 @@ def ll2v(lat, lon, r=R):
     return Vector((math.cos(la) * math.cos(lo), math.cos(la) * math.sin(lo), math.sin(la))) * r
 
 
-def globe_rotation():
-    """İzmir kameraya (−Y) bakacak, kuzey yukarı kalacak dönüş."""
+def globe_rotation(c=None, egim=None):
+    """Boylamı c olan meridyen kameraya (−Y) bakacak, kuzey yukarı kalacak dönüş (varsayılan: İzmir).
+    egim: kuzey kutbunun kameraya eğimi (derece); varsayılan İzmir'i merkeze getiren değer."""
     lat, lon = IZMIR
+    if c is not None:
+        lon = c
     rz = Matrix.Rotation(math.radians(-90 - lon), 4, 'Z')  # boylam → −Y
-    rx = Matrix.Rotation(math.radians(lat * 0.62), 4, 'X')  # İzmir'i merkeze yaklaştır (kuzey yukarı)
+    rx = Matrix.Rotation(math.radians(lat * 0.62 if egim is None else egim), 4, 'X')  # İzmir'i merkeze yaklaştır (kuzey yukarı)
     return rx @ rz
 
 
@@ -181,15 +193,14 @@ def build(variant):
     world = kit.studio_world(hdri='studio.exr', hdri_strength=0.3)
     kit.replace_reflection_env(world, 1.0)
     floor = kit.box('Zemin', (200, 200, 0.1), (0, 0, -1.65), kit.glossy_floor())
-    ring = kit.halo_ring('Hale', radius=1.55, width=0.008, strength=5.0, z=0.0)
-    ring.location = (0, 0, -1.599)
+    # plan: zemin lime halkası ve KonturLime ışığı kaldırıldı (kürede lime sızıntısı olmasın; lime yalnız yay/fabrika iğnesi)
 
     rot = globe_rotation()
     pts = np.array(json.load(open(os.path.join(kit.TEX_DIR, 'kara_noktalari.json'))), dtype=np.float32)
     globe_body(rot)
     dots = dots_object(pts, rot)
     arc_mat = kit.emission_material('Yay', kit.LIME_HI, 7.0)
-    arcs = [arc_object(f'Yay{i}', IZMIR, (lat, lon), rot, arc_mat) for i, (_, lat, lon, _) in enumerate(TARGETS)]
+    arcs = [arc_object(f'Yay{i}', IZMIR, (T[1], T[2]), rot, arc_mat) for i, T in enumerate(TARGETS)]
     # yay başı: ilerleyen ışık damlası (yolculuk hissi)
     bas_mat = kit.emission_material('YayBasi', (1.0, 1.0, 0.92, 1.0), 40.0)
     for i, a in enumerate(arcs):
@@ -201,20 +212,18 @@ def build(variant):
         a['bas'] = b.name
     # varış halkaları (kıtada yumuşak dalga)
     pulses = []
-    for i, (_, lat, lon, _) in enumerate(TARGETS):
+    for i, T in enumerate(TARGETS):
         p = kit.halo_ring(f'Varis{i}', radius=0.035, width=0.003, strength=6.0, segments=64)
-        n = ll2v(lat, lon, R * 1.004)
-        p.matrix_world = rot @ Matrix.Translation(n) @ n.to_track_quat('Z', 'Y').to_matrix().to_4x4()
+        n = ll2v(T[1], T[2], R * 1.004)
+        YEREL[p.name] = (n, n.to_track_quat('Z', 'Y').to_matrix().to_4x4())  # küre dönünce rot @ T @ yerel yeniden kurulur
+        p.matrix_world = rot @ Matrix.Translation(n) @ YEREL[p.name][1]
         pulses.append(p)
 
     k = kit.area_light('Ana', (-3.5, -4.0, 3.2), (0, 0, 0), 3.2, 200, (1.0, 0.97, 0.94), shape='DISK')
     kit.aim(k, (0, 0, 0))
     r1 = kit.area_light('Kontur', (2.6, 3.4, 1.6), (0, 0, 0), (0.6, 3.0), 380, (0.86, 0.93, 1.0))
     kit.aim(r1, (0, 0, 0))
-    r2 = kit.area_light('KonturLime', (-3.0, 2.8, -0.4), (0, 0, 0), (0.5, 2.6), 160, kit.LIME_HI)
-    kit.aim(r2, (0, 0, 0))
-    for ob in (r1, r2):
-        ob.visible_glossy = False
+    r1.visible_glossy = False
     # Sinematik: arka planda yıldız alanı, ışıldayan yaylar ve atmosfer
     kit.dust('Yildiz', count=1400, bounds=((-26, 26), (6, 14), (-12, 15)), seed=23, size=(0.005, 0.014), strength=2.2)
     kit.sinematik(bloom=0.4, esik=1.4, boyut=0.6)
@@ -222,15 +231,33 @@ def build(variant):
     return cam, dots, pts, arcs, pulses
 
 
-def cam_pose(t, variant):
+def anahtar(F, keys):
+    """(F, değer) anahtarları arasında ease-in-out ara değer."""
+    if F <= keys[0][0]:
+        return keys[0][1]
+    for (f0, v0), (f1, v1) in zip(keys, keys[1:]):
+        if F <= f1:
+            return kit.lerp(v0, v1, kit.smoother(kit.seg(F, f0, f1)))
+    return keys[-1][1]
+
+
+def cam_pose(F, variant):
     v = VARIANTS[variant]
-    d = kit.lerp(v['d0'], v['d1'], kit.smoother(kit.seg(t, 0.55, 1.0)))
+    k = anahtar(F, D_ANAHTAR)  # 0..1: d0→d1, 1..2: d1→d2
+    d = kit.lerp(v['d0'], v['d1'], min(k, 1.0)) if k <= 1.0 else kit.lerp(v['d1'], v['d2'], k - 1.0)
+    t = F / (FRAMES - 1)
     yaw = math.radians(kit.lerp(-6, 14, kit.smoother(t)))
     pitch = math.radians(kit.lerp(10, 18, kit.smooth(kit.seg(t, 0.5, 1.0))))
     tz = kit.lerp(0.25, -0.05, kit.smooth(kit.seg(t, 0.4, 1.0)))
     target = Vector((0, 0, tz))
     dirv = Vector((math.sin(yaw) * math.cos(pitch), -math.cos(yaw) * math.cos(pitch), math.sin(pitch)))
     return target + dirv * d, target
+
+
+def gorunur(cam_loc, rot, lat, lon):
+    """Küre noktası (lat, lon) kameraya bakan yüzde mi? (ufuk testi: arka yüzdeki çapa null olur)"""
+    n = (rot.to_3x3() @ ll2v(lat, lon, 1.0)).normalized()
+    return n.dot((cam_loc - rot @ ll2v(lat, lon, R)).normalized()) > 0.08
 
 
 def main():
@@ -243,6 +270,18 @@ def main():
     kita = pts[:, 2].astype(int)
     base = np.tile(np.array([0.78, 0.80, 0.80, 1.0], dtype=np.float32), (len(pts), 1))
     lime = np.array(kit.LIME_HI, dtype=np.float32)
+    # varış dalgası: kıtanın noktaları, varış noktasına jeodezik uzaklıkla sırayla yanar
+    la_, lo_ = np.radians(pts[:, 0]), np.radians(pts[:, 1])
+    uvec = np.stack([np.cos(la_) * np.cos(lo_), np.cos(la_) * np.sin(lo_), np.sin(la_)], 1)
+    dalga = []
+    for (kid, lat, lon, _, _, _) in TARGETS:
+        tv = np.array(ll2v(lat, lon, 1.0), dtype=np.float32)
+        ang = np.arccos(np.clip(uvec @ tv, -1, 1))
+        m = kita == kid
+        dn = np.zeros(len(pts), dtype=np.float32)
+        if m.any():
+            dn[m] = ang[m] / max(float(ang[m].max()), 1e-6)
+        dalga.append((m, dn))
     frames = pass_order(FRAMES) if ARGS.frames == 'all' else [int(x) for x in ARGS.frames.split(',')]
     meta_path = os.path.join(ARGS.out, 'meta.json')
     meta = {'frames': FRAMES, 'res': VARIANTS[ARGS.variant]['res'], 'hotspots': {}}
@@ -252,7 +291,12 @@ def main():
         if _eski.get('frames') == FRAMES:
             meta['hotspots'].update(_eski.get('hotspots', {}))
     for f in frames:
-        t = f / (FRAMES - 1)
+        # küre dönüşü: tüm küreye bağlı nesneler aynı dönüşle (Amerika ve Okyanusya ön yüzde yansın)
+        rot = globe_rotation(anahtar(f, BOYLAM), anahtar(f, EGIM))
+        dots.matrix_world = rot
+        src.matrix_world = rot @ Matrix.Translation(n_) @ n_.to_track_quat('Z', 'Y').to_matrix().to_4x4()
+        for ob in arcs:
+            ob.matrix_world = rot
         col = base.copy()
         glow = np.full(len(pts), 0.05, dtype=np.float32)
         # Türkiye: kaynak, lime
@@ -260,8 +304,8 @@ def main():
         tr = kita == 5
         col[tr] = base[tr] * (1 - k_tr) + lime * k_tr
         glow[tr] = 0.05 + 1.3 * k_tr
-        for i, (kid, lat, lon, ts) in enumerate(TARGETS):
-            u = kit.seg(t, ts, ts + ARC_DUR)
+        for i, (kid, lat, lon, fa, fb, fw) in enumerate(TARGETS):
+            u = kit.seg(f, fa, fb)
             arcs[i].data.bevel_factor_end = kit.ease_in_out(u)
             arcs[i].hide_render = u <= 0.0
             bas = bpy.data.objects[arcs[i]['bas']]
@@ -275,10 +319,12 @@ def main():
             pa = Vector(pp[3 * j:3 * j + 3])
             pb = Vector(pp[3 * j + 3:3 * j + 6])
             bas.location = arcs[i].matrix_world @ pa.lerp(pb, fr)
-            arrive = kit.smooth(kit.seg(t, ts + ARC_DUR * 0.85, ts + ARC_DUR + 0.08))
-            m = kita == kid
-            glow[m] = 0.05 + 0.75 * arrive
-            pr = kit.seg(t, ts + ARC_DUR * 0.85, ts + ARC_DUR + 0.12)
+            m, dn = dalga[i]
+            ti = fb + dn[m] * max(fw - fb - 5, 1)
+            glow[m] = 0.05 + 0.75 * np.array([kit.smooth(kit.seg(f, a_, a_ + 5)) for a_ in ti], dtype=np.float32)
+            pr = kit.seg(f, fb - 1, fb + 10)
+            yn, yq = YEREL[pulses[i].name]
+            pulses[i].matrix_world = rot @ Matrix.Translation(yn) @ yq
             pulses[i].hide_render = not (0 < pr < 1)
             sc = 0.5 + 1.8 * pr
             pulses[i].scale = (sc, sc, 1)
@@ -287,12 +333,12 @@ def main():
         me.attributes['renk'].data.foreach_set('color', col.ravel())
         me.attributes['isik'].data.foreach_set('value', glow)
         me.update()
-        loc, target = cam_pose(t, ARGS.variant)
-        if t < 0.24:
+        loc, target = cam_pose(f, ARGS.variant)
+        w = kit.smoother(kit.seg(f, 0, GIRIS_F))
+        if f < GIRIS_F:
             # giriş: İzmir'e tepeden yakın plan (sahne 3 çıkışındaki tepeden şantiye karesiyle eşleşir),
             # sonra küre açılır
-            w = kit.smoother(kit.seg(t, 0.0, 0.24))
-            pA = rot0 @ ll2v(*IZMIR, R)
+            pA = rot @ ll2v(*IZMIR, R)
             nA = pA.normalized()
             dB = loc - target
             dirv = nA.lerp(dB.normalized(), w).normalized()
@@ -302,16 +348,21 @@ def main():
         cam.location = loc
         kit.aim(cam, target)
         kit.kaydir(cam, ARGS.variant, 1.0)
-        cam.data.dof.focus_distance = max(0.1, (target - loc).length - R * 0.6 * (1 if t >= 0.24 else w))
+        cam.data.dof.focus_distance = max(0.1, (target - loc).length - R * 0.6 * (1 if f >= GIRIS_F else w))
         # kaynak halkası: İzmir'de, girişte parlak, küre açılınca söner
-        src.hide_render = t > 0.32
-        src.data.materials[0].node_tree.nodes['Emission'].inputs['Strength'].default_value = 7.0 * (1 - kit.smooth(kit.seg(t, 0.16, 0.32)))
-        rot = dots.matrix_world
+        src.hide_render = f > 61
+        src.data.materials[0].node_tree.nodes['Emission'].inputs['Strength'].default_value = 7.0 * (1 - kit.smooth(kit.seg(f, 30, 61)))
         hs = {}
-        if t >= 0.12:
-            pts_w = {'kaynak': rot @ ll2v(*IZMIR, R * 1.01)}
-            if t >= 0.80:
-                pts_w['kitalar'] = rot @ ll2v(18.0, -40.0, R * 1.01)
+        pts_w = {}
+        if f <= 60 and gorunur(cam.location, rot, *IZMIR):
+            pts_w['kaynak'] = rot @ ll2v(*IZMIR, R * 1.01)
+        if f >= 125 and gorunur(cam.location, rot, 0.0, -30.0):
+            pts_w['kitalar'] = rot @ ll2v(0.0, -30.0, R * 1.01)  # Atlantik açığı: kıta kartı noktası
+        # varış çapaları: ufuk testiyle (arka yüzdeki çapa yok)
+        for (kid, lat, lon, fa, fb, fw), ad in zip(TARGETS, ('avrupa', 'afrika', 'amerika', 'asya', 'okyanusya')):
+            if f >= fb and gorunur(cam.location, rot, lat, lon):
+                pts_w['v_' + ad] = rot @ ll2v(lat, lon, R * 1.01)
+        if pts_w:
             proj = kit.project(cam, list(pts_w.values()))
             hs = {k: p for k, p in zip(pts_w.keys(), proj) if p}
         meta['hotspots'][str(f)] = hs
