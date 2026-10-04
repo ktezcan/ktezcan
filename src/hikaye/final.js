@@ -316,6 +316,23 @@ export function finalKur(ortak) {
         ctx.stroke();
       }
     }
+    // t=140: "Güven." kabarcıklara dağılır (gözenek/kabarcık dili); yerine logo gelir
+    if (p >= 0.37 && p < 0.47 && kb) {
+      const u = (p - 0.37) / 0.1;
+      const r = mulberry32(140);
+      ctx.lineWidth = 1.5 * k;
+      for (let i = 0; i < 16; i++) {
+        const bx = mx + (r() - 0.5) * kb.w * 0.8 * k;
+        const by = my + (r() - 0.5) * kb.w * 0.16 * k;
+        const hiz = 0.6 + r() * 0.9;
+        const yy = by - u * hiz * 54 * k;
+        const rad = (3 + r() * 6) * k * (0.6 + 0.8 * u);
+        ctx.strokeStyle = `rgba(${SICAK}, ${((1 - u) * (0.35 + 0.4 * r())).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(bx, yy, rad, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
     if (p >= 0.3 && p < 0.5 && kb) {
       const olcek = (kb.w / LOGO_W) * k;
       const pt = (v) => [kb.x * k + v[0] * olcek, kb.y * k + v[1] * olcek];
